@@ -12,6 +12,11 @@ import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import PatientQueue from "../pages/Doctor/PatientQueue/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
+import PatientPage from "../pages/Patient/crud/PatientPage";
+import NotFound from "../pages/Patient/crud/NotFound";
+import PatientDetail from "../pages/Patient/crud/PatientDetail";
+import CreatePatient from "../pages/Patient/crud/CreatePatient";
+import UpdatePatient from "../pages/Patient/crud/UpdatePatient";
 /*
 import ReceptionDashboard from "../pages/Receptionist/ReceptionDashboard";
 import WarehouseStaffDashboard from "../pages/WarehouseStaff/WarehouseStaffDashboard";
@@ -22,9 +27,13 @@ export default function AppRoutes() {
 
   return (
     <Routes>
+      
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
-
+      <Route path="/test/list_patient" element= {<PatientPage/>}/>
+      <Route path="/test/create_patient" element= {<CreatePatient/>}/>
+      <Route path="/test/patient_detail/:id" element={<PatientDetail/>}/>
+      <Route path="/test/update_patient/:id" element={<UpdatePatient/>}/>
       {/* Admin */}
       <Route
         path="/admin"
@@ -106,6 +115,7 @@ export default function AppRoutes() {
           )
         }
       />
+      <Route path="/not_found" element={<NotFound/>}/>
     </Routes>
   );
 }
