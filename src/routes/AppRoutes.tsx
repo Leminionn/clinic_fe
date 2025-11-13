@@ -12,11 +12,11 @@ import CreateUpdatePatient from "../pages/SharedPages/crudPatients/CreateUpdateP
 import PatientDetail from "../pages/SharedPages/crudPatients/PatientDetail/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
-import PatientQueue from "../pages/Doctor/PatientQueue/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
 
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
+import ReceptionList from "../pages/SharedPages/crudReceptionList/ReceptionList/page";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -54,7 +54,7 @@ export default function AppRoutes() {
           <Route index element={<PatientList />} />
           <Route path="create-patient" element={<CreateUpdatePatient />} />
           <Route path="update-patient/:id" element={<CreateUpdatePatient />} />
-          <Route path="patient-detail/:id" element={<PatientDetail />}/>
+          <Route path="patient-detail/:id" element={<PatientDetail />} />
         </Route>
       </Route>
 
@@ -68,8 +68,12 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<DoctorDashboard />} />
-        <Route path="patient-queue" element={<PatientQueue />} />
+        <Route path="reception-list" element={<ReceptionList />} />
         <Route path="medical-examination" element={<MedicalExamination />} />
+        <Route path="patients">
+          <Route index element={<PatientList />} />
+          <Route path="patient-detail/:id" element={<PatientDetail />} />
+        </Route>
       </Route>
 
       {/* Receptionist */}
@@ -86,8 +90,9 @@ export default function AppRoutes() {
           <Route index element={<PatientList />} />
           <Route path="create-patient" element={<CreateUpdatePatient />} />
           <Route path="update-patient/:id" element={<CreateUpdatePatient />} />
-          <Route path="patient-detail/:id" element={<PatientDetail />}/>
+          <Route path="patient-detail/:id" element={<PatientDetail />} />
         </Route>
+        <Route path="reception-list" element={<ReceptionList />} />
       </Route>
 
       {/* WarehouseStaff */}

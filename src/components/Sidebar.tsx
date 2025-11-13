@@ -30,7 +30,7 @@ interface SidebarProps {
   items: SidebarItem[];
 }
 
-const drawerWidth = 300;
+const drawerWidth = 280;
 
 export default function Sidebar({ items }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);

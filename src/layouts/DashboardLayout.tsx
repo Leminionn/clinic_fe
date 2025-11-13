@@ -38,7 +38,7 @@ export default function DashboardLayout() {
     ],
     Doctor: [
       { label: "Dashboard", path: "/doctor", icon: <Home /> },
-      { label: "Patient Queue", path: "/doctor/patient-queue", icon: <People /> },
+      { label: "Reception List", path: "/doctor/reception-list", icon: <People /> },
       { label: "Medical Examination", path: "/doctor/medical-examination", icon: <MedicalInformation /> },
       { label: "My Appointments", path: "/doctor/my-appointments", icon: <Calendar1 /> },
       { label: "Profile", path: "/doctor/profile", icon: <Person /> },
@@ -46,7 +46,7 @@ export default function DashboardLayout() {
     ],
     Receptionist: [
       { label: "Dashboard", path: "/receptionist", icon: <Home /> },
-      { label: "Patient Reception", path: "/receptionist/patient-reception", icon: <People /> },
+      { label: "Reception List", path: "/receptionist/reception-list", icon: <People /> },
       { label: "Appointments", path: "/receptionist/appointments", icon: <Calendar1 /> },
       { label: "Receipts", path: "/receptionist/receipts", icon: <ReceiptLong /> },
       { label: "Profile", path: "/receptionist/profile", icon: <Person /> },
