@@ -53,11 +53,6 @@ const fakePatient = {
       date: "2025-10-11T09:30:00",
       doctorName: "Ngô Văn A"
     },
-    {
-      appointmentId: 1,
-      date: "2025-10-11T13:30:00",
-      doctorName: "Ngô Văn A"
-    },
   ]
 }
 

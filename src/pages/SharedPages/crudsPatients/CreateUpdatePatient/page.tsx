@@ -11,7 +11,7 @@ const fakePatient: PatientCreateDto = {
   gender: "Male",
   address: "12 Nguyen Trai, Ha Noi",
   phone: "0901234567",
-  email: "an.nguyen@example.com",
+  email: "an.nguyen@gmail.com",
   idCard: "012345678901",
   firstVisitDate: "2023-01-10",
 }

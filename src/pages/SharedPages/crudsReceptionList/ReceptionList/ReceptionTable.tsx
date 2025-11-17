@@ -144,7 +144,7 @@ export default function ReceptionTable() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
   const [data, setData] = useState<Reception[]>([]);
-  const [totalItems, setTotalItems] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchReceptions = async () => {
@@ -160,6 +160,7 @@ export default function ReceptionTable() {
   useEffect(() => {
     fetchReceptions();
     setData(fakeData.slice(0, rowsPerPage)) //sau khi fetch data thật thì xóa dòng này đi
+    setTotalItems(10)
   }, [page, rowsPerPage]);
 
 
@@ -221,7 +222,7 @@ export default function ReceptionTable() {
                 </TableCell>
                 <TableCell align="center">
                   <ActionMenu
-                    actions={role == "Doctor" ? [
+                    actions={role === "Doctor" ? [
                       {
                         label: "View patient",
                         icon: Visibility,

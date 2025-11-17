@@ -7,16 +7,17 @@ import { useAuth } from "../auth/AuthContext";
 
 // Các trang
 import AdminDashboard from "../pages/Admin/Dashboard/page";
-import PatientList from "../pages/SharedPages/crudPatients/PatientList/page";
-import CreateUpdatePatient from "../pages/SharedPages/crudPatients/CreateUpdatePatient/page";
-import PatientDetail from "../pages/SharedPages/crudPatients/PatientDetail/page";
+import PatientList from "../pages/SharedPages/crudsPatients/PatientList/page";
+import CreateUpdatePatient from "../pages/SharedPages/crudsPatients/CreateUpdatePatient/page";
+import PatientDetail from "../pages/SharedPages/crudsPatients/PatientDetail/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
 
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
-import ReceptionList from "../pages/SharedPages/crudReceptionList/ReceptionList/page";
+import ReceptionList from "../pages/SharedPages/crudsReceptionList/ReceptionList/page";
+import AppointmentList from "../pages/SharedPages/crudsAppointments/AppointmentList/page";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -56,6 +57,9 @@ export default function AppRoutes() {
           <Route path="update-patient/:id" element={<CreateUpdatePatient />} />
           <Route path="patient-detail/:id" element={<PatientDetail />} />
         </Route>
+        <Route path="appointments">
+          <Route index element={<AppointmentList />} />
+        </Route>
       </Route>
 
       {/* Doctor */}
@@ -93,6 +97,9 @@ export default function AppRoutes() {
           <Route path="patient-detail/:id" element={<PatientDetail />} />
         </Route>
         <Route path="reception-list" element={<ReceptionList />} />
+        <Route path="appointments">
+          <Route index element={<AppointmentList />} />
+        </Route>
       </Route>
 
       {/* WarehouseStaff */}
