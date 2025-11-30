@@ -11,6 +11,7 @@ import { CalendarDays, Search } from "lucide-react";
 import { getStatusBgColor, getStatusTextColor } from "./AppointmentTable";
 import { useAuth } from "../../../../auth/AuthContext";
 import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 export default function AppointmentToolbar({
   searchKey,
@@ -28,6 +29,7 @@ export default function AppointmentToolbar({
   onChangeStatus: (status: string) => void,
 
 }) {
+  const navigate = useNavigate();
   const { role } = useAuth();
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -157,7 +159,7 @@ export default function AppointmentToolbar({
         <Button
           variant="contained"
           startIcon={<Add sx={{ height: 24, width: 24, }} />}
-          onClick={() => { }}
+          onClick={() => { navigate('new'); }}
           sx={{
             borderRadius: 1,
             textTransform: "none",

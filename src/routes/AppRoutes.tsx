@@ -18,6 +18,7 @@ import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
 import ReceptionList from "../pages/SharedPages/crudsReceptionList/ReceptionList/page";
 import AppointmentList from "../pages/SharedPages/crudsAppointments/AppointmentList/page";
+import AppointmentBooking from "../pages/SharedPages/crudsAppointments/AppointmentBooking.tsx/page";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -99,6 +100,7 @@ export default function AppRoutes() {
         <Route path="reception-list" element={<ReceptionList />} />
         <Route path="appointments">
           <Route index element={<AppointmentList />} />
+          <Route path="new" element={<AppointmentBooking />} />
         </Route>
       </Route>
 
