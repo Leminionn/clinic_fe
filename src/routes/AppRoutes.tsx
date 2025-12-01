@@ -12,6 +12,8 @@ import CreateUpdatePatient from "../pages/SharedPages/crudsPatients/CreateUpdate
 import PatientDetail from "../pages/SharedPages/crudsPatients/PatientDetail/page";
 import PaymentMethodsList from "../pages/SharedPages/crudsPaymentMethods/List/page";
 import PaymentMethodDetail from "../pages/SharedPages/crudsPaymentMethods/Detail/PaymentMethodDetail";
+import SystemParamsList from "../pages/SharedPages/crudsSystemParams/List/page";
+import SystemParamGroupsList from "../pages/SharedPages/crudsSystemParams/Groups/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
@@ -62,6 +64,12 @@ export default function AppRoutes() {
         <Route path="payment-methods">
           <Route index element={<PaymentMethodsList />} />
           <Route path="detail/:id" element={<PaymentMethodDetail />} />
+        </Route>
+        <Route path="system-params">
+          <Route index element={<SystemParamsList />} />
+        </Route>
+        <Route path="system-param-groups">
+          <Route index element={<SystemParamGroupsList />} />
         </Route>
         <Route path="appointments">
           <Route index element={<AppointmentList />} />
