@@ -10,6 +10,9 @@ import AdminDashboard from "../pages/Admin/Dashboard/page";
 import PatientList from "../pages/SharedPages/crudsPatients/PatientList/page";
 import CreateUpdatePatient from "../pages/SharedPages/crudsPatients/CreateUpdatePatient/page";
 import PatientDetail from "../pages/SharedPages/crudsPatients/PatientDetail/page";
+import PaymentMethodsList from "../pages/SharedPages/crudsPaymentMethods/List/page";
+import PaymentMethodDetail from "../pages/SharedPages/crudsPaymentMethods/Detail/page";
+import CreateUpdatePaymentMethod from "../pages/SharedPages/crudsPaymentMethods/CreateUpdate/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
@@ -57,6 +60,12 @@ export default function AppRoutes() {
           <Route path="create-patient" element={<CreateUpdatePatient />} />
           <Route path="update-patient/:id" element={<CreateUpdatePatient />} />
           <Route path="patient-detail/:id" element={<PatientDetail />} />
+        </Route>
+        <Route path="payment-methods">
+          <Route index element={<PaymentMethodsList />} />
+          <Route path="create" element={<CreateUpdatePaymentMethod />} />
+          <Route path="update/:id" element={<CreateUpdatePaymentMethod />} />
+          <Route path="detail/:id" element={<PaymentMethodDetail />} />
         </Route>
         <Route path="appointments">
           <Route index element={<AppointmentList />} />
