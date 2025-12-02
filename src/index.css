@@ -111,3 +111,67 @@ button:hover {
   --color-text-secondary: #a1b1c9;
   --color-text-disabled: #555;
 }
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Căn giữa theo chiều ngang */
+  justify-content: center; /* Căn giữa theo chiều dọc */
+  height: 100vh; /* Chiều cao 100% viewport */
+  /* Giữ nguyên màu nền mặc định của trang */
+}
+.login-box {
+    /* Đặt một chiều rộng cố định để các input thẳng hàng */
+    width: 100%;
+    max-width: 380px; 
+    padding: 2rem 0; /* Thêm khoảng cách trên dưới cho thoáng */
+    text-align: center; /* Đảm bảo nút/tiêu đề được căn giữa trong box */
+}
+.login-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.form-group {
+    /* Thiết lập Flexbox để sắp xếp Label và Input */
+    display: flex;
+    flex-direction: column; /* Xếp Label trên Input (là cách bố cục tốt nhất) */
+    align-items: flex-start; /* Căn chữ Label sang trái */
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Quan trọng: giúp padding không làm tăng chiều rộng */
+    /* Đồng bộ kích thước để Input và Select luôn thẳng hàng */
+}
+
+.login-button {
+    background-color: #007bff; /* Màu xanh dương */
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    width: 100%; /* Đảm bảo nút có cùng chiều rộng với input */
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
