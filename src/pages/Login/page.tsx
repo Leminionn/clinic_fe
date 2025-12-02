@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, type Role } from '../../auth/AuthContext';
+import { apiCall } from '../../api/api';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<Role>(null);
+  const [username, setUsername]= useState<String>("");
+  const [password, setPassword] = useState<String>("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -12,54 +15,117 @@ const LoginPage: React.FC = () => {
       alert('Vui lòng chọn vai trò trước khi đăng nhập!');
       return;
     }
+    loginToServer();
+
+  };
+  function loginSuccess(data:any) {
 
     login(selectedRole);
 
-    // ✅ Điều hướng theo role
+    
     switch (selectedRole) {
       case 'Admin':
+        if(data.data.account.role!="ADMIN") {
+          alert("Đăng nhập thất bại");
+          return;
+        }
         navigate('/admin');
         break;
       case 'Doctor':
+        if(data.account.role!="DOCTOR") {
+          alert("Đăng nhập thất bại");
+          return;
+        }
         navigate('/doctor');
         break;
       case 'Receptionist':
+        if(data.account.role!="RECEPTIONIST") {
+          alert("Đăng nhập thất bại");
+          return;
+        }
         navigate('/receptionist');
         break;
       case 'WarehouseStaff':
+        if(data.account.role!="WAREHOUSE_STAFF") {
+          alert("Đăng nhập thất bại");
+          return;
+        }
         navigate('/warehouse-staff');
         break;
       case 'Patient':
+        if(data.account.role!="PATIENT") {
+          alert("Đăng nhập thất bại");
+          return;
+        }
         navigate('/patient');
         break;
       default:
         navigate('/');
         break;
     }
-  };
-
+    localStorage.setItem("accessToken",data.data.accessToken);
+    localStorage.setItem("refreshToken",data.data.refreshToken);
+  }
+  async function loginToServer() {
+    const requestBody = {
+      username:username,
+      password:password
+    }
+    apiCall("auth/login","POST",null,JSON.stringify(requestBody),loginSuccess,()=>{
+      alert("Đăng nhập thất bại")
+    })
+  }
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-80 text-center">
-        <h1 className="text-2xl font-semibold mb-4">Đăng nhập</h1>
+    <div className="login-container">
+      <div className="login-box">
+        <h1 className="login-title">Đăng nhập hệ thống</h1>
 
-        <select
-          className="border rounded-md px-3 py-2 w-full mb-4"
-          value={selectedRole ?? ''}
-          onChange={(e) => setSelectedRole(e.target.value as Role)}
-        >
-          <option value="">-- Chọn vai trò --</option>
-          <option value="Admin">Admin</option>
-          <option value="Doctor">Bác sĩ</option>
-          <option value="Receptionist">Lễ tân</option>
-          <option value="WarehouseStaff">Thủ kho / Cấp phát thuốc</option>
-          <option value="Patient">Bệnh nhân</option>
-        </select>
+       
+        <div className="form-group">
+          <label className="form-label" htmlFor="username">Tên tài khoản</label>
+          <input
+            id="username"
+            type="text"
+            className="form-input"
+            placeholder="Nhập tên tài khoản..."
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
 
-        <button
-          onClick={handleLogin}
-          className="bg-blue-500 text-white py-2 rounded-md w-full hover:bg-blue-600 transition"
-        >
+        
+        <div className="form-group">
+          <label className="form-label" htmlFor="password">Mật khẩu</label>
+          <input
+            id="password"
+            type="password"
+            className="form-input"
+            placeholder="Nhập mật khẩu..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        
+        <div className="form-group">
+          <label className="form-label" htmlFor="role">Vai trò</label>
+          <select
+            id="role"
+            className="form-select"
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value as Role)}
+          >
+            <option value="">-- Chọn vai trò --</option>
+            <option value="Admin">Admin</option>
+            <option value="Doctor">Bác sĩ</option>
+            <option value="Receptionist">Lễ tân</option>
+            <option value="WarehouseStaff">Thủ kho / Cấp phát thuốc</option>
+            <option value="Patient">Bệnh nhân</option>
+          </select>
+        </div>
+
+        
+        <button onClick={handleLogin} className="login-button">
           Đăng nhập
         </button>
       </div>
