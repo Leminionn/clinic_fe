@@ -5,7 +5,7 @@ import { apiCall } from '../../api/api';
 
 const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<Role>(null);
-  const [username, setUsername]= useState<String>("");
+  const [username, setUsername] = useState<String>("");
   const [password, setPassword] = useState<String>("");
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -18,60 +18,63 @@ const LoginPage: React.FC = () => {
     loginToServer();
 
   };
-  function loginSuccess(data:any) {
+  function loginSuccess(data: any) {
+    const token = data.data.accessToken;
 
-    login(selectedRole);
-
-    
     switch (selectedRole) {
       case 'Admin':
-        if(data.data.account.role!="ADMIN") {
+        if (data.data.account.role != "ADMIN") {
           alert("Đăng nhập thất bại");
           return;
         }
+        login(selectedRole, token);
         navigate('/admin');
         break;
       case 'Doctor':
-        if(data.account.role!="DOCTOR") {
+        if (data.data.account.role != "DOCTOR") {
           alert("Đăng nhập thất bại");
           return;
         }
+        login(selectedRole, token);
         navigate('/doctor');
         break;
       case 'Receptionist':
-        if(data.account.role!="RECEPTIONIST") {
+        if (data.data.account.role != "RECEPTIONIST") {
           alert("Đăng nhập thất bại");
           return;
         }
+        login(selectedRole, token);
         navigate('/receptionist');
         break;
       case 'WarehouseStaff':
-        if(data.account.role!="WAREHOUSE_STAFF") {
+        if (data.data.account.role != "WAREHOUSE_STAFF") {
           alert("Đăng nhập thất bại");
           return;
         }
+        login(selectedRole, token);
         navigate('/warehouse-staff');
         break;
       case 'Patient':
-        if(data.account.role!="PATIENT") {
+        if (data.data.account.role != "PATIENT") {
           alert("Đăng nhập thất bại");
           return;
         }
+        login(selectedRole, token);
         navigate('/patient');
         break;
       default:
         navigate('/');
         break;
     }
-    localStorage.setItem("accessToken",data.data.accessToken);
-    localStorage.setItem("refreshToken",data.data.refreshToken);
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("refreshToken", data.data.refreshToken);
   }
   async function loginToServer() {
     const requestBody = {
-      username:username,
-      password:password
+      username: username,
+      password: password
     }
-    apiCall("auth/login","POST",null,JSON.stringify(requestBody),loginSuccess,()=>{
+    apiCall("auth/login", "POST", null, JSON.stringify(requestBody), loginSuccess, () => {
       alert("Đăng nhập thất bại")
     })
   }
@@ -80,7 +83,7 @@ const LoginPage: React.FC = () => {
       <div className="login-box">
         <h1 className="login-title">Đăng nhập hệ thống</h1>
 
-       
+
         <div className="form-group">
           <label className="form-label" htmlFor="username">Tên tài khoản</label>
           <input
@@ -93,7 +96,7 @@ const LoginPage: React.FC = () => {
           />
         </div>
 
-        
+
         <div className="form-group">
           <label className="form-label" htmlFor="password">Mật khẩu</label>
           <input
@@ -106,7 +109,7 @@ const LoginPage: React.FC = () => {
           />
         </div>
 
-        
+
         <div className="form-group">
           <label className="form-label" htmlFor="role">Vai trò</label>
           <select
@@ -124,7 +127,7 @@ const LoginPage: React.FC = () => {
           </select>
         </div>
 
-        
+
         <button onClick={handleLogin} className="login-button">
           Đăng nhập
         </button>

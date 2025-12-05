@@ -22,6 +22,8 @@ import {
 } from "../../../../api/urls";
 import type { SystemParam, SystemParamGroup } from "../../../../types/SystemParam";
 
+const getToken = () => localStorage.getItem("accessToken");
+
 interface CreateUpdateSystemParamProps {
   open: boolean;
   onClose: () => void;
@@ -75,10 +77,10 @@ export default function CreateUpdateSystemParam({
     apiCall(
       systemParamGroupsGetActive,
       "GET",
-      null,
+      getToken(),
       null,
       (res: any) => {
-        setGroups(res.data || []);
+        setGroups(res || []);
       },
       (err: any) => {
         console.error(err);
@@ -107,7 +109,7 @@ export default function CreateUpdateSystemParam({
       dataType,
       unit: unit || null,
       effectiveFrom,
-      active,
+      active: active,
       description: description || null,
     };
 
@@ -119,7 +121,7 @@ export default function CreateUpdateSystemParam({
     apiCall(
       url,
       method,
-      null,
+      getToken(),
       JSON.stringify(payload),
       () => {
         onSaved();

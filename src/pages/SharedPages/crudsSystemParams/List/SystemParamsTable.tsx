@@ -12,25 +12,15 @@ import {
   Select,
   MenuItem,
   Chip,
+  Tooltip,
 } from "@mui/material";
-import { DeleteOutline, Edit } from "@mui/icons-material";
+import { DeleteOutline, Edit, Visibility } from "@mui/icons-material";
 import type { SystemParam } from "../../../../types/SystemParam";
 
 function getActiveColor(active: boolean) {
   return active
     ? { bg: "var(--color-bg-success)", text: "var(--color-text-success)" }
     : { bg: "var(--color-bg-error)", text: "var(--color-text-error)" };
-}
-
-function getDataTypeColor(dataType: string) {
-  const colors: Record<string, string> = {
-    STRING: "#2196f3",
-    NUMBER: "#4caf50",
-    BOOLEAN: "#ff9800",
-    DATE: "#9c27b0",
-    DECIMAL: "#00bcd4",
-  };
-  return colors[dataType] || "#757575";
 }
 
 interface SystemParamsTableProps {
@@ -43,6 +33,7 @@ interface SystemParamsTableProps {
   onRowsPerPageChange: (rows: number) => void;
   onDelete: (id: number) => void;
   onEdit: (param: SystemParam) => void;
+  onView: (param: SystemParam) => void;
 }
 
 export default function SystemParamsTable({
@@ -55,6 +46,7 @@ export default function SystemParamsTable({
   onRowsPerPageChange,
   onDelete,
   onEdit,
+  onView,
 }: SystemParamsTableProps) {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
@@ -81,9 +73,6 @@ export default function SystemParamsTable({
             <TableCell sx={{ fontWeight: "bold" }}>Param Code</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Param Name</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Value</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Type</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Unit</TableCell>
-            <TableCell sx={{ fontWeight: "bold" }}>Effective From</TableCell>
             <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
             <TableCell sx={{ fontWeight: "bold" }} align="center">
               Action
@@ -94,7 +83,7 @@ export default function SystemParamsTable({
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={10} align="center">
+              <TableCell colSpan={7} align="center">
                 <CircularProgress size={28} sx={{ my: 2 }} />
               </TableCell>
             </TableRow>
@@ -103,10 +92,10 @@ export default function SystemParamsTable({
               const activeStyle = getActiveColor(row.active);
               return (
                 <TableRow key={row.paramId} hover>
-                  <TableCell sx={{ width: "4%", fontWeight: "bold" }}>
+                  <TableCell sx={{ width: "5%", fontWeight: "bold" }}>
                     {(page - 1) * rowsPerPage + index + 1}
                   </TableCell>
-                  <TableCell width="10%">
+                  <TableCell width="12%">
                     <Chip
                       label={row.groupName || row.groupCode}
                       size="small"
@@ -117,38 +106,34 @@ export default function SystemParamsTable({
                       }}
                     />
                   </TableCell>
-                  <TableCell width="12%">{row.paramCode}</TableCell>
-                  <TableCell width="15%">{row.paramName}</TableCell>
                   <TableCell
-                    width="15%"
+                    width="18%"
                     sx={{
-                      maxWidth: 150,
+                      maxWidth: 200,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <Tooltip title={row.paramCode} arrow>
+                      <span style={{ fontWeight: 500 }}>{row.paramCode}</span>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell width="20%">{row.paramName}</TableCell>
+                  <TableCell
+                    width="22%"
+                    sx={{
+                      maxWidth: 250,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
+                      fontWeight: 600,
+                      color: "#1976d2",
                     }}
                   >
                     {row.paramValue}
                   </TableCell>
-                  <TableCell width="8%">
-                    <Chip
-                      label={row.dataType}
-                      size="small"
-                      sx={{
-                        bgcolor: getDataTypeColor(row.dataType),
-                        color: "#fff",
-                        fontWeight: 500,
-                        fontSize: "0.7rem",
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell width="8%">{row.unit || "-"}</TableCell>
                   <TableCell width="10%">
-                    {row.effectiveFrom
-                      ? new Date(row.effectiveFrom).toLocaleDateString()
-                      : "-"}
-                  </TableCell>
-                  <TableCell width="8%">
                     <Box
                       sx={{
                         backgroundColor: activeStyle.bg,
@@ -164,28 +149,43 @@ export default function SystemParamsTable({
                       {row.active ? "Active" : "Inactive"}
                     </Box>
                   </TableCell>
-                  <TableCell width="10%" align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => onEdit(row)}
-                      sx={{ color: "#5ba2d0" }}
-                    >
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => onDelete(row.paramId)}
-                      sx={{ color: "#d32f2f" }}
-                    >
-                      <DeleteOutline fontSize="small" />
-                    </IconButton>
+                  <TableCell width="13%" align="center">
+                    <Tooltip title="View" arrow>
+                      <IconButton
+                        size="small"
+                        onClick={() => onView(row)}
+                        sx={{ color: "#1976d2" }}
+                      >
+                        <Visibility fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit" arrow>
+                      <IconButton
+                        size="small"
+                        onClick={() => onEdit(row)}
+                        sx={{ color: "#5ba2d0" }}
+                      >
+                        <Edit fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    {/*
+                      <Tooltip title="Delete" arrow>
+                        <IconButton
+                          size="small"
+                          onClick={() => onDelete(row.paramId)}
+                          sx={{ color: "#d32f2f" }}
+                        >
+                          <DeleteOutline fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      */}
                   </TableCell>
                 </TableRow>
               );
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={10} align="center">
+              <TableCell colSpan={7} align="center">
                 <Typography variant="body2" color="text.secondary" py={4}>
                   No parameters found
                 </Typography>
@@ -233,3 +233,4 @@ export default function SystemParamsTable({
     </Box>
   );
 }
+

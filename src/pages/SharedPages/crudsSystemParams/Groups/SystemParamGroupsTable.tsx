@@ -11,8 +11,9 @@ import {
    Typography,
    Select,
    MenuItem,
+   Tooltip,
 } from "@mui/material";
-import { DeleteOutline, Edit } from "@mui/icons-material";
+import { DeleteOutline, Edit, Visibility } from "@mui/icons-material";
 import type { SystemParamGroup } from "../../../../types/SystemParam";
 
 function getActiveColor(active: boolean) {
@@ -31,6 +32,7 @@ interface SystemParamGroupsTableProps {
    onRowsPerPageChange: (rows: number) => void;
    onDelete: (id: number) => void;
    onEdit: (group: SystemParamGroup) => void;
+   onView: (group: SystemParamGroup) => void;
 }
 
 export default function SystemParamGroupsTable({
@@ -43,6 +45,7 @@ export default function SystemParamGroupsTable({
    onRowsPerPageChange,
    onDelete,
    onEdit,
+   onView,
 }: SystemParamGroupsTableProps) {
    const totalPages = Math.ceil(totalItems / rowsPerPage);
 
@@ -120,20 +123,33 @@ export default function SystemParamGroupsTable({
                               </Box>
                            </TableCell>
                            <TableCell width="10%" align="center">
-                              <IconButton
-                                 size="small"
-                                 onClick={() => onEdit(row)}
-                                 sx={{ color: "#5ba2d0" }}
-                              >
-                                 <Edit fontSize="small" />
-                              </IconButton>
-                              <IconButton
-                                 size="small"
-                                 onClick={() => onDelete(row.groupId)}
-                                 sx={{ color: "#d32f2f" }}
-                              >
-                                 <DeleteOutline fontSize="small" />
-                              </IconButton>
+                              <Tooltip title="View" arrow>
+                                 <IconButton
+                                    size="small"
+                                    onClick={() => onView(row)}
+                                    sx={{ color: "#1976d2" }}
+                                 >
+                                    <Visibility fontSize="small" />
+                                 </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Edit" arrow>
+                                 <IconButton
+                                    size="small"
+                                    onClick={() => onEdit(row)}
+                                    sx={{ color: "#5ba2d0" }}
+                                 >
+                                    <Edit fontSize="small" />
+                                 </IconButton>
+                              </Tooltip>
+                              {/* <Tooltip title="Delete" arrow>
+                                 <IconButton
+                                    size="small"
+                                    onClick={() => onDelete(row.groupId)}
+                                    sx={{ color: "#d32f2f" }}
+                                 >
+                                    <DeleteOutline fontSize="small" />
+                                 </IconButton>
+                              </Tooltip> */}
                            </TableCell>
                         </TableRow>
                      );

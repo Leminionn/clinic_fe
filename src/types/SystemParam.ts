@@ -30,7 +30,7 @@ export interface SystemParamCreateDto {
 	dataType: string;
 	unit?: string;
 	effectiveFrom?: string;
-	active: boolean;
+	isActive: boolean;
 	description?: string;
 }
 
@@ -38,5 +38,5 @@ export interface SystemParamGroupCreateDto {
 	groupCode: string;
 	groupName: string;
 	description?: string;
-	active: boolean;
+	isActive: boolean;
 }

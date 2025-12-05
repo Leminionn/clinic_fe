@@ -7,6 +7,11 @@ import {
    TextField,
    InputAdornment,
    Button,
+   Dialog,
+   DialogTitle,
+   DialogContent,
+   DialogActions,
+   Chip,
 } from "@mui/material";
 import { Search, FolderTree } from "lucide-react";
 import { Add } from "@mui/icons-material";
@@ -21,12 +26,16 @@ import {
 } from "../../../../api/urls";
 import type { SystemParamGroup } from "../../../../types/SystemParam";
 
+const getToken = () => localStorage.getItem("accessToken");
+
 export default function SystemParamGroupsList() {
    const [searchKey, setSearchKey] = useState("");
    const [isCreateOpen, setIsCreateOpen] = useState(false);
    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+   const [isViewOpen, setIsViewOpen] = useState(false);
    const [deleteId, setDeleteId] = useState<number | null>(null);
    const [editData, setEditData] = useState<SystemParamGroup | null>(null);
+   const [viewData, setViewData] = useState<SystemParamGroup | null>(null);
    const [data, setData] = useState<SystemParamGroup[]>([]);
    const [loading, setLoading] = useState(false);
    const [page, setPage] = useState(1);
@@ -40,11 +49,11 @@ export default function SystemParamGroupsList() {
       apiCall(
          systemParamGroupsSearch(query),
          "GET",
-         null,
+         getToken(),
          null,
          (res: any) => {
-            setData(res.data?.content || []);
-            setTotalItems(res.data?.totalElements || 0);
+            setData(res.content || []);
+            setTotalItems(res.totalElements || 0);
             setLoading(false);
          },
          (err: any) => {
@@ -68,12 +77,22 @@ export default function SystemParamGroupsList() {
       setIsCreateOpen(true);
    };
 
+   const handleView = (group: SystemParamGroup) => {
+      setViewData(group);
+      setIsViewOpen(true);
+   };
+
+   const handleCloseView = () => {
+      setIsViewOpen(false);
+      setViewData(null);
+   };
+
    const handleConfirmDelete = () => {
       if (deleteId !== null) {
          apiCall(
             systemParamGroupsDelete(deleteId),
             "DELETE",
-            null,
+            getToken(),
             null,
             () => {
                showMessage("Parameter group deleted successfully");
@@ -206,6 +225,7 @@ export default function SystemParamGroupsList() {
                      }}
                      onDelete={handleDelete}
                      onEdit={handleEdit}
+                     onView={handleView}
                   />
                </Box>
             </Card>
@@ -229,6 +249,79 @@ export default function SystemParamGroupsList() {
             buttonCancel="Cancel"
             buttonConfirm="Delete"
          />
+
+         {/* View Dialog */}
+         <Dialog open={isViewOpen} onClose={handleCloseView} maxWidth="md" fullWidth>
+            <DialogTitle sx={{ bgcolor: "#1976d2", color: "white", fontWeight: "bold" }}>
+               Parameter Group Details
+            </DialogTitle>
+            <DialogContent sx={{ mt: 2 }}>
+               {viewData && (
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+                        <Box>
+                           <Typography variant="subtitle2" color="text.secondary">
+                              Group Code
+                           </Typography>
+                           <Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+                              {viewData.groupCode}
+                           </Typography>
+                        </Box>
+                        <Box>
+                           <Typography variant="subtitle2" color="text.secondary">
+                              Group Name
+                           </Typography>
+                           <Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+                              {viewData.groupName}
+                           </Typography>
+                        </Box>
+                     </Box>
+                     <Box>
+                        <Typography variant="subtitle2" color="text.secondary">
+                           Status
+                        </Typography>
+                        <Chip
+                           label={viewData.active ? "Active" : "Inactive"}
+                           size="small"
+                           sx={{
+                              mt: 0.5,
+                              bgcolor: viewData.active
+                                 ? "var(--color-bg-success)"
+                                 : "var(--color-bg-error)",
+                              color: viewData.active
+                                 ? "var(--color-text-success)"
+                                 : "var(--color-text-error)",
+                              fontWeight: 600,
+                           }}
+                        />
+                     </Box>
+                     {viewData.description && (
+                        <Box>
+                           <Typography variant="subtitle2" color="text.secondary">
+                              Description
+                           </Typography>
+                           <Typography
+                              variant="body2"
+                              sx={{
+                                 mt: 0.5,
+                                 bgcolor: "#f5f5f5",
+                                 p: 1.5,
+                                 borderRadius: 1,
+                              }}
+                           >
+                              {viewData.description}
+                           </Typography>
+                        </Box>
+                     )}
+                  </Box>
+               )}
+            </DialogContent>
+            <DialogActions sx={{ p: 2 }}>
+               <Button onClick={handleCloseView} variant="contained" color="primary">
+                  Close
+               </Button>
+            </DialogActions>
+         </Dialog>
       </Box>
    );
 }

@@ -24,28 +24,26 @@ export const paymentMethodsGetById = (id: number) => `payment-methods/${id}`;
 export const paymentMethodsGetAll = "payment-methods";
 export const paymentMethodsGetActive = "payment-methods/active";
 
-// Admin - System Param Groups
+// Admin - System Param Groups (BE: /admin/sys-param-groups)
 export const systemParamGroupsSearch = (query: string) =>
-	`admin/system-param-groups/search${query}`;
-export const systemParamGroupsCreate = "admin/system-param-groups/create";
+	`admin/sys-param-groups/search${query}`;
+export const systemParamGroupsCreate = "admin/sys-param-groups";
 export const systemParamGroupsUpdate = (id: number) =>
-	`admin/system-param-groups/update/${id}`;
+	`admin/sys-param-groups/${id}`;
 export const systemParamGroupsDelete = (id: number) =>
-	`admin/system-param-groups/delete/${id}`;
+	`admin/sys-param-groups/${id}`;
 export const systemParamGroupsGetById = (id: number) =>
-	`admin/system-param-groups/${id}`;
-export const systemParamGroupsGetAll = "admin/system-param-groups/all";
-export const systemParamGroupsGetActive = "admin/system-param-groups/active";
+	`admin/sys-param-groups/${id}`;
+export const systemParamGroupsGetAll = "admin/sys-param-groups";
+export const systemParamGroupsGetActive = "admin/sys-param-groups/active";
 
-// Admin - System Params
+// Admin - System Params (BE: /admin/sys-params)
 export const systemParamsSearch = (query: string) =>
-	`admin/system-params/search${query}`;
-export const systemParamsCreate = "admin/system-params/create";
-export const systemParamsUpdate = (id: number) =>
-	`admin/system-params/update/${id}`;
-export const systemParamsDelete = (id: number) =>
-	`admin/system-params/delete/${id}`;
-export const systemParamsGetById = (id: number) => `admin/system-params/${id}`;
+	`admin/sys-params/search${query}`;
+export const systemParamsCreate = "admin/sys-params";
+export const systemParamsUpdate = (id: number) => `admin/sys-params/${id}`;
+export const systemParamsDelete = (id: number) => `admin/sys-params/${id}`;
+export const systemParamsGetById = (id: number) => `admin/sys-params/${id}`;
 export const systemParamsGetByGroup = (groupId: number) =>
-	`admin/system-params/by-group/${groupId}`;
-export const systemParamsGetAll = "admin/system-params/all";
+	`admin/sys-params/group/${groupId}`;
+export const systemParamsGetAll = "admin/sys-params";

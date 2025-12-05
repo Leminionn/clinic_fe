@@ -12,6 +12,10 @@ import {
 	FormControl,
 	InputLabel,
 	Chip,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
 } from "@mui/material";
 import { Search, Settings } from "lucide-react";
 import { Add } from "@mui/icons-material";
@@ -27,6 +31,8 @@ import {
 } from "../../../../api/urls";
 import type { SystemParam, SystemParamGroup } from "../../../../types/SystemParam";
 
+const getToken = () => localStorage.getItem("accessToken");
+
 export default function SystemParamsList() {
 	const [searchKey, setSearchKey] = useState("");
 	const [selectedGroupId, setSelectedGroupId] = useState<number | string>(
@@ -34,8 +40,10 @@ export default function SystemParamsList() {
 	);
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+	const [isViewOpen, setIsViewOpen] = useState(false);
 	const [deleteId, setDeleteId] = useState<number | null>(null);
 	const [editData, setEditData] = useState<SystemParam | null>(null);
+	const [viewData, setViewData] = useState<SystemParam | null>(null);
 	const [data, setData] = useState<SystemParam[]>([]);
 	const [groups, setGroups] = useState<SystemParamGroup[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -51,10 +59,10 @@ export default function SystemParamsList() {
 		apiCall(
 			systemParamGroupsGetAll,
 			"GET",
-			null,
+			getToken(),
 			null,
 			(res: any) => {
-				setGroups(res.data || []);
+				setGroups(res || []);
 			},
 			(err: any) => {
 				console.error(err);
@@ -72,18 +80,22 @@ export default function SystemParamsList() {
 			query += `&groupId=${selectedGroupId}`;
 		}
 
+		console.log("Fetching params with query:", query);
+		console.log("Token:", getToken());
+
 		apiCall(
 			systemParamsSearch(query),
 			"GET",
-			null,
+			getToken(),
 			null,
 			(res: any) => {
-				setData(res.data?.content || []);
-				setTotalItems(res.data?.totalElements || 0);
+				console.log("API Response:", res);
+				setData(res.content || []);
+				setTotalItems(res.totalElements || 0);
 				setLoading(false);
 			},
 			(err: any) => {
-				console.error(err);
+				console.error("API Error:", err);
 				setLoading(false);
 			}
 		);
@@ -103,12 +115,22 @@ export default function SystemParamsList() {
 		setIsCreateOpen(true);
 	};
 
+	const handleView = (param: SystemParam) => {
+		setViewData(param);
+		setIsViewOpen(true);
+	};
+
+	const handleCloseView = () => {
+		setIsViewOpen(false);
+		setViewData(null);
+	};
+
 	const handleConfirmDelete = () => {
 		if (deleteId !== null) {
 			apiCall(
 				systemParamsDelete(deleteId),
 				"DELETE",
-				null,
+				getToken(),
 				null,
 				() => {
 					showMessage("Parameter deleted successfully");
@@ -277,6 +299,7 @@ export default function SystemParamsList() {
 							}}
 							onDelete={handleDelete}
 							onEdit={handleEdit}
+							onView={handleView}
 						/>
 					</Box>
 				</Card>
@@ -300,6 +323,155 @@ export default function SystemParamsList() {
 				buttonCancel="Cancel"
 				buttonConfirm="Delete"
 			/>
+
+			{/* View Dialog */}
+			<Dialog open={isViewOpen} onClose={handleCloseView} maxWidth="md" fullWidth>
+				<DialogTitle sx={{ bgcolor: "#1976d2", color: "white", fontWeight: "bold" }}>
+					System Parameter Details
+				</DialogTitle>
+				<DialogContent sx={{ mt: 2 }}>
+					{viewData && (
+						<Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+							<Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Parameter Code
+									</Typography>
+									<Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+										{viewData.paramCode}
+									</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Parameter Name
+									</Typography>
+									<Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+										{viewData.paramName}
+									</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Group
+									</Typography>
+									<Chip
+										label={viewData.groupName || viewData.groupCode || "N/A"}
+										size="small"
+										sx={{
+											mt: 0.5,
+											bgcolor: "#e3f2fd",
+											color: "#1976d2",
+											fontWeight: 500,
+										}}
+									/>
+								</Box>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Data Type
+									</Typography>
+									<Chip
+										label={viewData.dataType}
+										size="small"
+										sx={{
+											mt: 0.5,
+											bgcolor: (() => {
+												const colors: Record<string, string> = {
+													STRING: "#2196f3",
+													NUMBER: "#4caf50",
+													BOOLEAN: "#ff9800",
+													DATE: "#9c27b0",
+													DECIMAL: "#00bcd4",
+												};
+												return colors[viewData.dataType] || "#757575";
+											})(),
+											color: "#fff",
+											fontWeight: 500,
+										}}
+									/>
+								</Box>
+							</Box>
+							<Box>
+								<Typography variant="subtitle2" color="text.secondary">
+									Parameter Value
+								</Typography>
+								<Typography
+									variant="body1"
+									fontWeight="600"
+									sx={{
+										mt: 0.5,
+										bgcolor: "#f5f5f5",
+										p: 1.5,
+										borderRadius: 1,
+									}}
+								>
+									{viewData.paramValue}
+								</Typography>
+							</Box>
+							<Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Unit
+									</Typography>
+									<Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+										{viewData.unit || "-"}
+									</Typography>
+								</Box>
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Effective From
+									</Typography>
+									<Typography variant="body1" fontWeight="600" sx={{ mt: 0.5 }}>
+										{viewData.effectiveFrom
+											? new Date(viewData.effectiveFrom).toLocaleDateString("vi-VN")
+											: "-"}
+									</Typography>
+								</Box>
+							</Box>
+							<Box>
+								<Typography variant="subtitle2" color="text.secondary">
+									Status
+								</Typography>
+								<Chip
+									label={viewData.active ? "Active" : "Inactive"}
+									size="small"
+									sx={{
+										mt: 0.5,
+										bgcolor: viewData.active
+											? "var(--color-bg-success)"
+											: "var(--color-bg-error)",
+										color: viewData.active
+											? "var(--color-text-success)"
+											: "var(--color-text-error)",
+										fontWeight: 600,
+									}}
+								/>
+							</Box>
+							{viewData.description && (
+								<Box>
+									<Typography variant="subtitle2" color="text.secondary">
+										Description
+									</Typography>
+									<Typography
+										variant="body2"
+										sx={{
+											mt: 0.5,
+											bgcolor: "#f5f5f5",
+											p: 1.5,
+											borderRadius: 1,
+										}}
+									>
+										{viewData.description}
+									</Typography>
+								</Box>
+							)}
+						</Box>
+					)}
+				</DialogContent>
+				<DialogActions sx={{ p: 2 }}>
+					<Button onClick={handleCloseView} variant="contained" color="primary">
+						Close
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Box>
 	);
 }
