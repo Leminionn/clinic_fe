@@ -13,8 +13,9 @@ import {
   ReceiptLong,
   MedicalServices,
   Payment,
+  Settings,
 } from "@mui/icons-material";
-import { Calendar1, ChartArea, } from "lucide-react";
+import { Calendar1, ChartArea, FolderTree } from "lucide-react";
 
 export default function DashboardLayout() {
   const { role } = useAuth();
@@ -37,6 +38,14 @@ export default function DashboardLayout() {
       { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
+      {
+        label: "Settings",
+        icon: <Settings />,
+        children: [
+          { label: "System Parameters", path: "/admin/system-params", icon: <Settings /> },
+          { label: "Parameter Groups", path: "/admin/system-param-groups", icon: <FolderTree /> },
+        ],
+      },
     ],
     Doctor: [
       { label: "Dashboard", path: "/doctor", icon: <Home /> },

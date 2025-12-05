@@ -11,6 +11,9 @@ import PatientList from "../pages/SharedPages/crudsPatients/PatientList/page";
 import CreateUpdatePatient from "../pages/SharedPages/crudsPatients/CreateUpdatePatient/page";
 import PatientDetail from "../pages/SharedPages/crudsPatients/PatientDetail/page";
 import PaymentMethodsList from "../pages/SharedPages/crudsPaymentMethods/List/page";
+
+import SystemParamsList from "../pages/SharedPages/crudsSystemParams/List/page";
+import SystemParamGroupsList from "../pages/SharedPages/crudsSystemParams/Groups/page";
 import PaymentMethodDetail from "../pages/SharedPages/crudsPaymentMethods/Detail/page";
 import CreateUpdatePaymentMethod from "../pages/SharedPages/crudsPaymentMethods/CreateUpdate/page";
 
@@ -66,6 +69,12 @@ export default function AppRoutes() {
           <Route path="create" element={<CreateUpdatePaymentMethod />} />
           <Route path="update/:id" element={<CreateUpdatePaymentMethod />} />
           <Route path="detail/:id" element={<PaymentMethodDetail />} />
+        </Route>
+        <Route path="system-params">
+          <Route index element={<SystemParamsList />} />
+        </Route>
+        <Route path="system-param-groups">
+          <Route index element={<SystemParamGroupsList />} />
         </Route>
         <Route path="appointments">
           <Route index element={<AppointmentList />} />
@@ -158,7 +167,7 @@ export default function AppRoutes() {
       />
       {/*
       <Route path="/not_found" element={<NotFound/>}/>
-      
+
       <Route path="/test/list_patient" element= {<PatientPage/>}/>
       <Route path="/test/create_patient" element= {<CreatePatient/>}/>
       <Route path="/test/patient_detail/:id" element={<PatientDetail/>}/>
