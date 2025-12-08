@@ -21,7 +21,7 @@ const LoginPage: React.FC = () => {
   function loginSuccess(data:any) {
 
     login(selectedRole);
-
+    console.log(data);
     
     switch (selectedRole) {
       case 'Admin':
@@ -32,28 +32,28 @@ const LoginPage: React.FC = () => {
         navigate('/admin');
         break;
       case 'Doctor':
-        if(data.account.role!="DOCTOR") {
+        if(data.data.account.role!="DOCTOR") {
           alert("Đăng nhập thất bại");
           return;
         }
         navigate('/doctor');
         break;
       case 'Receptionist':
-        if(data.account.role!="RECEPTIONIST") {
+        if(data.data.account.role!="RECEPTIONIST") {
           alert("Đăng nhập thất bại");
           return;
         }
         navigate('/receptionist');
         break;
       case 'WarehouseStaff':
-        if(data.account.role!="WAREHOUSE_STAFF") {
+        if(data.data.account.role!="WAREHOUSE_STAFF") {
           alert("Đăng nhập thất bại");
           return;
         }
         navigate('/warehouse-staff');
         break;
       case 'Patient':
-        if(data.account.role!="PATIENT") {
+        if(data.data.account.role!="PATIENT") {
           alert("Đăng nhập thất bại");
           return;
         }
