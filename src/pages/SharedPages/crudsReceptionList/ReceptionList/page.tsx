@@ -6,6 +6,7 @@ import NewReceptionForm from "./NewReception";
 import ReceptionToolbar from "./ReceptionToolbar";
 import ReceptionTable from "./ReceptionTable";
 import dayjs from "dayjs";
+import { apiCall } from "../../../../api/api";
 
 export default function ReceptionList() {
   const [searchKey, setSearchKey] = useState("");
@@ -64,9 +65,21 @@ export default function ReceptionList() {
         open={isNewFormOpen}
         onClose={() => setIsNewFormOpen(false)}
         onConfirm={(patientId: number) => {
+          
+          const data = {
+            patientId:patientId,
+            receptionDate: new Date().toISOString()
+          }
+          const accessToken = localStorage.getItem("accessToken");
+          apiCall("receptionist/create","POST",accessToken?accessToken:"",JSON.stringify(data),
+        (data:any)=>{
           showMessage("Received patient successfully!");
-
           setIsNewFormOpen(false);
+        },
+      (data:any)=>{
+        showMessage(data.message);
+      })
+          
         }}
         onAppointmentCheckIn={(appointmentId: number) => {
           showMessage("Checked in successfully!");
