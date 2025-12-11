@@ -14,7 +14,7 @@ export default function AppointmentList() {
   const [confirmMessage, setConfirmMessage] = useState('');
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-
+  const [isEdit, setIsEdit]= useState(false);
   const handleConfirmCancel = (id: any) => {
     setSelectedId(id);
     setConfirmType('error');
@@ -101,6 +101,7 @@ export default function AppointmentList() {
 
         }}
       />
+      
     </Box>
   );
 }

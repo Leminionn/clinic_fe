@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { apiCall } from "../../../../api/api";
+import { Edit } from "lucide-react";
 
 export function getStatusBgColor(status: string): string {
   if (status === 'Admitted - Waiting') {
@@ -253,12 +254,23 @@ export default function ReceptionTable() {
                         icon: PlayCircleOutline,
                         onClick: () => { },
                       },
-                    ] : [
+                    ] : row.status=="WAITING"?[
                       {
                         label: "View patient",
                         icon: Visibility,
                         onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
                       },
+                      {
+                        label:"Change Status",
+                        icon: Edit,
+                        onClick:()=>{}
+                      }
+                    ]:[
+                      {
+                        label: "View patient",
+                        icon: Visibility,
+                        onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
+                      }
                     ]}
                   />
                 </TableCell>

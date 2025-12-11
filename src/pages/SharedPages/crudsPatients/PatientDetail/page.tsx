@@ -7,6 +7,7 @@ import type { Patient } from "../../../../types/Patient";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import PatientInformation from "./PatientInformation";
 import VisitHistory from "./VisitHistory";
+import { apiCall } from "../../../../api/api";
 
 const fakePatient = {
   patientId: 1,
@@ -40,7 +41,14 @@ export default function PatientDetail() {
   })
 
   useEffect(() => {
-    setData(fakePatient);
+    const accessToken = localStorage.getItem("accessToken");
+    apiCall(`receptionist/get_patient_by_id/${id}`,'GET',accessToken?accessToken:"",null,
+      (data:any)=>{
+        setData(data.data);
+      },
+      (data:any)=>{
+        alert(data.message);
+      });
   }, []);
 
   const handleConfirmDeletePatient = () => {

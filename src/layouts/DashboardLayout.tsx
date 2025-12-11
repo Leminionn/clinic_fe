@@ -51,6 +51,7 @@ export default function DashboardLayout() {
       { label: "Appointments", path: "/receptionist/appointments", icon: <Calendar1 /> },
       { label: "Receipts", path: "/receptionist/receipts", icon: <ReceiptLong /> },
       { label: "Profile", path: "/receptionist/profile", icon: <Person /> },
+      {label:"Patients",path:"/receptionist/patients",icon: <Person></Person>}
     ],
     WarehouseStaff: [
       { label: "Dashboard", path: "/warehouse-staff", icon: <Home /> },
