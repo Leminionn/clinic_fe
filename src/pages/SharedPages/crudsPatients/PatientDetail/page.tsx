@@ -66,10 +66,19 @@ export default function PatientDetail() {
   }
 
   const handleDeletePatient = () => {
-    showMessage("Patient deleted successfully!");
+    const accessToken = localStorage.getItem("accessToken");
+    apiCall(`receptionist/delete_patient/${id}`,'DELETE',accessToken,null,
+      (data:any)=>{
+        showMessage("Patient deleted successfully!");
 
-    setIsConfirmDialogOpen(false);
-    navigate('..');
+        setIsConfirmDialogOpen(false);
+        navigate('/receptionist/patients');
+      },
+      (data:any)=>{
+        alert(data.message);
+      }
+    )
+    
   }
 
   return (
