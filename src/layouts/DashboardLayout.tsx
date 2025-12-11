@@ -14,6 +14,7 @@ import {
   MedicalServices,
   Payment,
   Settings,
+  LocalHospital,
 } from "@mui/icons-material";
 import { Calendar1, ChartArea, FolderTree } from "lucide-react";
 
@@ -36,6 +37,7 @@ export default function DashboardLayout() {
       { label: "Appointments", path: "/admin/appointments", icon: <Calendar1 /> },
       { label: "Services", path: "/admin/services", icon: <MedicalServices /> },
       { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
+      { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
       {
