@@ -6,12 +6,14 @@ import { Add } from "@mui/icons-material";
 import AlertDialog from "../../../../components/AlertDialog";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../auth/AuthContext";
+import { apiCall } from "../../../../api/api";
 
 export default function PatientList() {
 	const navigate = useNavigate();
 	const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 	const [deleteId, setDeleteId] = useState(null);
-
+	const role = useAuth();
 	const handleConfirmDelete = (id: any) => {
 		setDeleteId(id);
 		setIsDeleteConfirmOpen(true);
@@ -135,10 +137,21 @@ export default function PatientList() {
 				onConfirm={() => {
 					if (!deleteId) return;
 
-					showMessage("Patient deletion successful!");
-
-					setIsDeleteConfirmOpen(false);
-					setDeleteId(null);
+					let prefix="";
+					if(role.role=="Admin") prefix="admin";
+					if(role.role=="Receptionist") prefix="receptionist";
+					const accessToken = localStorage.getItem("accessToken");
+					apiCall(`${prefix}/delete_patient/${deleteId}`,'DELETE',accessToken,null,
+					(data:any)=>{
+						showMessage("Patient deletion successful!");
+						setIsDeleteConfirmOpen(false);
+						setDeleteId(null);
+						
+					},
+					(data:any)=>{
+						alert(data.message);
+					}
+					)
 				}}
 			/>
 		</Box>

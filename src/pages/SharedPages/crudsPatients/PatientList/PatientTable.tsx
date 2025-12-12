@@ -32,8 +32,11 @@ export default function PatientTable({
 	
 	useEffect(
 		()=>{
+			let prefix="";
+			if(role=="Admin") prefix="admin";
+			if(role=="Receptionist") prefix="receptionist";
 			const accessToken=localStorage.getItem("accessToken");
-			apiCall(`receptionist/get_all_patients`,'GET',accessToken?accessToken:"",null,(data:any)=>{
+			apiCall(`${prefix}/get_all_patients`,'GET',accessToken?accessToken:"",null,(data:any)=>{
 				setData(data.data);
 			},(data:any)=>{
 				alert(data.message);

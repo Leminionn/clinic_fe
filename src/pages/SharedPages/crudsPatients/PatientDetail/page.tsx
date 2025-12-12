@@ -8,6 +8,7 @@ import { showMessage } from "../../../../components/ActionResultMessage";
 import PatientInformation from "./PatientInformation";
 import VisitHistory from "./VisitHistory";
 import { apiCall } from "../../../../api/api";
+import { useAuth } from "../../../../auth/AuthContext";
 
 const fakePatient = {
   patientId: 1,
@@ -28,6 +29,7 @@ export default function PatientDetail() {
   const [confirmMessage, setConfirmMessage] = useState('');
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [patientTabs,setPatientTabs] = useState<any>(null);
+  const role = useAuth();
   const [data, setData] = useState<Patient>({
     patientId: 0,
     fullName: "",
@@ -41,15 +43,18 @@ export default function PatientDetail() {
   })
 
   useEffect(() => {
+    let prefix="";
+    if(role.role=="Admin") prefix="admin";
+    if(role.role=="Receptionist") prefix="receptionist";
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(`receptionist/get_patient_by_id/${id}`,'GET',accessToken?accessToken:"",null,
+    apiCall(`${prefix}/get_patient_by_id/${id}`,'GET',accessToken?accessToken:"",null,
       (data:any)=>{
         setData(data.data);
       },
       (data:any)=>{
         alert(data.message);
       });
-    apiCall(`receptionist/patient_tabs/${id}`,'GET',accessToken?accessToken:"",null,
+    apiCall(`${prefix}/patient_tabs/${id}`,'GET',accessToken?accessToken:"",null,
       (data:any)=>{
         setPatientTabs(data.data);
       },
@@ -66,13 +71,16 @@ export default function PatientDetail() {
   }
 
   const handleDeletePatient = () => {
+    let prefix="";
+    if(role.role=="Admin") prefix="admin";
+    if(role.role=="Receptionist") prefix="receptionist";
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(`receptionist/delete_patient/${id}`,'DELETE',accessToken,null,
+    apiCall(`${prefix}/delete_patient/${id}`,'DELETE',accessToken,null,
       (data:any)=>{
         showMessage("Patient deleted successfully!");
 
         setIsConfirmDialogOpen(false);
-        navigate('/receptionist/patients');
+        navigate(`/${prefix}/patients`);
       },
       (data:any)=>{
         alert(data.message);

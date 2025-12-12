@@ -5,6 +5,7 @@ import { showMessage } from "../../../../components/ActionResultMessage";
 import type { PatientCreateDto } from "../../../../types/PatientCreateDto";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiCall } from "../../../../api/api";
+import { useAuth } from "../../../../auth/AuthContext";
 
 const fakePatient: PatientCreateDto = {
   fullName: "Nguyen Van An",
@@ -30,6 +31,7 @@ const NullPatient: PatientCreateDto = {
 
 export default function CreateUpdatePatient() {
   const { id: patientId } = useParams();
+  const role = useAuth();
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState('');
@@ -38,12 +40,15 @@ export default function CreateUpdatePatient() {
   const [data, setData] = useState<PatientCreateDto>(NullPatient)
 
   useEffect(() => {
+    let prefix="";
+    if(role.role=="Admin") prefix="admin";
+    if(role.role=="Receptionist") prefix="receptionist";
     if (patientId) {
       //logic get patient info
 
       //gắn tạm
       const accessToken = localStorage.getItem("accessToken");
-    apiCall(`receptionist/get_patient_by_id/${patientId}`,'GET',accessToken?accessToken:"",null,
+    apiCall(`${prefix}/get_patient_by_id/${patientId}`,'GET',accessToken?accessToken:"",null,
       (data:any)=>{
         setData(data.data);
       },
@@ -68,10 +73,13 @@ export default function CreateUpdatePatient() {
   }
 
   const handleSubmit = () => {
+    let prefix="";
+    if(role.role=="Admin") prefix="admin";
+    if(role.role=="Receptionist") prefix="receptionist";
     const accessToken = localStorage.getItem("accessToken");
     if (isEditMode) {
       
-      apiCall(`receptionist/update_patient/${patientId}`,'PUT',accessToken?accessToken:"",JSON.stringify(data),(data:any)=>{
+      apiCall(`${prefix}/update_patient/${patientId}`,'PUT',accessToken?accessToken:"",JSON.stringify(data),(data:any)=>{
         showMessage("Patient updated successfully!");
         setData(NullPatient);
         setIsConfirmDialogOpen(false);
@@ -81,7 +89,7 @@ export default function CreateUpdatePatient() {
       })
       
     } else {
-      apiCall(`receptionist/create_patient`,'POST',accessToken?accessToken:"",JSON.stringify(data),(data:any)=>{
+      apiCall(`${prefix}/create_patient`,'POST',accessToken?accessToken:"",JSON.stringify(data),(data:any)=>{
         showMessage("Patient created successfully!");
         setData(NullPatient);
         setIsConfirmDialogOpen(false);
