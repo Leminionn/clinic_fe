@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import AppointmentsTab from "./AppointmentsTab";
 import MedicalRecordsTab from "./MedicalRecordsTab";
+import InvoicesTab from "./InvoiceTab";
 
 export default function VisitHistory({ patientId, patientTabs}: { patientId: number,patientTabs:any }) {
   const [tab, setTab] = useState(0);
@@ -48,12 +49,14 @@ export default function VisitHistory({ patientId, patientTabs}: { patientId: num
         >
           <Tab label="Appointments" />
           <Tab label="Medical Records" />
+          <Tab label ="Invoices"/>
         </Tabs>
       </Box>
 
       <CardContent>
         {tab === 0 && <AppointmentsTab patientId={patientId} appointments={patientTabs.appointments} />}
         {tab === 1 && <MedicalRecordsTab patientId={patientId} medicalRecords={patientTabs.medicalRecords} />}
+        {tab===2&&<InvoicesTab patientId={patientId} invoices={patientTabs.invoices}/>}
       </CardContent>
     </Card>
   );
