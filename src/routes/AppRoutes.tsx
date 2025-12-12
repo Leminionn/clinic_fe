@@ -18,6 +18,8 @@ import PaymentMethodDetail from "../pages/SharedPages/crudsPaymentMethods/Detail
 import CreateUpdatePaymentMethod from "../pages/SharedPages/crudsPaymentMethods/CreateUpdate/page";
 
 import DiseaseTypesList from "../pages/Admin/DiseaseTypes/List/page";
+import CreateUpdateDiseaseType from "../pages/Admin/DiseaseTypes/CreateUpdate/page";
+import DiseaseTypeDetail from "../pages/Admin/DiseaseTypes/Detail/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
