@@ -29,6 +29,8 @@ import ServiceDetailPage from "../pages/SharedPages/crudsServices/ServiceDetail/
 import ServiceCreateForm from "../pages/SharedPages/crudsServices/CreateService/CreateService";
 import AppointmentBooking from "../pages/SharedPages/crudsAppointments/AppointmentBooking.tsx/page";
 import AppointmentDetail from "../pages/SharedPages/crudsAppointments/AppointmentDetail/AppointmentDetail";
+import MedicalRecordDetail from "../pages/SharedPages/crudMedicalRecords/MedicalRecordDetail/MedicalRecordDetail";
+import InvoiceDetail from "../pages/SharedPages/crudInvoice/InvoiceDetail/InvoiceDetail";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -60,6 +62,8 @@ export default function AppRoutes() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="appointment/:id" element={<AppointmentDetail/>}/>
+        <Route path="medical_record/:id" element={<MedicalRecordDetail/>}/>
+        <Route path="invoice/:id" element={<InvoiceDetail/>}/>
         <Route path="staffs">
           <Route path="doctors" element={<DoctorManagement />} />
         </Route>
@@ -131,6 +135,8 @@ export default function AppRoutes() {
           <Route path="new" element={<AppointmentBooking />} />
         </Route>
         <Route path="appointment/:id" element={<AppointmentDetail/>}/>
+        <Route path="medical_record/:id" element={<MedicalRecordDetail/>}/>
+        <Route path="invoice/:id" element={<InvoiceDetail/>}/>
         
       </Route>
 

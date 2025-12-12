@@ -13,9 +13,12 @@ import {
   Avatar,
   Stack,
   Tooltip,
+  IconButton,
 } from "@mui/material";
-import { Event, Person, MedicalServices, Notes } from "@mui/icons-material";
+import { Event, Person, MedicalServices, Notes, VisibilityOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
+import { useAuth } from "../../../../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // 1. Define Interface based on your Java Entity & JSON structure
 export interface MedicalRecordDTO {
@@ -39,7 +42,8 @@ interface MedicalRecordsTabProps {
 }
 
 export default function MedicalRecordsTab({ patientId, medicalRecords }: MedicalRecordsTabProps) {
-  
+  const role = useAuth();
+  const navigate= useNavigate();
   return (
     <Box>
       <Typography variant="h6" gutterBottom fontWeight="bold">
@@ -72,6 +76,8 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary', width: '25%' }}>Symptoms and Diagnotics</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary', width: '20%' }}>Service</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary', width: '15%' }}>Notes</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary' }} align="center">Action</TableCell>
+
               </TableRow>
             </TableHead>
             <TableBody>
@@ -163,6 +169,36 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                         <Typography variant="caption" color="text.secondary">-</Typography>
                     )}
                   </TableCell>
+
+                  <TableCell align="center">
+                        <Tooltip title="Detail">
+                            <IconButton
+                                onClick={() => {
+                                    // TODO: Thêm logic chuyển hướng hoặc mở modal tại đây
+                                    let prefix="";
+                                    if(role.role=="Admin") prefix="admin";
+                                    if(role.role=="Receptionist") prefix="receptionist";
+                                    navigate(`/${prefix}/medical_record/${row.recordId}`)
+                                    
+                                }}
+                                sx={{
+                                    color: 'var(--color-primary-main)', // Hoặc dùng màu cứng '#1976d2' nếu biến CSS chưa có
+                                    border: '1px solid currentColor',
+                                    borderRadius: 1.5,
+                                    height: 32,
+                                    width: 32,
+                                    padding: 0,
+                                    opacity: 0.8,
+                                    '&:hover': {
+                                        opacity: 1,
+                                        bgcolor: 'rgba(25, 118, 210, 0.04)'
+                                    }
+                                }}
+                            >
+                                <VisibilityOutlined sx={{ fontSize: 18 }} />
+                            </IconButton>
+                        </Tooltip>
+                    </TableCell>
                 </TableRow>
               ))}
             </TableBody>
