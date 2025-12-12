@@ -47,3 +47,13 @@ export const systemParamsGetById = (id: number) => `admin/sys-params/${id}`;
 export const systemParamsGetByGroup = (groupId: number) =>
 	`admin/sys-params/group/${groupId}`;
 export const systemParamsGetAll = "admin/sys-params";
+
+// Admin - Disease Types (BE: /admin/disease-types)
+export const diseaseTypesSearch = (query: string) =>
+	`admin/disease-types${query}`;
+export const diseaseTypesCreate = "admin/disease-types";
+export const diseaseTypesUpdate = (id: number) => `admin/disease-types/${id}`;
+export const diseaseTypesDelete = (id: number) => `admin/disease-types/${id}`;
+export const diseaseTypesGetById = (id: number) => `admin/disease-types/${id}`;
+export const diseaseTypesGetAll = "admin/disease-types/all";
+export const diseaseTypesGetActive = "admin/disease-types/active";

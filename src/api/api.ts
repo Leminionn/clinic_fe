@@ -8,8 +8,11 @@ export const apiCall = async (
 	onSuccess: any,
 	onFailure: any
 ) => {
-	const url = baseURL + endpoint;
-	console.log(baseURL);
+	// normalize baseURL and endpoint to avoid duplicate slashes
+	const normalizedBase = (baseURL || "").replace(/\/$/, "");
+	const normalizedEndpoint = (endpoint || "").replace(/^\//, "");
+	const url = `${normalizedBase}/${normalizedEndpoint}`;
+	console.log("API URL:", url);
 	let headers;
 	if (token) {
 		headers = {
