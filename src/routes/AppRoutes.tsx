@@ -17,6 +17,8 @@ import SystemParamGroupsList from "../pages/SharedPages/crudsSystemParams/Groups
 import PaymentMethodDetail from "../pages/SharedPages/crudsPaymentMethods/Detail/page";
 import CreateUpdatePaymentMethod from "../pages/SharedPages/crudsPaymentMethods/CreateUpdate/page";
 
+import DiseaseTypesList from "../pages/Admin/DiseaseTypes/List/page";
+
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
@@ -70,6 +72,12 @@ export default function AppRoutes() {
           <Route path="update/:id" element={<CreateUpdatePaymentMethod />} />
           <Route path="detail/:id" element={<PaymentMethodDetail />} />
         </Route>
+        <Route path="disease-types">
+          <Route index element={<DiseaseTypesList />} />
+          <Route path="create" element={<CreateUpdateDiseaseType />} />
+          <Route path="update/:id" element={<CreateUpdateDiseaseType />} />
+          <Route path="detail/:id" element={<DiseaseTypeDetail />} />
+        </Route>
         <Route path="system-params">
           <Route index element={<SystemParamsList />} />
         </Route>
@@ -120,6 +128,7 @@ export default function AppRoutes() {
           <Route index element={<AppointmentList />} />
           <Route path="new" element={<AppointmentBooking />} />
         </Route>
+
       </Route>
 
       {/* WarehouseStaff */}
@@ -131,6 +140,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+
       </Route>
 
       {/* Patient */}
