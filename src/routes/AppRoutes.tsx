@@ -28,6 +28,7 @@ import ServiecList from "../pages/SharedPages/crudsServices/ServiceList/page";
 import ServiceDetailPage from "../pages/SharedPages/crudsServices/ServiceDetail/ServiceDetail";
 import ServiceCreateForm from "../pages/SharedPages/crudsServices/CreateService/CreateService";
 import AppointmentBooking from "../pages/SharedPages/crudsAppointments/AppointmentBooking.tsx/page";
+import AppointmentDetail from "../pages/SharedPages/crudsAppointments/AppointmentDetail/AppointmentDetail";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -58,6 +59,7 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<AdminDashboard />} />
+        <Route path="appointment/:id" element={<AppointmentDetail/>}/>
         <Route path="staffs">
           <Route path="doctors" element={<DoctorManagement />} />
         </Route>
@@ -128,6 +130,7 @@ export default function AppRoutes() {
           <Route index element={<AppointmentList />} />
           <Route path="new" element={<AppointmentBooking />} />
         </Route>
+        <Route path="appointment/:id" element={<AppointmentDetail/>}/>
         
       </Route>
 

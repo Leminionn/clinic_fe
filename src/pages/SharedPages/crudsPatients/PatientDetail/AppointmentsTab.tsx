@@ -12,10 +12,14 @@ import {
   Chip,
   Paper,
   Avatar,
-  Stack
+  Stack,
+  Tooltip,
+  IconButton
 } from "@mui/material";
-import { AccessTime, Event, Person } from "@mui/icons-material";
+import { AccessTime, Event, Person, VisibilityOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
+import { useAuth } from "../../../../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 export interface AppointmentDTO {
@@ -53,7 +57,8 @@ interface AppointmentsTabProps {
 }
 
 export default function AppointmentsTab({ patientId, appointments }: AppointmentsTabProps) {
-  
+  const role= useAuth();
+  const navigate = useNavigate();
   return (
     <Box>
       <Typography variant="h6" gutterBottom fontWeight="bold">
@@ -85,6 +90,7 @@ export default function AppointmentsTab({ patientId, appointments }: Appointment
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary' }}>Doctor</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary' }}>Status</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary' }}>Create at</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: 'text.secondary' }} align="center">Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -158,6 +164,35 @@ export default function AppointmentsTab({ patientId, appointments }: Appointment
                       <Typography variant="body2" color="text.secondary">
                         {dayjs(row.createDate).format("DD/MM/YYYY HH:mm")}
                       </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                        <Tooltip title="Detail">
+                            <IconButton
+                                onClick={() => {
+                                    // TODO: Thêm logic chuyển hướng hoặc mở modal tại đây
+                                    let prefix="";
+                                    if(role.role=="Admin") prefix="admin";
+                                    if(role.role=="Receptionist") prefix="receptionist";
+                                    navigate(`/${prefix}/appointment/${row.appointmentId}`)
+                                    console.log("appointment ID:", row.appointmentId);
+                                }}
+                                sx={{
+                                    color: 'var(--color-primary-main)', // Hoặc dùng màu cứng '#1976d2' nếu biến CSS chưa có
+                                    border: '1px solid currentColor',
+                                    borderRadius: 1.5,
+                                    height: 32,
+                                    width: 32,
+                                    padding: 0,
+                                    opacity: 0.8,
+                                    '&:hover': {
+                                        opacity: 1,
+                                        bgcolor: 'rgba(25, 118, 210, 0.04)'
+                                    }
+                                }}
+                            >
+                                <VisibilityOutlined sx={{ fontSize: 18 }} />
+                            </IconButton>
+                        </Tooltip>
                     </TableCell>
                   </TableRow>
                 );
