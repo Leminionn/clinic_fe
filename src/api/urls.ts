@@ -57,3 +57,16 @@ export const diseaseTypesDelete = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetById = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetAll = "admin/disease-types/all";
 export const diseaseTypesGetActive = "admin/disease-types/active";
+
+// Admin - Staff Management (BE: /admin/staff)
+export const staffSearch = (query: string) => `admin/staff${query}`;
+export const staffCreate = "admin/staff";
+export const staffUpdate = (id: number) => `admin/staff/${id}`;
+export const staffDelete = (id: number) => `admin/staff/${id}`;
+export const staffGetById = (id: number) => `admin/staff/${id}`;
+export const staffGetAll = "admin/staff/all";
+export const staffGetByRole = (role: string) => `admin/staff/role/${role}`;
+
+// Admin - Staff Schedule (BE: /admin/staff-schedule)
+export const staffScheduleGetByStaffId = (staffId: number) =>
+	`admin/staff-schedule/staff/${staffId}`;

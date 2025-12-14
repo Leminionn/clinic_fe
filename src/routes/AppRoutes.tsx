@@ -23,6 +23,8 @@ import DiseaseTypeDetail from "../pages/Admin/DiseaseTypes/Detail/page";
 
 // Staff Management
 import StaffList from "../pages/Admin/Staff/List/page";
+import DoctorsList from "../pages/Admin/Staff/Doctors/page";
+import ReceptionistsList from "../pages/Admin/Staff/Receptionists/page";
 import WarehouseStaffsList from "../pages/Admin/Staff/WarehouseStaffs/page";
 import CreateUpdateStaff from "../pages/Admin/Staff/CreateUpdate/page";
 import StaffDetail from "../pages/Admin/Staff/Detail/page";
