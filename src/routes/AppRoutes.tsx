@@ -21,9 +21,13 @@ import DiseaseTypesList from "../pages/Admin/DiseaseTypes/List/page";
 import CreateUpdateDiseaseType from "../pages/Admin/DiseaseTypes/CreateUpdate/page";
 import DiseaseTypeDetail from "../pages/Admin/DiseaseTypes/Detail/page";
 
+// Staff Management
+import StaffList from "../pages/Admin/Staff/List/page";
+import CreateUpdateStaff from "../pages/Admin/Staff/CreateUpdate/page";
+import StaffDetail from "../pages/Admin/Staff/Detail/page";
+
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
-import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
 
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
 import ReceptionList from "../pages/SharedPages/crudsReceptionList/ReceptionList/page";
@@ -68,9 +72,6 @@ export default function AppRoutes() {
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
-        <Route path="staffs">
-          <Route path="doctors" element={<DoctorManagement />} />
-        </Route>
         <Route path="patients">
           <Route index element={<PatientList />} />
           <Route path="create-patient" element={<CreateUpdatePatient />} />
@@ -88,6 +89,15 @@ export default function AppRoutes() {
           <Route path="create" element={<CreateUpdateDiseaseType />} />
           <Route path="update/:id" element={<CreateUpdateDiseaseType />} />
           <Route path="detail/:id" element={<DiseaseTypeDetail />} />
+        </Route>
+        <Route path="staff">
+          <Route path="doctors" element={<DoctorsList />} />
+          <Route path="receptionists" element={<ReceptionistsList />} />
+          <Route path="warehouse-staffs" element={<WarehouseStaffsList />} />
+          <Route path="create" element={<CreateUpdateStaff />} />
+          <Route path="edit/:id" element={<CreateUpdateStaff />} />
+          <Route path=":id" element={<StaffDetail />} />
+          <Route path="schedule/:id" element={<StaffSchedule />} />
         </Route>
         <Route path="system-params">
           <Route index element={<SystemParamsList />} />

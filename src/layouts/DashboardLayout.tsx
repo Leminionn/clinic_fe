@@ -28,10 +28,10 @@ export default function DashboardLayout() {
         label: "Staffs",
         icon: <People />,
         children: [
-          { label: "Doctors", path: "/admin/staffs/doctors", icon: <People /> },
-          { label: "Receptionists", path: "/admin/staffs/receptionists", icon: <People /> },
-          { label: "Warehouse Staffs", path: "/admin/staffs/warehouse-staffs", icon: <People /> },
-          
+          { label: "Doctors", path: "/admin/staff/doctors", icon: <People /> },
+          { label: "Receptionists", path: "/admin/staff/receptionists", icon: <People /> },
+          { label: "Warehouse Staffs", path: "/admin/staff/warehouse-staffs", icon: <People /> },
+
         ],
       },
       { label: "Patients", path: "/admin/patients", icon: <People /> },
@@ -64,7 +64,7 @@ export default function DashboardLayout() {
       { label: "Appointments", path: "/receptionist/appointments", icon: <Calendar1 /> },
       { label: "Receipts", path: "/receptionist/receipts", icon: <ReceiptLong /> },
       { label: "Profile", path: "/receptionist/profile", icon: <Person /> },
-      {label:"Patients",path:"/receptionist/patients",icon: <Person></Person>}
+      { label: "Patients", path: "/receptionist/patients", icon: <Person></Person> }
     ],
     WarehouseStaff: [
       { label: "Dashboard", path: "/warehouse-staff", icon: <Home /> },
