@@ -21,6 +21,9 @@ import DiseaseTypesList from "../pages/Admin/DiseaseTypes/List/page";
 import CreateUpdateDiseaseType from "../pages/Admin/DiseaseTypes/CreateUpdate/page";
 import DiseaseTypeDetail from "../pages/Admin/DiseaseTypes/Detail/page";
 
+import ScheduleList from "../pages/Admin/Schedules/List/page";
+import ShiftDetail from "../pages/Admin/Schedules/Detail/page";
+
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import DoctorManagement from "../pages/Admin/Staff/Doctor/page";
@@ -102,6 +105,10 @@ export default function AppRoutes() {
           <Route index element={<ServiecList />} />
           <Route path="service-detail/:serviceId" element={<ServiceDetailPage />} />
           <Route path="create" element={<ServiceCreateForm />} />
+        </Route>
+        <Route path="schedules">
+          <Route index element={<ScheduleList />} />
+          <Route path="shift/:staffId/:date/:shiftType" element={<ShiftDetail />} />
         </Route>
       </Route>
 
