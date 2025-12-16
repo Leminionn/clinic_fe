@@ -147,7 +147,7 @@ export default function StaffTable({
                               <IconButton
                                  size="small"
                                  onClick={() =>
-                                    navigate(`/admin/staff/edit/${row.staffId}`)
+                                    navigate(`/admin/staff/edit/${row.staffId}`, { state: { from: window.location.pathname } })
                                  }
                                  sx={{ color: "var(--color-text-secondary)" }}
                               >
