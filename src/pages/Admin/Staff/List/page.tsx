@@ -10,7 +10,7 @@ import {
    MenuItem,
    Typography,
 } from "@mui/material";
-import { Add, Search, FilterList } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import { apiCall } from "../../../../api/api";
@@ -67,18 +67,14 @@ export default function StaffList() {
       fetchData();
    }, [page, rowsPerPage]);
 
-   const handleSearch = () => {
-      setPage(1);
-      fetchData();
-   };
-
-   const handleReset = () => {
-      setSearchTerm("");
-      setRoleFilter("ALL");
-      setStatusFilter("ALL");
-      setPage(1);
-      setTimeout(fetchData, 100);
-   };
+   // Trigger search on text change with debounce (like other sections)
+   useEffect(() => {
+      const t = setTimeout(() => {
+         setPage(1);
+         fetchData();
+      }, 300);
+      return () => clearTimeout(t);
+   }, [searchTerm, roleFilter, statusFilter]);
 
    const handleDeleteConfirm = (id: number) => {
       setDeleteId(id);
@@ -145,7 +141,6 @@ export default function StaffList() {
                   size="small"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   sx={{ minWidth: 250 }}
                />
 
@@ -175,17 +170,6 @@ export default function StaffList() {
                      <MenuItem value="INACTIVE">Inactive</MenuItem>
                   </Select>
                </FormControl>
-
-               <Button
-                  variant="contained"
-                  startIcon={<Search />}
-                  onClick={handleSearch}
-               >
-                  Search
-               </Button>
-               <Button variant="outlined" onClick={handleReset}>
-                  Reset
-               </Button>
             </Box>
          </Card>
 

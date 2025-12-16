@@ -10,7 +10,7 @@ import {
    FormControl,
    InputLabel,
 } from "@mui/material";
-import { Add, Search } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import { apiCall } from "../../../../api/api";
@@ -65,17 +65,14 @@ export default function WarehouseStaffsList() {
       fetchData();
    }, [page, rowsPerPage]);
 
-   const handleSearch = () => {
-      setPage(1);
-      fetchData();
-   };
-
-   const handleReset = () => {
-      setSearchTerm("");
-      setStatusFilter("ALL");
-      setPage(1);
-      setTimeout(fetchData, 100);
-   };
+   // Trigger search on text change with debounce (same style as other lists)
+   useEffect(() => {
+      const t = setTimeout(() => {
+         setPage(1);
+         fetchData();
+      }, 300);
+      return () => clearTimeout(t);
+   }, [searchTerm, statusFilter]);
 
    const handleDeleteConfirm = (id: number) => {
       setDeleteId(id);
@@ -142,7 +139,6 @@ export default function WarehouseStaffsList() {
                   size="small"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   sx={{ minWidth: 250 }}
                />
 
@@ -159,16 +155,7 @@ export default function WarehouseStaffsList() {
                   </Select>
                </FormControl>
 
-               <Button
-                  variant="contained"
-                  startIcon={<Search />}
-                  onClick={handleSearch}
-               >
-                  Search
-               </Button>
-               <Button variant="outlined" onClick={handleReset}>
-                  Reset
-               </Button>
+               {/* Search is triggered on change; Reset button removed to match other lists */}
             </Box>
          </Card>
 
