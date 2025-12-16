@@ -14,7 +14,7 @@ import {
    FormControlLabel,
 } from "@mui/material";
 import { ChevronLeft } from "@mui/icons-material";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import { apiCall } from "../../../../api/api";
 import {
@@ -33,8 +33,8 @@ interface StaffForm {
    idCard: string;
    address: string;
    role: string;
-   specialization: string;
-   hireDate: string;
+   /* specialization: string; */
+   /* hireDate: string; */
    active: boolean;
 }
 
@@ -47,20 +47,24 @@ const emptyForm: StaffForm = {
    idCard: "",
    address: "",
    role: "RECEPTIONIST",
-   specialization: "",
-   hireDate: new Date().toISOString().split("T")[0],
+   /* specialization: "", */
+   /* hireDate: new Date().toISOString().split("T")[0], */
    active: true,
 };
 
 export default function CreateUpdateStaff() {
    const { id } = useParams();
    const [searchParams] = useSearchParams();
+   const location = useLocation();
    const navigate = useNavigate();
    const [isEditMode, setIsEditMode] = useState(false);
    const [loading, setLoading] = useState(false);
    const [data, setData] = useState<StaffForm>(emptyForm);
    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
    const [confirmMessage, setConfirmMessage] = useState("");
+
+
+   const fromPath = (location.state as any)?.from;
 
    useEffect(() => {
       if (id) {
@@ -83,8 +87,9 @@ export default function CreateUpdateStaff() {
                      idCard: staff.idCard || "",
                      address: staff.address || "",
                      role: staff.role || "RECEPTIONIST",
-                     specialization: staff.specialization || "",
-                     hireDate: staff.hireDate?.split("T")[0] || "",
+                     /* specialization: staff.specialization || "",
+                     /* hireDate: staff.hireDate?.split("T")[0] || "", */
+
                      active: staff.active ?? true,
                   });
                }
@@ -130,14 +135,18 @@ export default function CreateUpdateStaff() {
          showMessage("Please select date of birth", "error");
          return false;
       }
+      /* hireDate validation commented out because backend has no hireDate
       if (!data.hireDate) {
          showMessage("Please select hire date", "error");
          return false;
       }
+      */
+      /* specialization validation commented out per request
       if (data.role === "DOCTOR" && !data.specialization.trim()) {
          showMessage("Please enter specialization for doctor", "error");
          return false;
       }
+      */
       return true;
    };
 
@@ -163,8 +172,8 @@ export default function CreateUpdateStaff() {
          idCard: data.idCard,
          address: data.address,
          role: data.role,
-         specialization: data.role === "DOCTOR" ? data.specialization : undefined,
-         hireDate: data.hireDate,
+         /* specialization: data.role === "DOCTOR" ? data.specialization : undefined, */
+         /* hireDate: data.hireDate */
          active: data.active,
       };
 
@@ -207,13 +216,28 @@ export default function CreateUpdateStaff() {
       }
    };
 
+   const handleBack = () => {
+      if (fromPath) {
+         navigate(fromPath);
+      } else if (id) {
+         navigate(`/admin/staff/${id}`);
+      } else {
+         const roleRoutes: any = {
+            DOCTOR: "/admin/staff/doctors",
+            RECEPTIONIST: "/admin/staff/receptionists",
+            WAREHOUSE_STAFF: "/admin/staff/warehouse-staffs",
+         };
+         navigate(roleRoutes[data.role] || "/admin/staff/doctors");
+      }
+   };
+
    return (
       <Box sx={{ p: 3 }}>
          {/* Header */}
          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
             <Button
                startIcon={<ChevronLeft />}
-               onClick={() => navigate("/admin/staff")}
+               onClick={handleBack}
             >
                Back
             </Button>
@@ -316,6 +340,7 @@ export default function CreateUpdateStaff() {
                </Grid>
 
                {/* Hire Date */}
+               {/*
                <Grid item xs={12} md={6}>
                   <TextField
                      fullWidth
@@ -327,8 +352,10 @@ export default function CreateUpdateStaff() {
                      InputLabelProps={{ shrink: true }}
                   />
                </Grid>
+               */}
 
                {/* Specialization (Only for Doctor) */}
+               {/* Specialization (Only for Doctor) - commented per request
                {data.role === "DOCTOR" && (
                   <Grid item xs={12} md={6}>
                      <TextField
@@ -342,6 +369,7 @@ export default function CreateUpdateStaff() {
                      />
                   </Grid>
                )}
+               */}
 
                {/* Position removed - handled by backend only */}
 
@@ -373,7 +401,7 @@ export default function CreateUpdateStaff() {
 
             {/* Action Buttons */}
             <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end", mt: 3 }}>
-               <Button variant="outlined" onClick={() => navigate("/admin/staff")}>
+               <Button variant="outlined" onClick={handleBack}>
                   Cancel
                </Button>
                <Button
