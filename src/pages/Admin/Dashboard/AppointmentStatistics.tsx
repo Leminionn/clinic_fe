@@ -24,8 +24,8 @@ export default function AppointmentStatistics() {
             </Typography>
             <Divider />
             <Box sx={{ display: 'flex', gap: 3, mt: 2.5, }}>
-                {statBoxItems.map(item => (
-                    <Box sx={{
+                {statBoxItems.map((item, index) => (
+                    <Box key={index} sx={{
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',

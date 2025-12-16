@@ -131,12 +131,14 @@ export default function CopyFromPreviousDialog({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Typography variant="h6" fontWeight="bold">
-          Copy Schedule from Previous Month
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Copy schedule from {MONTHS[sourceMonth - 1]} {sourceYear} to {MONTHS[targetMonth - 1]} {targetYear}
-        </Typography>
+        <Box>
+          <Typography variant="h6" fontWeight="bold">
+            Copy Schedule from Previous Month
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Copy schedule from {MONTHS[sourceMonth - 1]} {sourceYear} to {MONTHS[targetMonth - 1]} {targetYear}
+          </Typography>
+        </Box>
       </DialogTitle>
 
       <DialogContent>

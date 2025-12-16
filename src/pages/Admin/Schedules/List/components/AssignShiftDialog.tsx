@@ -15,6 +15,10 @@ import {
   Chip,
   Alert,
   CircularProgress,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
+  FormLabel,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -75,6 +79,7 @@ export default function AssignShiftDialog({
   const [currentPickerDate, setCurrentPickerDate] = useState<Dayjs | null>(
     preselectedDate ? dayjs(preselectedDate) : dayjs(new Date(selectedYear, selectedMonth - 1, 1))
   );
+  const [conflictAction, setConflictAction] = useState<'SKIP' | 'OVERWRITE' | 'CANCEL'>("SKIP");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<BulkOperationResponse | null>(null);
@@ -105,8 +110,9 @@ export default function AssignShiftDialog({
       // Single date assignment
       const request = {
         staffId: staffId,
-        scheduleDate: selectedDates[0].format("YYYY-MM-DD"),
+        date: selectedDates[0].format("YYYY-MM-DD"),
         shiftType: shiftType,
+        conflictAction: conflictAction,
       };
 
       apiCall(
@@ -128,8 +134,9 @@ export default function AssignShiftDialog({
       // Bulk assignment
       const request = {
         staffId: staffId,
-        scheduleDates: selectedDates.map(d => d.format("YYYY-MM-DD")),
+        dates: selectedDates.map(d => d.format("YYYY-MM-DD")),
         shiftType: shiftType,
+        conflictAction: conflictAction,
       };
 
       apiCall(
@@ -158,6 +165,7 @@ export default function AssignShiftDialog({
     setShiftType("MORNING");
     setSelectedDates([]);
     setCurrentPickerDate(preselectedDate ? dayjs(preselectedDate) : dayjs(new Date(selectedYear, selectedMonth - 1, 1)));
+    setConflictAction("SKIP");
     setError(null);
     setResult(null);
     onClose();
@@ -170,12 +178,14 @@ export default function AssignShiftDialog({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Typography variant="h6" fontWeight="bold">
-          Assign Shift
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Assign a shift (4 time slots) to a doctor
-        </Typography>
+        <Box>
+          <Typography variant="h6" fontWeight="bold">
+            Assign Shift
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Assign a shift (4 time slots) to a doctor
+          </Typography>
+        </Box>
       </DialogTitle>
 
       <DialogContent>
@@ -221,6 +231,43 @@ export default function AssignShiftDialog({
                 </Box>
               </MenuItem>
             </Select>
+          </FormControl>
+
+          {/* Conflict Action */}
+          <FormControl component="fieldset">
+            <FormLabel component="legend">If schedule already exists</FormLabel>
+            <RadioGroup
+              value={conflictAction}
+              onChange={(e) => setConflictAction(e.target.value as 'SKIP' | 'OVERWRITE' | 'CANCEL')}
+            >
+              <FormControlLabel
+                value="SKIP"
+                control={<Radio size="small" />}
+                label={
+                  <Typography variant="body2">
+                    Skip - Keep existing schedule, only add new dates
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                value="OVERWRITE"
+                control={<Radio size="small" />}
+                label={
+                  <Typography variant="body2">
+                    Overwrite - Replace existing schedule
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                value="CANCEL"
+                control={<Radio size="small" />}
+                label={
+                  <Typography variant="body2">
+                    Cancel - Stop if any conflict found
+                  </Typography>
+                }
+              />
+            </RadioGroup>
           </FormControl>
 
           {/* Date Selection */}

@@ -89,6 +89,13 @@ export default function ScheduleListPage() {
   const fetchMonthlySchedule = useCallback(() => {
     setLoading(true);
     const token = localStorage.getItem("accessToken");
+    
+    if (!token) {
+      console.warn("No token found, skipping schedule fetch");
+      setLoading(false);
+      return;
+    }
+
     apiCall(
       scheduleGetMonthly(selectedMonth, selectedYear),
       "GET",
@@ -101,12 +108,19 @@ export default function ScheduleListPage() {
       (err: any) => {
         console.error("Failed to fetch schedule:", err);
         setLoading(false);
+        // Don't show loading state if error
       }
     );
   }, [selectedMonth, selectedYear]);
 
   const fetchDoctors = useCallback(() => {
     const token = localStorage.getItem("accessToken");
+    
+    if (!token) {
+      console.warn("No token found, skipping doctors fetch");
+      return;
+    }
+
     apiCall(
       staffGetDoctors,
       "GET",

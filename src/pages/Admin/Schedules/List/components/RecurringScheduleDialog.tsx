@@ -84,7 +84,7 @@ export default function RecurringScheduleDialog({
 }: RecurringScheduleDialogProps) {
   const [staffId, setStaffId] = useState<number | "">("");
   const [shiftType, setShiftType] = useState<ShiftType>("MORNING");
-  const [dayOfWeek, setDayOfWeek] = useState<number>(1);
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([1]);
   const [conflictAction, setConflictAction] = useState<ConflictAction>("SKIP");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,16 +96,29 @@ export default function RecurringScheduleDialog({
       return;
     }
 
+    if (daysOfWeek.length === 0) {
+      setError("Please select at least one day of the week");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
 
     const token = localStorage.getItem("accessToken");
+    
+    // Calculate start and end dates for the selected month
+    const startDate = new Date(selectedYear, selectedMonth - 1, 1);
+    const endDate = new Date(selectedYear, selectedMonth, 0);
+    
+    // Format dates as YYYY-MM-DD
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    
     const request = {
       staffId: staffId,
-      year: selectedYear,
-      month: selectedMonth,
-      dayOfWeek: dayOfWeek,
+      startDate: formatDate(startDate),
+      endDate: formatDate(endDate),
+      daysOfWeek: daysOfWeek,
       shiftType: shiftType,
       conflictAction: conflictAction,
     };
@@ -133,7 +146,7 @@ export default function RecurringScheduleDialog({
   const handleClose = () => {
     setStaffId("");
     setShiftType("MORNING");
-    setDayOfWeek(1);
+    setDaysOfWeek([1]);
     setConflictAction("SKIP");
     setError(null);
     setResult(null);
@@ -152,7 +165,7 @@ export default function RecurringScheduleDialog({
       const jsDay = date.getDay();
       const isoDay = jsDay === 0 ? 7 : jsDay;
       
-      if (isoDay === dayOfWeek) {
+      if (daysOfWeek.includes(isoDay)) {
         // Check if not past date
         if (date >= new Date(new Date().setHours(0, 0, 0, 0))) {
           dates.push(`${day}/${month + 1}`);
@@ -165,12 +178,14 @@ export default function RecurringScheduleDialog({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Typography variant="h6" fontWeight="bold">
-          Create Recurring Schedule
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Automatically assign shifts every week for {MONTHS[selectedMonth - 1]} {selectedYear}
-        </Typography>
+        <Box>
+          <Typography variant="h6" fontWeight="bold">
+            Create Recurring Schedule
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Automatically assign shifts every week for {MONTHS[selectedMonth - 1]} {selectedYear}
+          </Typography>
+        </Box>
       </DialogTitle>
 
       <DialogContent>
@@ -191,20 +206,32 @@ export default function RecurringScheduleDialog({
             </Select>
           </FormControl>
 
-          {/* Day of Week */}
+          {/* Days of Week - Multiple Selection */}
           <FormControl fullWidth>
-            <InputLabel>Repeat Every</InputLabel>
+            <InputLabel>Repeat On Days</InputLabel>
             <Select
-              value={dayOfWeek}
-              label="Repeat Every"
-              onChange={(e) => setDayOfWeek(e.target.value as number)}
+              multiple
+              value={daysOfWeek}
+              label="Repeat On Days"
+              onChange={(e) => {
+                const value = e.target.value;
+                setDaysOfWeek(typeof value === 'string' ? value.split(',').map(Number) : value);
+              }}
             >
               {WEEKDAYS.map((day) => (
                 <MenuItem key={day.value} value={day.value}>
-                  Every {day.label}
+                  {day.label}
                 </MenuItem>
               ))}
             </Select>
+            {daysOfWeek.length > 0 && (
+              <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {daysOfWeek.map(day => {
+                  const dayLabel = WEEKDAYS.find(d => d.value === day)?.label;
+                  return <Chip key={day} label={dayLabel} size="small" />;
+                })}
+              </Box>
+            )}
           </FormControl>
 
           {/* Shift Type */}
