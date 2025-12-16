@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import UserProfile from "./UserProfile";
 
 export interface SidebarItem {
   label: string;
@@ -170,6 +171,11 @@ export default function Sidebar({ items }: SidebarProps) {
       </List>
 
       <Box flexGrow={1} />
+
+      <Divider />
+
+      {/* User Profile */}
+      <UserProfile collapsed={collapsed} />
 
       <Divider />
 

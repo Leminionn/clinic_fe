@@ -64,9 +64,43 @@ export const staffCreate = "admin/staff";
 export const staffUpdate = (id: number) => `admin/staff/${id}`;
 export const staffDelete = (id: number) => `admin/staff/${id}`;
 export const staffGetById = (id: number) => `admin/staff/${id}`;
-export const staffGetAll = "admin/staff/all";
 export const staffGetByRole = (role: string) => `admin/staff/role/${role}`;
 
 // Admin - Staff Schedule (BE: /admin/staff-schedule)
 export const staffScheduleGetByStaffId = (staffId: number) =>
 	`admin/staff-schedule/staff/${staffId}`;
+// Profile API
+export const profileGetMe = "account/me";
+export const profileUpdateMe = "account/me";
+
+// Admin - Staff Schedules (BE: /admin/schedules)
+export const scheduleGetMonthly = (month: number, year: number) =>
+	`admin/schedules/monthly?month=${month}&year=${year}`;
+export const scheduleGetMonthlyByStaff = (
+	staffId: number,
+	month: number,
+	year: number
+) => `admin/schedules/monthly/staff/${staffId}?month=${month}&year=${year}`;
+export const scheduleGetDaily = (date: string) =>
+	`admin/schedules/daily?date=${date}`;
+export const scheduleGetDailyByStaff = (staffId: number, date: string) =>
+	`admin/schedules/daily/staff/${staffId}?date=${date}`;
+export const scheduleGetSlotById = (scheduleId: number) =>
+	`admin/schedules/${scheduleId}`;
+export const scheduleCreateSlot = "admin/schedules";
+export const scheduleUpdateSlot = (scheduleId: number) =>
+	`admin/schedules/${scheduleId}`;
+export const scheduleDeleteSlot = (scheduleId: number) =>
+	`admin/schedules/${scheduleId}`;
+export const scheduleAssignShift = "admin/schedules/shift";
+export const scheduleBulkAssign = "admin/schedules/bulk";
+export const scheduleRecurring = "admin/schedules/recurring";
+export const scheduleCopyFromPrevious = "admin/schedules/copy-from-previous";
+export const scheduleGetStaffList = (month: number, year: number) =>
+	`admin/schedules/staff-list?month=${month}&year=${year}`;
+export const scheduleCanModify = (date: string) =>
+	`admin/schedules/can-modify?date=${date}`;
+
+// Admin - Staff (for dropdowns)
+export const staffGetDoctors = "admin/staffs/doctors";
+export const staffGetAll = "admin/staffs";

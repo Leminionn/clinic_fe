@@ -29,6 +29,8 @@ import WarehouseStaffsList from "../pages/Admin/Staff/WarehouseStaffs/page";
 import CreateUpdateStaff from "../pages/Admin/Staff/CreateUpdate/page";
 import StaffDetail from "../pages/Admin/Staff/Detail/page";
 import StaffSchedule from "../pages/Admin/Staff/Schedule/page";
+import ScheduleList from "../pages/Admin/Schedules/List/page";
+import ShiftDetail from "../pages/Admin/Schedules/Detail/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
@@ -116,6 +118,10 @@ export default function AppRoutes() {
           <Route index element={<ServiecList />} />
           <Route path="service-detail/:serviceId" element={<ServiceDetailPage />} />
           <Route path="create" element={<ServiceCreateForm />} />
+        </Route>
+        <Route path="schedules">
+          <Route index element={<ScheduleList />} />
+          <Route path="shift/:staffId/:date/:shiftType" element={<ShiftDetail />} />
         </Route>
       </Route>
 

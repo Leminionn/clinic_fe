@@ -36,6 +36,7 @@ export default function DashboardLayout() {
       },
       { label: "Patients", path: "/admin/patients", icon: <People /> },
       { label: "Appointments", path: "/admin/appointments", icon: <Calendar1 /> },
+      { label: "Staff Schedules", path: "/admin/schedules", icon: <Calendar1 /> },
       { label: "Services", path: "/admin/services", icon: <MedicalServices /> },
       { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
