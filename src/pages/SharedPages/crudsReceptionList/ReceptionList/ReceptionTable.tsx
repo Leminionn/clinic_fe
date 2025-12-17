@@ -15,7 +15,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import ActionMenu from "../../../../components/ActionMenu";
-import { PlayCircleOutline, Visibility } from "@mui/icons-material";
+import { CancelOutlined, Done, PlayCircleOutline, Visibility } from "@mui/icons-material";
 import type { Reception } from "../../../../types/Reception";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -47,100 +47,9 @@ export function getStatusTextColor(status: string): string {
   }
 }
 
-const fakeData = [
-  {
-    receptionId: 101,
-    patientName: "Nguyễn Văn A",
-    patientId: 1,
-    receptionDate: "2025-10-11T09:30:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Paid"
-  },
-  {
-    receptionId: 102,
-    patientName: "Lê Thị C",
-    patientId: 2,
-    receptionDate: "2025-10-11T09:45:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Admitted - Absent"
-  },
-  {
-    receptionId: 103,
-    patientName: "Nguyễn Văn E",
-    patientId: 3,
-    receptionDate: "2025-10-11T09:50:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Paid"
-  },
-  {
-    receptionId: 104,
-    patientName: "Phạm Thị F",
-    patientId: 4,
-    receptionDate: "2025-10-11T09:55:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Examined - Unpaid"
-  },
-  {
-    receptionId: 105,
-    patientName: "Trương Văn G",
-    patientId: 5,
-    receptionDate: "2025-10-11T10:10:00",
-    receptionistName: "Nguyễn Minh D",
-    receptionistId: 2,
-    status: "Paid"
-  },
-  {
-    receptionId: 106,
-    patientName: "Lê Thị H",
-    patientId: 6,
-    receptionDate: "2025-10-11T10:15:00",
-    receptionistName: "Nguyễn Minh D",
-    receptionistId: 2,
-    status: "Admitted - Waiting"
-  },
-  {
-    receptionId: 107,
-    patientName: "Dương Văn I",
-    patientId: 7,
-    receptionDate: "2025-10-11T10:30:00",
-    receptionistName: "Nguyễn Minh D",
-    receptionistId: 2,
-    status: "Admitted - Waiting"
-  },
-  {
-    receptionId: 108,
-    patientName: "Nguyễn Văn A",
-    patientId: 1,
-    receptionDate: "2025-10-11T09:30:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Paid"
-  },
-  {
-    receptionId: 109,
-    patientName: "Lê Thị C",
-    patientId: 2,
-    receptionDate: "2025-10-11T09:45:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Admitted - Absent"
-  },
-  {
-    receptionId: 110,
-    patientName: "Nguyễn Văn E",
-    patientId: 3,
-    receptionDate: "2025-10-11T09:50:00",
-    receptionistName: "Trần Thị B",
-    receptionistId: 1,
-    status: "Paid"
-  },
-];
 
-export default function ReceptionTable() {
+
+export default function ReceptionTable({filterStatus, filterDate}) {
   const navigate = useNavigate();
   const { role } = useAuth();
   const [page, setPage] = useState(1);
@@ -149,15 +58,17 @@ export default function ReceptionTable() {
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [listReceptions, setListReceptions] = useState<Reception[]>([]);
+ 
   function mapData(listReceptions:any):Reception[] {
     return listReceptions.map((item:any)=>{
+      
       const reception:Reception={
         receptionId: item.receptionId,
-        patientName: item.patient.fullName,
+        patientName: item.patient? item.patient.fullName: "",
         receptionDate: item.receptionDate,
-        patientId: item.patient.patientId,
-        receptionistName: item.receptionist.fullName,
-        receptionistId: item.receptionist.staffId,
+        patientId: item.patient? item.patient.patientId:"",
+        receptionistName: item.receptionist? item.receptionist.fullName:"",
+        receptionistId: item.receptionist? item.receptionist.staffId:"",
         status: item.status
       };
       return reception;
@@ -165,7 +76,14 @@ export default function ReceptionTable() {
   }
   const fetchReceptions = async (page:number, pageSize:number) => {
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(`receptionist/all_receptions?pageNumber=${page-1}&pageSize=${pageSize}`,"GET",accessToken?accessToken:"",null,
+    let url = `receptionist/all_receptions?pageNumber=${page-1}&pageSize=${pageSize}`;
+    if(filterStatus!='All') {
+      url+=`&status=${filterStatus}`
+    }
+    if(filterDate) {
+      url+=`&date=${filterDate}`;
+    }
+    apiCall(url,"GET",accessToken?accessToken:"",null,
       (data:any)=>{
         console.log(data.data.content);
         setData(mapData(data.data.content));
@@ -177,13 +95,25 @@ export default function ReceptionTable() {
     )
 
   };
-
+  function changeStatus(role:string, status:string, rowId:number) {
+    const accessToken = localStorage.getItem("accessToken");
+    const data= {
+      receptionId:rowId,
+      newStatus:status
+    }
+    
+    apiCall(`${role}/reception/update`,'PUT',accessToken?accessToken:"",JSON.stringify(data),(data:any)=>{
+      alert("Change status success");
+    },(data:any)=>{
+      alert(data.message);
+    })
+  }
   useEffect(() => {
     fetchReceptions(page,rowsPerPage);
     
     
-  }, [page, rowsPerPage]);
-
+  }, [page, rowsPerPage,filterStatus,filterDate]);
+  
 
   return (
     <Box sx={{
@@ -243,7 +173,7 @@ export default function ReceptionTable() {
                 </TableCell>
                 <TableCell align="center">
                   <ActionMenu
-                    actions={role === "Doctor" ? [
+                    actions={(role === "Doctor"&&row.status=="WAITING") ? [
                       {
                         label: "View patient",
                         icon: Visibility,
@@ -252,18 +182,39 @@ export default function ReceptionTable() {
                       {
                         label: "Start examination",
                         icon: PlayCircleOutline,
-                        onClick: () => { },
+                        onClick: () => { changeStatus("doctor","IN_EXAMINATION",row.receptionId) },
                       },
-                    ] : row.status=="WAITING"?[
+                      {
+                        label:"Cancel reception",
+                        icon: CancelOutlined,
+                        onClick:()=>{ changeStatus("doctor","CANCELLED",row.receptionId)}
+                      }
+                    ] : (row.status=="WAITING"&&role=="Receptionist")?[
                       {
                         label: "View patient",
                         icon: Visibility,
                         onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
                       },
                       {
-                        label:"Change Status",
-                        icon: Edit,
-                        onClick:()=>{}
+                        label: "Start examination",
+                        icon: PlayCircleOutline,
+                        onClick: () => {changeStatus("receptionist","IN_EXAMINATION",row.receptionId) },
+                      },
+                      {
+                        label:"Cancel reception",
+                        icon: CancelOutlined,
+                        onClick:()=>{ changeStatus("receptionist","CANCELLED",row.receptionId)}
+                      }
+                    ]:(row.status=="IN_EXAMINATION"&&role=="Doctor")?[
+                      {
+                        label: "View patient",
+                        icon: Visibility,
+                        onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
+                      },
+                      {
+                        label:"Done",
+                        icon:Done ,
+                        onClick:()=>{ changeStatus("doctor","DONE",row.receptionId)}
                       }
                     ]:[
                       {
@@ -279,7 +230,7 @@ export default function ReceptionTable() {
           ) : (
             <TableRow>
               <TableCell colSpan={7} align="center">
-                Không có dữ liệu
+               No data
               </TableCell>
             </TableRow>
           )}

@@ -7,11 +7,12 @@ import ReceptionToolbar from "./ReceptionToolbar";
 import ReceptionTable from "./ReceptionTable";
 import dayjs from "dayjs";
 import { apiCall } from "../../../../api/api";
+import { FilterDrama } from "@mui/icons-material";
 
 export default function ReceptionList() {
   const [searchKey, setSearchKey] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
   const [isNewFormOpen, setIsNewFormOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -56,7 +57,7 @@ export default function ReceptionList() {
           <Divider />
 
           <Box flex={1} mt={3}>
-            <ReceptionTable />
+            <ReceptionTable filterStatus={filterStatus} filterDate={selectedDate}/>
           </Box>
         </Card>
       </Box>
@@ -71,7 +72,7 @@ export default function ReceptionList() {
             receptionDate: new Date().toISOString()
           }
           const accessToken = localStorage.getItem("accessToken");
-          apiCall("receptionist/create","POST",accessToken?accessToken:"",JSON.stringify(data),
+          apiCall("receptionist/reception/create","POST",accessToken?accessToken:"",JSON.stringify(data),
         (data:any)=>{
           showMessage("Received patient successfully!");
           setIsNewFormOpen(false);

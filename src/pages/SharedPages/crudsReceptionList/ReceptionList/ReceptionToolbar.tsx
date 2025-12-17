@@ -136,10 +136,10 @@ export default function ReceptionToolbar({
         >
           <MenuItem value="">
             <Box sx={{ padding: '2px 10px', }}>
-              All status
+              ${status}
             </Box>
           </MenuItem>
-          {["Admitted - Waiting", "Examined - Unpaid", "Paid", "Admitted - Absent"].map(item => (
+          {["DONE", "IN_EXAMINATION", "WAITING", "CANCELLED","All"].map(item => (
             <MenuItem value={item}>
               <Box sx={{
                 display: 'inline-flex',

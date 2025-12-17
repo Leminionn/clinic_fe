@@ -11,7 +11,7 @@ export const apiCall = async (
 	// normalize baseURL and endpoint to avoid duplicate slashes
 	const normalizedBase = (baseURL || "").replace(/\/$/, "");
 	const normalizedEndpoint = (endpoint || "").replace(/^\//, "");
-	const url = `${normalizedBase}/${normalizedEndpoint}`;
+	const url = `${normalizedBase}${normalizedEndpoint}`;
 	console.log("API URL:", url);
 	let headers;
 	if (token) {
