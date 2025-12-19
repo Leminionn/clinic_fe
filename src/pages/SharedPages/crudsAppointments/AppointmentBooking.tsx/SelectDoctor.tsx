@@ -52,7 +52,7 @@ export default function SelectDoctor({
                 borderRadius: 1,
                 paddingX: '10px',
               }}>
-                <Avatar src={item.image} sx={{ height: 36, width: 36, }} />
+                {/*<Avatar src={item.image} sx={{ height: 36, width: 36, }} />*/}
                 Dr. {item.fullName}
               </Box>
             </MenuItem>

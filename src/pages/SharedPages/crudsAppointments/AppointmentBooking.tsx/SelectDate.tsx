@@ -28,7 +28,7 @@ export default function SelectDate({
         <DateCalendar
           value={selectedDate ? dayjs(selectedDate) : dayjs()}
           minDate={dayjs().add(1, 'day')}
-          onChange={(newValue) => onChangeDate(newValue ? newValue.toISOString() : dayjs().toISOString())}
+          onChange={(newValue) => onChangeDate(newValue ?dayjs(newValue).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"))}
           sx={{
             border: '1px solid var(--color-border)',
             borderRadius: "10px",

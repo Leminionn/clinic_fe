@@ -1,18 +1,23 @@
 import { Box, Button, Card, Typography } from "@mui/material";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { apiCall } from "../../../../api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function SelectTimeSlot({
   selectedDate,
   selectedDoctor,
   selectedTime,
   setSelectedTime,
+  setSelectedSlotId
 }: {
   selectedDate: string | null;
   selectedDoctor: any;
   selectedTime: string;
   setSelectedTime: (time: string) => void;
+  setSelectedSlotId: (slotId:number)=>void;
 }) {
-  const timeSlots = [
+  /*const timeSlots = [
     { time: "08:00 AM", available: true },
     { time: "08:30 AM", available: false },
     { time: "09:00 AM", available: true },
@@ -27,7 +32,31 @@ export default function SelectTimeSlot({
     { time: "03:30 PM", available: true },
     { time: "04:00 PM", available: true },
     { time: "04:30 PM", available: true },
-  ];
+  ];*/
+
+  const [timeSlots, setTimeSlots] = useState<any[]>();
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(!selectedDoctor||!selectedDate) {
+      setTimeSlots([]);
+      return;
+    }
+    const url = `unsecure/doctor_schedule?doctorId=${selectedDoctor.id}&selectedDate=${selectedDate}`;
+    console.log(selectedDate);
+    apiCall(url,"GET",null,null,(data:any)=>{
+      const timeSlotsData= data.data.map(item=>{
+        return {
+          time: item.startTime,
+          available: item.status=='AVAILABLE'?true:false,
+          scheduleId: item.scheduleId
+        }
+      });
+      setTimeSlots(timeSlotsData);
+    },(data:any)=>{
+      alert(data.message);
+      navigate("/patient");
+    })
+  },[selectedDate,selectedDoctor]);
 
   return (
     <Card sx={{
@@ -69,7 +98,11 @@ export default function SelectTimeSlot({
             {timeSlots.map((slot, index) => (
               <Button
                 key={index}
-                onClick={() => slot.available && setSelectedTime(slot.time)}
+                onClick={() =>{ 
+                  slot.available && setSelectedTime(slot.time);
+                  slot.available&&setSelectedSlotId(slot.scheduleId);
+                }
+                }
                 disabled={!slot.available}
                 sx={{
                   opacity: !slot.available ? 0.7 : 1,

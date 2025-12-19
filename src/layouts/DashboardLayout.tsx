@@ -75,7 +75,7 @@ export default function DashboardLayout() {
     ],
     Patient: [
       { label: "Dashboard", path: "/patient", icon: <Home /> },
-      { label: "My Appointments", path: "/patient/my-appointments", icon: <Calendar1 /> },
+      { label: "My Appointments", path: "/patient/appointments", icon: <Calendar1 /> },
       { label: "Recent Prescriptions", path: "/patient/recent-presciptions", icon: <MedicationLiquid /> },
       { label: "Profile", path: "/patient/profile", icon: <Person /> },
     ],

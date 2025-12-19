@@ -180,6 +180,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        
 
       </Route>
 
@@ -189,9 +190,12 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allow="Patient">
             <DashboardLayout />
+            
           </ProtectedRoute>
+          
         }
       >
+        <Route path="appointments" element={<AppointmentBooking/>}/>
       </Route>
 
       {/* Redirect fallback */}

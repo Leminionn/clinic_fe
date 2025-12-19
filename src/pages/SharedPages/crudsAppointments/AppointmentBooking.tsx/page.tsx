@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,13 +14,28 @@ import SelectTimeSlot from "./SelectTimeSlots";
 import type { Patient } from "../../../../types/Patient";
 import AppointmentSummary from "./Summary";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../../auth/AuthContext";
+import { apiCall } from "../../../../api/api";
 
 export interface IDoctor {
   id: number;
   fullName: string;
   image: string;
 }
-
+function fromResponseToPatient(data:any) {
+  return {
+    patientId: data.patientId,
+    address: data.address,
+    firstVisitDate: dayjs(data.firstVisitDate).format("DD/MM/YYYY"),
+    fullName: data.fullName,
+    dateOfBirth: data.dateOfBirth,
+    gender: data.gender,
+    email: data.email,
+    phone: data.phone,
+    idCard: data.idCard
+  }
+  
+}
 export default function AppointmentBooking() {
   const navigate = useNavigate();
   const [patient, setPatient] = useState<Patient>();
@@ -28,13 +43,16 @@ export default function AppointmentBooking() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [isConfirmed, setIsSuccess] = useState(false);
+  const [selectedSlotId, setSelectedSlotId] = useState(0);
+  const {role} = useAuth();
 
-  const doctorsList: IDoctor[] = [
-    { id: 1, fullName: "Sarah Smith", image: "https://picsum.photos/200/200?random=1" },
-    { id: 2, fullName: "Michael Johnson", image: "https://picsum.photos/200/200?random=2" },
+  /*const doctorsList: IDoctor[] = [
+    { id: 1, fullName: "Sarah Smith"},
+    { id: 2, fullName: "Michael Johnson"},
     { id: 3, fullName: "Emily Lee", image: "https://picsum.photos/200/200?random=3" },
     { id: 4, fullName: "Robert Brown", image: "https://picsum.photos/200/200?random=4" },
-  ];
+  ];*/
+  const [doctorsList, setDoctorsList] = useState<any[]>([]);
 
   const handleDoctorChange = (e: any) => {
     const doc = doctorsList.find((d) => d.id === e.target.value);
@@ -46,10 +64,50 @@ export default function AppointmentBooking() {
 
       return;
     }
+    const accessToken = localStorage.getItem("accessToken");
+    const body = {
+      scheduleId: selectedSlotId
+    }
 
-    setIsSuccess(true);
+    apiCall("patient/book_appointment","POST",accessToken?accessToken:"",JSON.stringify(body),(data:any)=>{
+      setIsSuccess(true);
+    },(data:any)=>{
+      alert(data.message);
+      navigate("/patient");
+    })
+    
 
   };
+  function getPatient() {
+    const accessToken = localStorage.getItem("accessToken");
+      apiCall("patient/auth","GET",accessToken?accessToken:"",null,(data:any)=>{
+        setPatient(fromResponseToPatient(data.data));
+      },(data:any)=>{
+        alert(data.message);
+        navigate("/patient");
+      })
+  }
+  function getListDoctor() {
+    apiCall("unsecure/list_doctor","GET",null,null,(data:any)=>{
+      
+      setDoctorsList(data.data.map((item: { staffId: any; fullName: any; })=>{
+        return {
+        id:item.staffId,
+        fullName:item.fullName
+        }
+      }))
+    },(data:any)=>{
+        alert(data.message);
+        navigate("/patient");
+      });
+  }
+  useEffect(()=>{
+    if(role=="Patient") {
+      getPatient();
+    }
+    getListDoctor();
+
+  },[role])
 
   if (isConfirmed) return (
     <Box sx={{ display: 'flex', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -160,10 +218,10 @@ export default function AppointmentBooking() {
       }}>
         {/* Left column */}
         <Box sx={{ flex: 1, }}>
-          <PatientInformation
+          {role!="Patient"&&<PatientInformation
             onSelectPatient={setPatient}
             onCreateNew={() => { }}
-          />
+          />}
           <SelectDoctor
             doctorsList={doctorsList}
             selectedDoctor={selectedDoctor}
@@ -182,7 +240,9 @@ export default function AppointmentBooking() {
             selectedDate={selectedDate}
             selectedTime={selectedTime}
             setSelectedTime={setSelectedTime}
+            setSelectedSlotId={setSelectedSlotId}
           />
+          
           {patient && selectedDoctor && selectedDate && selectedTime && (
             <AppointmentSummary
               patient={patient}
