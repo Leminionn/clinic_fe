@@ -1,36 +1,24 @@
-import { useRef, } from "react";
+import { useRef } from "react";
 import {
   Box,
   TextField,
-  Select,
-  MenuItem,
   InputAdornment,
-  Button,
 } from "@mui/material";
 import { CalendarDays, Search } from "lucide-react";
-import { getStatusBgColor, getStatusTextColor } from "./AppointmentTable";
-import { useAuth } from "../../../../auth/AuthContext";
-import { Add } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 
-export default function AppointmentToolbar({
+interface PrescriptionToolbarProps {
+  searchKey: string;
+  onChangeSearchKey: (key: string) => void;
+  date: string;
+  onChangeDate: (date: string) => void;
+}
+
+export default function PrescriptionToolbar({
   searchKey,
   onChangeSearchKey,
   date,
   onChangeDate,
-  status,
-  onChangeStatus,
-}: {
-  searchKey: string,
-  onChangeSearchKey: (key: string) => void,
-  date: string,
-  onChangeDate: (date: string) => void,
-  status: string,
-  onChangeStatus: (status: string) => void,
-
-}) {
-  const navigate = useNavigate();
-  const { role } = useAuth();
+}: PrescriptionToolbarProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
 
   return (
@@ -49,7 +37,8 @@ export default function AppointmentToolbar({
           alignItems: "center",
         }}
       >
-        {role!="Patient"&&<TextField
+        {/* Search by Patient Name */}
+        <TextField
           value={searchKey}
           onChange={(e) => onChangeSearchKey(e.target.value)}
           placeholder="Search by patient name"
@@ -76,8 +65,9 @@ export default function AppointmentToolbar({
               border: 'none'
             },
           }}
-        />}
+        />
 
+        {/* Date Filter */}
         <TextField
           value={date}
           onChange={(e) => onChangeDate(e.target.value)}
@@ -108,74 +98,12 @@ export default function AppointmentToolbar({
                 borderColor: "var(--color-primary-main)",
               },
             },
-
             "& input::-webkit-calendar-picker-indicator": {
               display: "none",
             },
           }}
         />
-
-        <Select
-          value={status}
-          onChange={(e) => onChangeStatus(e.target.value)}
-          displayEmpty
-          sx={{
-            "& fieldset": {
-              borderRadius: 3,
-              borderWidth: 1.6,
-              borderColor: "var(--color-primary-main)",
-            },
-            "& .MuiInputBase-input": {
-              display: 'flex',
-              width: '150px',
-              alignItems: 'center',
-              paddingY: '8px',
-              paddingLeft: "24px",
-            },
-          }}
-        >
-          <MenuItem value="">
-            <Box sx={{ padding: '2px 10px', }}>
-              All status
-            </Box>
-          </MenuItem>
-          {["Scheduled", "Checked in", "Completed", "Cancelled", "Absent"].map(item => (
-            <MenuItem value={item}>
-              <Box sx={{
-                display: 'inline-flex',
-                borderRadius: 1,
-                padding: '2px 10px',
-                color: getStatusTextColor(item),
-                bgcolor: getStatusBgColor(item),
-              }}>
-                {item}
-              </Box>
-            </MenuItem>
-          ))}
-        </Select>
       </Box>
-
-      {(role === "Receptionist"||role=="Patient") &&
-        <Button
-          variant="contained"
-          startIcon={<Add sx={{ height: 24, width: 24, }} />}
-          onClick={() => { 
-            if(role=='Receptionist') {
-              navigate('new'); 
-              return;
-            } 
-            navigate("/patient/book_appointment");
-            
-          }}
-          sx={{
-            borderRadius: 1,
-            textTransform: "none",
-            boxShadow: "none",
-          }}
-        >
-          New Appoinment
-        </Button>
-      }
     </Box>
-  )
+  );
 }

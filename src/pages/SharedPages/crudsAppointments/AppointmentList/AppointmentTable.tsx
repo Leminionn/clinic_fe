@@ -22,6 +22,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import type { Appointment } from "../../../../types/Appointment";
+import { apiCall } from "../../../../api/api";
 
 export function getStatusBgColor(status: string): string {
   if (status === 'Scheduled') {
@@ -63,13 +64,45 @@ const fakeData: Appointment[] = [
   { appointment_id: 9, patient_id: 9, patient_name: "Ranjan Maari", patient_image: "", doctor_name: "David Lee", doctor_image: "", appointment_date: "05/12/2025", appointment_time: "4:00 PM", status: "Scheduled" },
   { appointment_id: 10, patient_id: 10, patient_name: "Philipile Gopal", patient_image: "", doctor_name: "Anna Kim", doctor_image: "", appointment_date: "05/12/2025", appointment_time: "4:30 PM", status: "Scheduled" },
 ];
-
+function getStatus(appointmentStatus:string) {
+  if(appointmentStatus=="SCHEDULED") return "Scheduled";
+  if(appointmentStatus=="CONFIRMED") return "Checked in";
+  if(appointmentStatus=="COMPLETED") return "Completed";
+  if(appointmentStatus=="CANCELLED") return "Cancelled";
+  if(appointmentStatus=="NOSHOW") return "Absent";
+  return "";
+}
+function getEnumStatus(clientSideStatus:string) {
+  if(clientSideStatus=="Scheduled") return "SCHEDULED";
+  if(clientSideStatus=="Checked in") return "CONFIRMED";
+  if(clientSideStatus=="Completed") return "COMPLETED";
+  if(clientSideStatus=="Cancelled") return "CANCELLED";
+  if(clientSideStatus=="Absent") return "NOSHOW";
+  return "";
+}
+function mapAppointmentData(appointment:any) {
+  return {
+    appointment_id:appointment.appointmentId,
+    patient_id: appointment.patient.patientId,
+    patient_name: appointment.patient.fullName,
+    doctor_name: appointment.doctorName,
+    appointment_date: appointment.appointmentDate,
+    appointment_time: appointment.appointmentTime,
+    status: getStatus(appointment.status)
+  }
+}
 export default function AppointmentTable({
   handleCancel,
   handleCheckIn,
+  selectedStatus, 
+  selectedDate,
+  patientName
 }: {
   handleCancel: (id: any) => void,
   handleCheckIn: (id: any) => void,
+  selectedStatus: string,
+  selectedDate: string, 
+  patientName:string
 }) {
   const navigate = useNavigate();
   const { role } = useAuth();
@@ -79,21 +112,55 @@ export default function AppointmentTable({
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (page:number, rowsPerPage:number) => {
     setLoading(true);
-    // Mô phỏng loading trong 500ms rồi render giao diện
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timeout);
+    let url="";
+    if(role=="Patient") {
+      
+      
+      url= `patient/appointment_history?pageNumber=${page-1}&pageSize=${rowsPerPage}`;
+      
+      
+    }
+    if(role=="Receptionist"||role=="Admin") {
+      let prefix="";
+      if(role=="Receptionist") {
+        prefix="receptionist";
+      } 
+      else prefix="admin";
+      url=`${prefix}/appointments?pageNumber=${page-1}&pageSize=${rowsPerPage}`;
+      if(patientName&&patientName!="") {
+        url+=`&patientName=${patientName}`;
+      }
+    }
+    if(selectedStatus&&selectedStatus!="") {
+        url+=`&status=${getEnumStatus(selectedStatus)}`;
+      }
+      if(selectedDate&&selectedDate!="") {
+        url+=`&appointmentDate=${selectedDate}`;
+      }
+
+    const accessToken = localStorage.getItem("accessToken");
+      
+      apiCall(url,"GET",accessToken?accessToken:"",null,(data:any)=>{
+        setData(data.data.content.map((item: any)=>{
+          return mapAppointmentData(item);
+        }));
+        setLoading(false);
+        setTotalItems(data.data.totalElements);
+      },(data:any)=>{
+        alert(data.message);
+        navigate("/patient");
+      })
+    
+    
 
   };
 
   useEffect(() => {
-    fetchAppointments();
-    setData(fakeData.slice(0, rowsPerPage)) //sau khi fetch data thật thì xóa dòng này đi
-    setTotalItems(10)
-  }, [page, rowsPerPage]);
+    fetchAppointments(page,rowsPerPage);
+    
+  }, [page, rowsPerPage, selectedStatus,selectedDate,patientName]);
 
 
   return (
@@ -149,7 +216,7 @@ export default function AppointmentTable({
                   }}
                     title={row.patient_name}
                   >
-                    <Avatar src={row.patient_image} sx={{ height: 36, width: 36, }} />
+                    
                     <Typography sx={{
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
@@ -169,7 +236,7 @@ export default function AppointmentTable({
                   }}
                     title={"Dr. " + row.doctor_name}
                   >
-                    <Avatar src={row.doctor_image} sx={{ height: 36, width: 36, }} />
+                    
                     <Typography sx={{
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',

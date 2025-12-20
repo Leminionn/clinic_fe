@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 
 export default function AppointmentList() {
   const [searchKey, setSearchKey] = useState("");
-  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [selectedDate, setSelectedDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [confirmType, setConfirmType] = useState<'error' | 'warning' | 'info'>('error');
   const [confirmMessage, setConfirmMessage] = useState('');
@@ -80,6 +80,9 @@ export default function AppointmentList() {
             <AppointmentTable
               handleCancel={handleConfirmCancel}
               handleCheckIn={handleConfirmCheckIn}
+              selectedStatus={filterStatus}
+              selectedDate={selectedDate}
+              patientName={searchKey}
             />
           </Box>
         </Card>
