@@ -3,8 +3,10 @@ import {
   Box,
   TextField,
   InputAdornment,
+  Button,
 } from "@mui/material";
 import { CalendarDays, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PrescriptionToolbarProps {
   searchKey: string;
@@ -20,7 +22,7 @@ export default function PrescriptionToolbar({
   onChangeDate,
 }: PrescriptionToolbarProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
-
+  const navigate= useNavigate();
   return (
     <Box
       sx={{
@@ -104,6 +106,9 @@ export default function PrescriptionToolbar({
           }}
         />
       </Box>
+      <Button onClick={()=>{
+        navigate("/doctor/prescription/create");
+      }}>New Prescription</Button>
     </Box>
   );
 }

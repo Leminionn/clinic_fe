@@ -47,6 +47,7 @@ import MedicalRecordDetail from "../pages/SharedPages/crudMedicalRecords/Medical
 import InvoiceDetail from "../pages/SharedPages/crudInvoice/InvoiceDetail/InvoiceDetail";
 import PrescriptionListPage from "../pages/Doctor/Prescriptions/page";
 import PrescriptionDetail from "../pages/Doctor/Prescriptions/detail";
+import PrescriptionCreatePage from "../pages/Doctor/Prescriptions/create";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -145,6 +146,7 @@ export default function AppRoutes() {
         </Route>
         <Route path="prescriptions" element={<PrescriptionListPage/>}/>
         <Route path="prescription/:id" element={<PrescriptionDetail/>}/>
+        <Route path="prescription/create" element={<PrescriptionCreatePage/>}/>
       </Route>
 
       {/* Receptionist */}
