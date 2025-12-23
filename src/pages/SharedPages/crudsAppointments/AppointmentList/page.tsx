@@ -5,6 +5,9 @@ import { showMessage } from "../../../../components/ActionResultMessage";
 import AppointmentToolbar from "./AppointmentToolbar";
 import AppointmentTable from "./AppointmentTable";
 import dayjs from "dayjs";
+import { apiCall } from "../../../../api/api";
+import { useAuth } from "../../../../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AppointmentList() {
   const [searchKey, setSearchKey] = useState("");
@@ -15,6 +18,8 @@ export default function AppointmentList() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isEdit, setIsEdit]= useState(false);
+  const {role}= useAuth();
+  const navigate = useNavigate();
   const handleConfirmCancel = (id: any) => {
     setSelectedId(id);
     setConfirmType('error');
@@ -22,11 +27,19 @@ export default function AppointmentList() {
     setIsConfirmDialogOpen(true);
   };
 
-  const handleCancelAppointment = () => {
-    showMessage("Appointment cancellation successful!");
-
+  const handleCancelAppointment = (id:any) => {
+     const accessToken = localStorage.getItem("accessToken");
+    const url = role=="Receptionist"?`receptionist/change_appointment_status/${id}?status=CANCELLED`:`patient/change_appointment_status/${id}?status=CANCELLED`;
+    apiCall(url,"GET",accessToken?accessToken:"",null,(data:any)=>{
+      showMessage("Appointment cancellation successful!");
     setIsConfirmDialogOpen(false);
     setSelectedId(null);
+    },(data:any)=>{
+      alert(data.message);
+      navigate(role=="Receptionist"?"/receptionist":"/patient");
+    })
+
+    
   }
 
   const handleConfirmCheckIn = (id: any) => {
@@ -36,11 +49,18 @@ export default function AppointmentList() {
     setIsConfirmDialogOpen(true);
   };
 
-  const handleCheckIn = () => {
-    showMessage("Checked in successful!");
-
-    setIsConfirmDialogOpen(false);
-    setSelectedId(null);
+  const handleCheckIn = (id:any) => {
+    const accessToken = localStorage.getItem("accessToken");
+    const url = `receptionist/change_appointment_status/${id}?status=CONFIRMED`;
+    apiCall(url,"GET",accessToken?accessToken:"",null,(data:any)=>{
+      showMessage("Checked in successful!");
+      setIsConfirmDialogOpen(false);
+      setSelectedId(null);
+    },(data:any)=>{
+      alert(data.message);
+      navigate("/receptionist");
+    })
+    
   }
 
   return (
@@ -99,8 +119,8 @@ export default function AppointmentList() {
           if (!selectedId) return;
 
           confirmType === 'error'
-            ? handleCancelAppointment()
-            : handleCheckIn()
+            ? handleCancelAppointment(selectedId)
+            : handleCheckIn(selectedId)
 
         }}
       />

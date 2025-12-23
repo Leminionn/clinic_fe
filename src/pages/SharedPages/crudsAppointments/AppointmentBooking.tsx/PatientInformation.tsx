@@ -3,6 +3,8 @@ import { ArrowRight, Mail, MapPin, Phone, Search } from "lucide-react";
 import { useState } from "react";
 import type { Patient } from "../../../../types/Patient";
 import dayjs from "dayjs";
+import { apiCall } from "../../../../api/api";
+import { useNavigate } from "react-router-dom";
 
 const fakePatient: Patient = {
   patientId: 1,
@@ -27,7 +29,7 @@ export default function PatientInformation({
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [notFound, setNotFound] = useState(false);
-
+  const navigate= useNavigate();
   const handleSearch = async () => {
     if (!patientIdCard.trim()) return;
 
@@ -35,21 +37,35 @@ export default function PatientInformation({
     setNotFound(false);
     setPatient(null);
 
-    try {
-      const res = fakePatient;
-
-      if (res) {
+    
+      let res = fakePatient;
+      const accessToken = localStorage.getItem("accessToken");
+      apiCall(`receptionist/find_patient?idCard=${patientIdCard}`,'GET',accessToken?accessToken:"",null,(data:any)=>{
+        res = {
+          patientId: data.data.patientId,
+          address: data.data.address,
+          firstVisitDate: dayjs(data.data.firstVisitDate).format("DD/MM/YYYY"), 
+          fullName: data.data.fullName,
+          dateOfBirth: dayjs(data.data.dateOfBirth).format("DD/MM/YYYY"),
+          gender: data.data.gender,
+          email: data.data.email,
+          phone: data.data.phone,
+          idCard: data.data.idCard
+        };
         setPatient(res);
-      } else {
-        setNotFound(true);
-      }
-    } finally {
-      // Mô phỏng loading trong 500ms rồi render giao diện
-      const timeout = setTimeout(() => {
         setLoading(false);
-      }, 500);
-      return () => clearTimeout(timeout);
-    }
+      },(data:any)=>{
+        if(data.statusCode==404){
+          setNotFound(true);
+          setLoading(false);
+        }
+        else {
+          alert(data.message);
+          navigate("/receptionist");
+        }
+      })
+      
+    
   };
 
   return (

@@ -258,8 +258,8 @@ export default function AppointmentTable({
                     {row.status}
                   </Box>
                 </TableCell>
-                <TableCell align="center" width="15%">
-                  {role === "Receptionist" &&
+                <TableCell align="right" width="15%">
+                  {role === "Receptionist"&&row.status=="Scheduled" &&
                     <Button
                       variant="text"
                       onClick={() => { handleCheckIn(row.appointment_id) }}
@@ -273,7 +273,7 @@ export default function AppointmentTable({
                       Check in
                     </Button>
                   }
-                  {(role === "Admin" || role === "Receptionist") &&
+                  {(role === "Admin" || role === "Receptionist"||role=="Patient") &&row.status=="Scheduled"&&
                     <IconButton
                       onClick={() => { handleCancel(row.appointment_id) }}
                       sx={{
@@ -312,7 +312,7 @@ export default function AppointmentTable({
           ) : (
             <TableRow>
               <TableCell colSpan={7} align="center">
-                Không có dữ liệu
+               No data
               </TableCell>
             </TableRow>
           )}
