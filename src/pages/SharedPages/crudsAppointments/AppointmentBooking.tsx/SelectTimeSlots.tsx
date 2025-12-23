@@ -9,13 +9,15 @@ export default function SelectTimeSlot({
   selectedDoctor,
   selectedTime,
   setSelectedTime,
-  setSelectedSlotId
+  setSelectedSlotId,
+  selectedSlotId
 }: {
   selectedDate: string | null;
   selectedDoctor: any;
   selectedTime: string;
   setSelectedTime: (time: string) => void;
   setSelectedSlotId: (slotId:number)=>void;
+  selectedSlotId: number;
 }) {
   /*const timeSlots = [
     { time: "08:00 AM", available: true },
@@ -97,18 +99,21 @@ export default function SelectTimeSlot({
             mt: 3,
           }}>
             {timeSlots&&timeSlots.map((slot, index) => (
+              
+
               <Button
+
                 key={index}
                 onClick={() =>{ 
                   slot.available && setSelectedTime(slot.time);
                   slot.available&&setSelectedSlotId(slot.scheduleId);
                 }
                 }
-                disabled={!slot.available}
+                disabled={!slot.available&&selectedSlotId!=slot.scheduleId}
                 sx={{
                   opacity: !slot.available ? 0.7 : 1,
-                  bgcolor: slot.time === selectedTime ? 'var(--color-primary-main)' : 'var(--color-bg-default)',
-                  color: slot.time === selectedTime ? 'var(--color-primary-contrast)' : 'var(--color-text-primary)',
+                  bgcolor: (slot.time === selectedTime||selectedSlotId==slot.scheduleId) ? 'var(--color-primary-main)' : 'var(--color-bg-default)',
+                  color: (slot.time === selectedTime||selectedSlotId==slot.scheduleId) ? 'var(--color-primary-contrast)' : 'var(--color-text-primary)',
                   fontWeight: 'bold',
                   textTransform: 'none',
                   border: '1px solid var(--color-border)',
@@ -120,10 +125,14 @@ export default function SelectTimeSlot({
                 }}
               >
                 {slot.time}
+                <br/>
+                
+               
                 {!slot.available && (
                   <Typography sx={{ fontSize: 12, fontWeight: 'bold', ml: 1, }}>(Booked)</Typography>
                 )}
               </Button>
+            
             ))}
           </Box>
         </>

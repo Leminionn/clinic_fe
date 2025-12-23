@@ -250,6 +250,7 @@ export default function AppointmentBooking() {
             selectedTime={selectedTime}
             setSelectedTime={setSelectedTime}
             setSelectedSlotId={setSelectedSlotId}
+            selectedSlotId={selectedSlotId}
           />
           
           {patient && selectedDoctor && selectedDate && selectedTime && (

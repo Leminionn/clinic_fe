@@ -6,9 +6,11 @@ import {
   CircularProgress,
   Typography,
   Avatar,
-  Divider
+  Divider,
+  TextField,
+  InputAdornment
 } from "@mui/material";
-import { Check, Phone, Mail, MapPin } from "lucide-react";
+import { Check, Phone, Mail, MapPin, Search } from "lucide-react";
 import { Person } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { useNavigate, useParams } from "react-router-dom";
@@ -48,6 +50,8 @@ export default function AppointmentUpdate() {
   const [selectedSlotId, setSelectedSlotId] = useState(0);
   const [doctorsList, setDoctorsList] = useState<any[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [patientIdCard, setPatientIdCard] = useState("");
+  const [notFound, setNotFound] = useState(false);
 
   // --- Fetch Data ---
 
@@ -107,6 +111,7 @@ export default function AppointmentUpdate() {
       
       // -- PREFILL DATA --
       setPatient(data.patient);
+      setPatientIdCard(data.patient.idCard);
       
       // Format ngày để khớp với SelectDate (YYYY-MM-DD)
       setSelectedDate(dayjs(data.appointmentDate).format("YYYY-MM-DD"));
@@ -132,10 +137,22 @@ export default function AppointmentUpdate() {
       navigate(-1);
     });
   };
+  const getSlotId=()=>{
+    if(!appointmentId) return;
+    apiCall(`unsecure/appointment/scheduleId/${appointmentId}`,'GET',null,null,(data:any)=>{
+      setSelectedSlotId(data.data);
+    },(data:any)=>{
+      alert(data.message);
+      
+      navigate(role=="Receptionist"?"/receptionist":"/patient");
+    })
+  }
 
   useEffect(() => {
     getListDoctor();
+    getSlotId();
     getAppointmentDetail();
+    
   }, [appointmentId, role]);
 
   // --- Handlers ---
@@ -241,6 +258,42 @@ export default function AppointmentUpdate() {
     </Box>
   );
 
+  function handleSearch(): void {
+     if (!patientIdCard.trim()) return;
+    
+        setLoading(true);
+        setNotFound(false);
+        setPatient(null);
+    
+        
+          let res = patient;
+          const accessToken = localStorage.getItem("accessToken");
+          apiCall(`receptionist/find_patient?idCard=${patientIdCard}`,'GET',accessToken?accessToken:"",null,(data:any)=>{
+            res = {
+              patientId: data.data.patientId,
+              address: data.data.address,
+              firstVisitDate: dayjs(data.data.firstVisitDate).format("DD/MM/YYYY"), 
+              fullName: data.data.fullName,
+              dateOfBirth: dayjs(data.data.dateOfBirth).format("DD/MM/YYYY"),
+              gender: data.data.gender,
+              email: data.data.email,
+              phone: data.data.phone,
+              idCard: data.data.idCard
+            };
+            setPatient(res);
+            setLoading(false);
+          },(data:any)=>{
+            if(data.statusCode==404){
+              setNotFound(true);
+              setLoading(false);
+            }
+            else {
+              alert(data.message);
+              navigate("/receptionist");
+            }
+          })
+  }
+
   // --- Main Render ---
   return (
     <Box sx={{
@@ -253,6 +306,7 @@ export default function AppointmentUpdate() {
       <Typography variant="h5" fontWeight="bold" mx={4} mb={3}>
         Update Appointment #{appointmentId}
       </Typography>
+      
 
       <Box sx={{
         display: 'flex',
@@ -263,7 +317,7 @@ export default function AppointmentUpdate() {
         {/* Left column */}
         <Box sx={{ flex: 1 }}>
           {/* Patient Info Card (Read-only mode) */}
-          {patient && (
+          { (
             <Card sx={{
               p: 3,
               mb: 3,
@@ -271,6 +325,40 @@ export default function AppointmentUpdate() {
               boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.031)",
             }}>
               <Typography sx={{ fontWeight: 'bold', mb: 2 }}>Patient Information</Typography>
+              { role=="Receptionist"&&<TextField
+        value={patientIdCard}
+        onChange={(e) => setPatientIdCard(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+        placeholder="Search by patient id card"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search size={22} color="var(--color-text-secondary)" />
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          bgcolor: "var(--color-bg-input)",
+          borderRadius: 3,
+          mb: 2,
+          '& .MuiInputBase-root': {
+            pl: '18px',
+          },
+          '& .MuiInputBase-input': {
+            py: '10px',
+            pl: 1,
+            pr: 3
+          },
+          '& fieldset': {
+            border: 'none'
+          },
+        }}
+      />}
+      {
+        role=="Receptionist"&&notFound&&<h3>Patient not found</h3>
+      }
+      {!notFound&&patient&&
+      <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                 <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.light', color: 'primary.main' }}>
                   <Person />
@@ -292,6 +380,7 @@ export default function AppointmentUpdate() {
                   <MapPin size={16} /> <Typography variant="body2">{patient.address}</Typography>
                 </Box>
               </Box>
+              </Box>}
             </Card>
           )}
 
@@ -300,12 +389,13 @@ export default function AppointmentUpdate() {
             selectedDoctor={selectedDoctor}
             handleDoctorChange={handleDoctorChange}
           />
+          
           <SelectDate
             selectedDate={selectedDate}
             onChangeDate={handleDateChange}
           />
         </Box>
-
+        
         {/* Right column */}
         <Box sx={{ flex: 1 }}>
             {
@@ -316,6 +406,7 @@ export default function AppointmentUpdate() {
             selectedTime={selectedTime}
             setSelectedTime={setSelectedTime}
             setSelectedSlotId={setSelectedSlotId}
+            selectedSlotId={selectedSlotId}
           />}
           
           {patient && selectedDoctor && selectedDate && selectedTime && (
