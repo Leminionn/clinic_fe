@@ -104,3 +104,40 @@ export const scheduleCanModify = (date: string) =>
 // Admin - Staff (for dropdowns)
 export const staffGetDoctors = "admin/staffs/doctors";
 export const staffGetAll = "admin/staffs";
+
+// ==================== INVOICE APIs ====================
+// Staff (Receptionist/Admin) Invoice APIs
+export const invoiceSearch = (role: string, query: string) =>
+	`${role}/invoices${query}`;
+export const invoiceGetById = (role: string, invoiceId: number) =>
+	`${role}/invoices/${invoiceId}`;
+export const invoiceUpdate = (role: string, invoiceId: number) =>
+	`${role}/invoices/${invoiceId}`;
+export const invoiceMedicineDetails = (role: string, invoiceId: number) =>
+	`${role}/invoices/${invoiceId}/medicine-details`;
+export const invoiceMedicineDetailDelete = (role: string, invoiceId: number, detailId: number) =>
+	`${role}/invoices/${invoiceId}/medicine-details/${detailId}`;
+export const invoiceServiceDetails = (role: string, invoiceId: number) =>
+	`${role}/invoices/${invoiceId}/service-details`;
+export const invoiceServiceDetailDelete = (role: string, invoiceId: number, detailId: number) =>
+	`${role}/invoices/${invoiceId}/service-details/${detailId}`;
+export const invoiceAvailableMedicines = (role: string) =>
+	`${role}/invoices/available-medicines`;
+export const invoiceMarkPaid = (role: string, invoiceId: number) =>
+	`${role}/invoices/${invoiceId}/mark-paid`;
+
+// Patient Invoice APIs
+export const patientInvoices = "patient/invoices";
+export const patientInvoiceById = (invoiceId: number) =>
+	`patient/invoices/${invoiceId}`;
+
+// Payment (PayOS) APIs
+export const paymentCreatePayment = (role: string) =>
+	`${role}/payment/create-payment`;
+export const paymentGetPaymentRequest = (role: string, orderCode: number) =>
+	`${role}/payment/payment-requests/${orderCode}`;
+export const paymentCancelPayment = (role: string, orderCode: number) =>
+	`${role}/payment/payment-requests/${orderCode}/cancel`;
+export const paymentVerifyPayment = (role: string) =>
+	`${role}/payment/verify-payment`;
+
