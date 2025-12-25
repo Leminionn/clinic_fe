@@ -8,11 +8,14 @@ import { showMessage } from "../../../../components/ActionResultMessage";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { apiCall } from "../../../../api/api";
+import PatientToolbar from "./PatientToolBar";
 
 export default function PatientList() {
 	const navigate = useNavigate();
 	const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 	const [deleteId, setDeleteId] = useState(null);
+	const [name, setName] = useState("");
+	const [gender, setGender] = useState("");
 	const role = useAuth();
 	const handleConfirmDelete = (id: any) => {
 		setDeleteId(id);
@@ -55,32 +58,9 @@ export default function PatientList() {
 								alignItems: "center",
 							}}
 						>
-							<TextField
-								placeholder="Search"
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<Search size={22} color="var(--color-text-secondary)" />
-										</InputAdornment>
-									),
-								}}
-								sx={{
-									bgcolor: "var(--color-primary-light)",
-									borderRadius: 3,
-									width: '300px',
-									'& .MuiInputBase-root': {
-										pl: '18px',
-									},
-									'& .MuiInputBase-input': {
-										py: '10px',
-										pl: 1,
-										pr: 3
-									},
-									'& fieldset': {
-										border: 'none'
-									},
-								}}
-							/>
+							<PatientToolbar searchKey={name} onChangeSearchKey={setName} gender={gender} onChangeGender={setGender}>
+
+							</PatientToolbar>
 							{/*
 						<Button
 							variant="outlined"
@@ -122,6 +102,8 @@ export default function PatientList() {
 					<Box flex={1} mt={3}>
 						<PatientTable
 							handleDelete={handleConfirmDelete}
+							gender={gender}
+							name={name}
 						/>
 					</Box>
 				</Card>

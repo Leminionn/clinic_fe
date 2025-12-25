@@ -24,7 +24,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-const ServiceTable = ({ }) => {
+const ServiceTable = ({ searchKey}:{
+  searchKey:string
+}) => {
     
 const [serviceData,setServiceData] = useState([]);
 const loading = false; 
@@ -35,8 +37,10 @@ const [rowsPerPage, setRowsPerPage]= useState(7);
 const role= useAuth();
 const navigate = useNavigate();
 async function getServicesFromServer() {
-    const url = `unsecure/all_services?pageNumber=${currentPage-1}&pageSize=${rowsPerPage}`;
-    apiCall(url,"GET",null,null,onSuccess,onFailure);
+  let url = `admin/service/search?pageNumber=${currentPage-1}&pageSize=${rowsPerPage}`;
+  if(searchKey!="") url+=`&keyWord=${searchKey}`;
+    const accessToken = localStorage.getItem("accessToken");
+    apiCall(url,"GET",accessToken?accessToken:"",null,onSuccess,onFailure);
 }
 function onSuccess(data:any) {
     setServiceData(data.data.content);
@@ -47,7 +51,7 @@ function onFailure() {
 }
 useEffect(()=>{
     getServicesFromServer();
-},[currentPage,rowsPerPage]);
+},[currentPage,rowsPerPage,searchKey]);
 
 
 
@@ -97,10 +101,10 @@ const formatCurrency = (amount) => {
             <TableHead>
                 <TableRow>
                     <TableCell sx={{ fontWeight: 'bold' }} width="10%">ID</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }} width="45%">Tên Dịch vụ</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }} align="right" width="25%">Giá Đơn vị</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }} width="45%">Service name</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }} align="right" width="25%">Unit price</TableCell>
                    
-                    <TableCell sx={{ fontWeight: 'bold' }} align="center" width="20%">Thao tác</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }} align="center" width="20%">Action</TableCell>
                 </TableRow>
             </TableHead>
 

@@ -4,8 +4,10 @@ import ServiceTable from "./ServiceTable";
 import { AddCircleOutline } from "@mui/icons-material";
 import theme from "../../../../theme";
 import { useNavigate } from "react-router-dom";
+import ServiceToolbar from "./ServiceToolBar";
 export default function ServiecList() {
     const navigate = useNavigate();
+    const [searchKey, setSearchKey] = useState("");
     return (
         <Box sx={{
       display: 'flex',
@@ -24,6 +26,12 @@ export default function ServiecList() {
                 <Typography variant="h5" fontWeight="bold">
                     Services
                 </Typography>
+                <ServiceToolbar
+                searchKey={searchKey}
+                onChangeSearchKey={setSearchKey}
+                >
+
+                </ServiceToolbar>
 
                 {/* Nút "Create Service" đã được thêm */}
                 <Button
@@ -62,7 +70,7 @@ export default function ServiecList() {
           <Divider />
 
           <Box flex={1} mt={2}>
-            <ServiceTable></ServiceTable>
+            <ServiceTable searchKey={searchKey}></ServiceTable>
           </Box>
         </Card>
       </Box>
