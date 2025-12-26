@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import {
 	Box,
 	IconButton,
+	MenuItem,
 	Pagination,
+	Select,
 	Table,
 	TableBody,
 	TableCell,
@@ -20,29 +22,39 @@ import { apiCall } from "../../../../api/api";
 
 export default function PatientTable({
 	handleDelete,
+	gender,
+	name
 }: {
 	handleDelete: (id: any) => void,
+	gender: string,
+	name: string
+	
 }) {
 	const navigate = useNavigate();
 	const { role } = useAuth();
 	const [data, setData] = useState([]);
 	const [page, setPage] = useState(1);
+	const [pageSize, setPageSize] = useState(7);
+	const [totalItems, setTotalItems] = useState(0);
 	const rowsPerPage = 7;
-	const pageData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+	
 	
 	useEffect(
 		()=>{
-			let prefix="";
-			if(role=="Admin") prefix="admin";
-			if(role=="Receptionist") prefix="receptionist";
-			const accessToken=localStorage.getItem("accessToken");
-			apiCall(`${prefix}/get_all_patients`,'GET',accessToken?accessToken:"",null,(data:any)=>{
-				setData(data.data);
+			
+			let url = `unsecure/patients?pageNumber=${page-1}&pageSize=${pageSize}`;
+			if(name!="") url+=`&keyword=${name}`;
+			if(gender!="") url+=`&gender=${gender}`;
+			
+			apiCall(url,'GET',null,null,(data:any)=>{
+				setData(data.data.content);
+				setTotalItems(data.data.totalElements);
+
 			},(data:any)=>{
 				alert(data.message);
-			})
-		}
-	,[page])
+		})}
+		
+	,[page,gender,name, pageSize])
 	return (
 		<Box sx={{
 			display: 'flex',
@@ -68,7 +80,7 @@ export default function PatientTable({
 				</TableHead>
 
 				<TableBody>
-					{pageData.map((p) => (
+					{data.map((p) => (
 						<TableRow key={p.patientId} hover>
 							<TableCell width="15%">
 								{p.fullName}
@@ -147,8 +159,24 @@ export default function PatientTable({
 			</Table>
 
 			<Box sx={{ display: "flex", justifyContent: "flex-end", mr: 4, }}>
+				<Select
+            value={pageSize}
+            onChange={(e) => setPageSize(e.target.value)}
+            sx={{
+              "& .MuiInputBase-input": {
+                width: '20px',
+                py: '6px',
+              },
+            }}
+          >
+            {[7, 10, 15].map(item => (
+              <MenuItem value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </Select>
 				<Pagination
-					count={Math.ceil(data.length / rowsPerPage)}
+					count={Math.ceil(totalItems / rowsPerPage)}
 					page={page}
 					onChange={(_, val) => setPage(val)}
 					color="primary"

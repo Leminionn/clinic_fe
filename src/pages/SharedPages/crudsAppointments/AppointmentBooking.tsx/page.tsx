@@ -65,15 +65,18 @@ export default function AppointmentBooking() {
       return;
     }
     const accessToken = localStorage.getItem("accessToken");
-    const body = {
+    const body = role=="Patient"? {
       scheduleId: selectedSlotId
+    }: {
+      scheduleId:selectedSlotId,
+      patientId: patient?.patientId
     }
-
-    apiCall("patient/book_appointment","POST",accessToken?accessToken:"",JSON.stringify(body),(data:any)=>{
+    const url = role=="Patient"?"patient/book_appointment":"receptionist/book_appointment"
+    apiCall(url,"POST",accessToken?accessToken:"",JSON.stringify(body),(data:any)=>{
       setIsSuccess(true);
     },(data:any)=>{
       alert(data.message);
-      navigate("/patient");
+      navigate(role=="Patient"?"/patient":"/receptionist");
     })
     
 
@@ -86,6 +89,9 @@ export default function AppointmentBooking() {
         alert(data.message);
         navigate("/patient");
       })
+  }
+  function getPatientByIdCard() {
+    
   }
   function getListDoctor() {
     apiCall("unsecure/list_doctor","GET",null,null,(data:any)=>{
@@ -104,6 +110,9 @@ export default function AppointmentBooking() {
   useEffect(()=>{
     if(role=="Patient") {
       getPatient();
+    }
+    if(role=="Receptionist") {
+
     }
     getListDoctor();
 
@@ -241,6 +250,7 @@ export default function AppointmentBooking() {
             selectedTime={selectedTime}
             setSelectedTime={setSelectedTime}
             setSelectedSlotId={setSelectedSlotId}
+            selectedSlotId={selectedSlotId}
           />
           
           {patient && selectedDoctor && selectedDate && selectedTime && (

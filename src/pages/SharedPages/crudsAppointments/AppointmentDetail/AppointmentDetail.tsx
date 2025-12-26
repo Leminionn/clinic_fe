@@ -67,11 +67,12 @@ const AppointmentDetail=() => {
     const {id} = useParams();
     const [appointment, setAppointment] = useState<AppointmentDetailDTO>();
     useEffect(()=>{
-        let prefix="";
-        if(role.role=="Admin") prefix="admin";
-        if(role.role=="Receptionist") prefix="receptionist";
+        let url="";
+        if(role.role=="Admin") url=`admin/appointment_by_id/${id}`
+        if(role.role=="Receptionist") url=`receptionist/appointment_by_id/${id}`
+        if(role.role=="Patient") url=`patient/appointment/${id}`
         const accessToken = localStorage.getItem("accessToken");
-        apiCall(`${prefix}/appointment_by_id/${id}`,'GET',accessToken?accessToken:"",null,(data:any)=>{
+        apiCall(url,'GET',accessToken?accessToken:"",null,(data:any)=>{
             setAppointment(data.data);
         },(data:any)=>{
             alert(data.message);
@@ -115,6 +116,12 @@ const AppointmentDetail=() => {
                 <Typography variant="h5" fontWeight="bold" color="#1e293b">
                     Detail #{appointment.appointmentId}
                 </Typography>
+                {appointment.status=='SCHEDULED'&&<Button onClick={
+                    ()=>{
+                        const prefix=role.role=="Patient"?"patient":"receptionist";
+                        navigate(`/${prefix}/appointment/update/${appointment.appointmentId}`)
+                    }
+                }>Edit</Button>}
             </Box>
 
             {/* Nội dung chính: Chia làm 2 cột nếu màn hình rộng */}
@@ -163,7 +170,7 @@ const AppointmentDetail=() => {
                                 <InfoItem 
                                     icon={<EventAvailable color="action" />} 
                                     label="Create at" 
-                                    value={dayjs(appointment.createDate).format("DD/MM/YYYY HH:mm")} 
+                                    value={appointment.createDate} 
                                 />
                             </Grid>
 
@@ -241,6 +248,7 @@ const AppointmentDetail=() => {
                     </Stack>
                 </Grid>
             </Grid>
+            
         </Box>
     );
 };

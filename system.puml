@@ -1,0 +1,46 @@
+@startuml
+title Private Clinic web architecture (React - Spring Boot - MySQL)
+
+' Style
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam databaseBackgroundColor #EEE
+skinparam componentBackgroundColor #E3F2FD
+
+actor "User" as User
+
+package "Client Side (Frontend)" {
+    component "React JS Application" as ReactApp {
+        [View Components]
+        [Axios/Fetch API]
+    }
+    note bottom of ReactApp
+        - Display UI 
+        - Handle user event
+        - Call API
+    end note
+}
+
+package "Server Side (Backend)" {
+    component "Spring Boot Application" as SpringBoot {
+        [Controller Layer]
+        [Service Layer]
+        [Repository Layer (JPA)]
+    }
+    note bottom of SpringBoot
+        - Business Logic
+        - Provides REST API
+        - Security (Spring Security)
+    end note
+}
+
+database "MySQL Database" as MySQL {
+    [Tables: Medicine,Patient,Reception,..]
+}
+
+' Relationships
+User .right.> ReactApp : Interact (Browser)
+ReactApp -right-> SpringBoot : REST API (JSON)\nHTTP Request
+SpringBoot -right-> MySQL : JDBC / Hibernate\n(Query Data)
+
+@enduml
