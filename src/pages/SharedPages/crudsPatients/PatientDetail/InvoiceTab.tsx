@@ -206,7 +206,7 @@ export default function InvoicesTab({ patientId, invoices }: InvoicesTabProps) {
                                     let prefix="";
                                     if(role.role=="Admin") prefix="admin";
                                     if(role.role=="Receptionist") prefix="receptionist";
-                                    navigate(`/${prefix}/invoice/${row.invoiceId}`)
+                                    navigate(`/${prefix}/invoices/${row.invoiceId}`)
                                     console.log("appointment ID:", row.invoiceId);
                                 }}
                                 sx={{

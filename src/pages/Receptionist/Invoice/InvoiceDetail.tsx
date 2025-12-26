@@ -535,7 +535,7 @@ const InvoiceDetailPage: React.FC = () => {
 		return (
 			<Box sx={{ p: 4 }}>
 				<Alert severity="error">Invoice not found</Alert>
-				<Button onClick={() => navigate(`/${role}/invoices`)} sx={{ mt: 2 }}>
+				<Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>
 					Back to list
 				</Button>
 			</Box>
@@ -556,7 +556,7 @@ const InvoiceDetailPage: React.FC = () => {
 			{/* Header */}
 			<Box display="flex" alignItems="center" justifyContent="space-between">
 				<Box display="flex" alignItems="center" gap={1}>
-					<IconButton onClick={() => navigate(`/${role}/invoices`)}>
+					<IconButton onClick={() => navigate(-1)}>
 						<ChevronLeft />
 					</IconButton>
 					<Typography sx={{ fontSize: "20px", fontWeight: "bold" }}>
