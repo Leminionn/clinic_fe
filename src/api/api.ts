@@ -11,17 +11,21 @@ export const apiCall = async (
 	// normalize baseURL and endpoint to avoid duplicate slashes
 	const normalizedBase = (baseURL || "").replace(/\/$/, "");
 	const normalizedEndpoint = (endpoint || "").replace(/^\//, "");
-	const url = `${normalizedBase}${normalizedEndpoint}`;
+	const url = normalizedBase
+		? `${normalizedBase}/${normalizedEndpoint}`
+		: `/${normalizedEndpoint}`;
 	console.log("API URL:", url);
 	let headers;
 	if (token) {
 		headers = {
 			"Content-type": "application/json",
+			"ngrok-skip-browser-warning": "69420",
 			Authorization: "Bearer " + token,
 		};
 	} else {
 		headers = {
 			"Content-type": "application/json",
+			"ngrok-skip-browser-warning": "69420",
 		};
 	}
 	let reqInf;

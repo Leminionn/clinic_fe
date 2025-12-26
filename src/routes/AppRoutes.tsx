@@ -51,6 +51,10 @@ import PrescriptionCreatePage from "../pages/Doctor/Prescriptions/create";
 import PrescriptionUpdatePage from "../pages/Doctor/Prescriptions/update";
 import AppointmentUpdate from "../pages/SharedPages/crudsAppointments/AppointmentDetail/EditAppointment";
 
+// Invoice Management
+import { InvoiceList, InvoiceDetailPage } from "../pages/Receptionist/Invoice";
+import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/Invoice";
+
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
 import NotFound from "../pages/Patient/crud/NotFound";
@@ -128,6 +132,10 @@ export default function AppRoutes() {
           <Route index element={<ScheduleList />} />
           <Route path="shift/:staffId/:date/:shiftType" element={<ShiftDetail />} />
         </Route>
+        <Route path="invoices">
+          <Route index element={<InvoiceList />} />
+          <Route path=":invoiceId" element={<InvoiceDetailPage />} />
+        </Route>
       </Route>
 
       {/* Doctor */}
@@ -177,6 +185,10 @@ export default function AppRoutes() {
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
+        <Route path="invoices">
+          <Route index element={<InvoiceList />} />
+          <Route path=":invoiceId" element={<InvoiceDetailPage />} />
+        </Route>
         <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate/>}/>
 
       </Route>
@@ -205,6 +217,11 @@ export default function AppRoutes() {
           
         }
       >
+        <Route path="appointments" element={<AppointmentBooking/>}/>
+        <Route path="invoices">
+          <Route index element={<PatientInvoiceHistory />} />
+          <Route path=":invoiceId" element={<PatientInvoiceDetail />} />
+        </Route>
         <Route path="appointments" element={<AppointmentList/>}/>
         <Route path="book_appointment" element={<AppointmentBooking/>}/>
         <Route path="appointment/:id" element={<AppointmentDetail />} />
