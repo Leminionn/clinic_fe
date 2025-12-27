@@ -39,7 +39,9 @@ const MedicalRecordDetailPage: React.FC = () => {
    const [prescriptionDetails, setPrescriptionDetails] = useState<
       PrescriptionDetail[]
    >([]);
+   const [serviceNames, setServiceNames] = useState<string[]>([]);
    const [loading, setLoading] = useState(true);
+   // const [expandedDetails, setExpandedDetails] = useState(false);
    const [expandedDetails, setExpandedDetails] = useState(false);
 
    useEffect(() => {
@@ -60,6 +62,8 @@ const MedicalRecordDetailPage: React.FC = () => {
             setMedicalRecord(record);
             // Try to fetch prescription if exists
             fetchPrescriptionForRecord(record.recordId);
+            // Fetch service names
+            fetchServiceNames(record.orderedServices);
             setLoading(false);
          },
          (error: any) => {
@@ -103,6 +107,47 @@ const MedicalRecordDetailPage: React.FC = () => {
          }
       );
    };
+
+   const fetchServiceNames = (orderedServicesStr: string) => {
+      if (!orderedServicesStr) {
+         setServiceNames([]);
+         return;
+      }
+
+      // Parse service IDs from string like "1,3"
+      const serviceIds = orderedServicesStr.split(',').map(id => id.trim());
+      const names: string[] = [];
+      let fetchedCount = 0;
+
+      serviceIds.forEach((serviceId) => {
+         apiCall(
+            `unsecure/service/${serviceId}`,
+            "GET",
+            token,
+            null,
+            (data: any) => {
+               if (data.data) {
+                  names.push(data.data.serviceName);
+               }
+               fetchedCount++;
+               if (fetchedCount === serviceIds.length) {
+                  setServiceNames(names);
+               }
+            },
+            (error: any) => {
+               console.error(`Failed to fetch service ${serviceId}:`, error);
+               fetchedCount++;
+               if (fetchedCount === serviceIds.length) {
+                  setServiceNames(names);
+               }
+            }
+         );
+      });
+   };
+
+   // const handleOpenRecordDialog = () => {
+   //    setExpandedDetails(!expandedDetails);
+   // };
 
    const handleOpenRecordDialog = () => {
       setExpandedDetails(!expandedDetails);
@@ -205,9 +250,24 @@ const MedicalRecordDetailPage: React.FC = () => {
                      <Typography variant="subtitle2" color="text.secondary" fontWeight="600">
                         Ordered Services
                      </Typography>
-                     <Typography variant="body1" gutterBottom>
-                        {medicalRecord.orderedServices || "N/A"}
-                     </Typography>
+                     {serviceNames.length > 0 ? (
+                        <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
+                           {serviceNames.map((serviceName, index) => (
+                              <Chip
+                                 key={index}
+                                 label={serviceName}
+                                 color="secondary"
+                                 variant="outlined"
+                                 size="small"
+                                 sx={{ mb: 0.5 }}
+                              />
+                           ))}
+                        </Stack>
+                     ) : (
+                        <Typography variant="body1" gutterBottom>
+                           {medicalRecord.orderedServices || "N/A"}
+                        </Typography>
+                     )}
                   </Box>
                   <Box sx={{ gridColumn: { xs: '1', md: '1 / -1' } }}>
                      <Typography variant="subtitle2" color="text.secondary" fontWeight="600">
@@ -219,7 +279,8 @@ const MedicalRecordDetailPage: React.FC = () => {
                   </Box>
                </Box>
 
-               <Box sx={{ mt: 3 }}>
+               {/* Additional Information - Hidden from patients as these are internal/technical details */}
+               {/* <Box sx={{ mt: 3 }}>
                   <Button
                      variant="outlined"
                      color="primary"
@@ -228,10 +289,10 @@ const MedicalRecordDetailPage: React.FC = () => {
                   >
                      {expandedDetails ? "Hide" : "View"} Additional Record Details
                   </Button>
-               </Box>
+               </Box> */}
 
                {/* Expandable Additional Details */}
-               <Collapse in={expandedDetails} timeout="auto" unmountOnExit>
+               {/* <Collapse in={expandedDetails} timeout="auto" unmountOnExit>
                   <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
                      <Typography variant="subtitle1" fontWeight="600" gutterBottom>
                         Additional Information
@@ -280,7 +341,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                         )}
                      </Stack>
                   </Box>
-               </Collapse>
+               </Collapse> */}
             </CardContent>
          </Card>
 
