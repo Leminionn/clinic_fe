@@ -22,7 +22,6 @@ import CreateUpdateDiseaseType from "../pages/Admin/DiseaseTypes/CreateUpdate/pa
 import DiseaseTypeDetail from "../pages/Admin/DiseaseTypes/Detail/page";
 
 // Staff Management
-import StaffList from "../pages/Admin/Staff/List/page";
 import DoctorsList from "../pages/Admin/Staff/Doctors/page";
 import ReceptionistsList from "../pages/Admin/Staff/Receptionists/page";
 import WarehouseStaffsList from "../pages/Admin/Staff/WarehouseStaffs/page";
@@ -54,6 +53,10 @@ import AppointmentUpdate from "../pages/SharedPages/crudsAppointments/Appointmen
 // Invoice Management
 import { InvoiceList, InvoiceDetailPage } from "../pages/Receptionist/Invoice";
 import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/Invoice";
+
+// Patient Medical Records
+import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
+import MedicalRecordDetailPage from "../pages/Patient/MedicalRecords/MedicalRecordDetailPage";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -154,10 +157,10 @@ export default function AppRoutes() {
           <Route index element={<PatientList />} />
           <Route path="patient-detail/:id" element={<PatientDetail />} />
         </Route>
-        <Route path="prescriptions" element={<PrescriptionListPage/>}/>
-        <Route path="prescription/:id" element={<PrescriptionDetail/>}/>
-        <Route path="prescription/create" element={<PrescriptionCreatePage/>}/>
-        <Route path="prescription/update/:prescriptionId" element={<PrescriptionUpdatePage/>}/>
+        <Route path="prescriptions" element={<PrescriptionListPage />} />
+        <Route path="prescription/:id" element={<PrescriptionDetail />} />
+        <Route path="prescription/create" element={<PrescriptionCreatePage />} />
+        <Route path="prescription/update/:prescriptionId" element={<PrescriptionUpdatePage />} />
       </Route>
 
       {/* Receptionist */}
@@ -189,7 +192,7 @@ export default function AppRoutes() {
           <Route index element={<InvoiceList />} />
           <Route path=":invoiceId" element={<InvoiceDetailPage />} />
         </Route>
-        <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate/>}/>
+        <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate />} />
 
       </Route>
 
@@ -202,7 +205,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        
+
 
       </Route>
 
@@ -212,20 +215,23 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute allow="Patient">
             <DashboardLayout />
-            
+
           </ProtectedRoute>
-          
+
         }
       >
-        <Route path="appointments" element={<AppointmentBooking/>}/>
+        <Route path="appointments" element={<AppointmentBooking />} />
+        <Route path="medical-records" element={<MedicalRecordsPage />} />
+        <Route path="medical-record/:recordId" element={<MedicalRecordDetailPage />} />
+        <Route path="appointments" element={<AppointmentBooking />} />
         <Route path="invoices">
           <Route index element={<PatientInvoiceHistory />} />
           <Route path=":invoiceId" element={<PatientInvoiceDetail />} />
         </Route>
-        <Route path="appointments" element={<AppointmentList/>}/>
-        <Route path="book_appointment" element={<AppointmentBooking/>}/>
+        <Route path="appointments" element={<AppointmentList />} />
+        <Route path="book_appointment" element={<AppointmentBooking />} />
         <Route path="appointment/:id" element={<AppointmentDetail />} />
-        <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate/>}/>
+        <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate />} />
       </Route>
 
       {/* Redirect fallback */}
