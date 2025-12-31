@@ -57,6 +57,9 @@ import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/In
 // Patient Medical Records
 import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
 import MedicalRecordDetailPage from "../pages/Patient/MedicalRecords/MedicalRecordDetailPage";
+import PatientRegister from "../pages/Register/RegisterNewPatient";
+import ChangePassword from "../pages/ChangePassword/ChangePassword";
+import CreateAccount from "../pages/Register/CreateAccount";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -76,7 +79,9 @@ export default function AppRoutes() {
 
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
-
+      <Route path="/register_patient" element={<PatientRegister/>}/>
+      <Route path="/change_password" element={<ChangePassword/>}/>
+      <Route path="/create_account" element={<CreateAccount/>}/>
       {/* Admin */}
       <Route
         path="/admin"

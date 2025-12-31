@@ -134,6 +134,14 @@ const LoginPage: React.FC = () => {
           Đăng nhập
         </button>
       </div>
+      <div>
+        <button onClick={(e)=>{
+          navigate("/register_patient");
+        }}>Register for new patient</button>
+        <button onClick={(e)=>{
+          navigate("/create_account");
+        }}>Create account</button>
+      </div>
     </div>
   );
 };
