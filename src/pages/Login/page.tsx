@@ -4,9 +4,9 @@ import { useAuth, type Role } from '../../auth/AuthContext';
 import { apiCall } from '../../api/api';
 
 const LoginPage: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<Role>(null);
-  const [username, setUsername] = useState<String>("");
-  const [password, setPassword] = useState<String>("");
+  const [selectedRole, setSelectedRole] = useState<Role>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -18,46 +18,51 @@ const LoginPage: React.FC = () => {
     loginToServer();
 
   };
-  function loginSuccess(data:any) {
+  function loginSuccess(data: any) {
+    console.log("Login response:", data);
 
     const token = data.data.accessToken;
-    
+    const userRole = data.data.account.role;
+
+    console.log("User role from backend:", userRole);
+    console.log("Selected role from UI:", selectedRole);
+
     switch (selectedRole) {
       case 'Admin':
-        if (data.data.account.role != "ADMIN") {
-          alert("Đăng nhập thất bại");
+        if (userRole !== "ADMIN") {
+          alert("Đăng nhập thất bại: Vai trò không khớp");
           return;
         }
         login(selectedRole, token);
         navigate('/admin');
         break;
       case 'Doctor':
-        if(data.data.account.role!="DOCTOR") {
-          alert("Đăng nhập thất bại");
+        if (userRole !== "DOCTOR") {
+          alert("Đăng nhập thất bại: Vai trò không khớp");
           return;
         }
         login(selectedRole, token);
         navigate('/doctor');
         break;
       case 'Receptionist':
-        if(data.data.account.role!="RECEPTIONIST") {
-          alert("Đăng nhập thất bại");
+        if (userRole !== "RECEPTIONIST") {
+          alert("Đăng nhập thất bại: Vai trò không khớp");
           return;
         }
         login(selectedRole, token);
         navigate('/receptionist');
         break;
       case 'WarehouseStaff':
-        if(data.data.account.role!="WAREHOUSE_STAFF") {
-          alert("Đăng nhập thất bại");
+        if (userRole !== "WAREHOUSE_STAFF") {
+          alert("Đăng nhập thất bại: Vai trò không khớp");
           return;
         }
         login(selectedRole, token);
         navigate('/warehouse-staff');
         break;
       case 'Patient':
-        if(data.data.account.role!="PATIENT") {
-          alert("Đăng nhập thất bại");
+        if (userRole !== "PATIENT") {
+          alert("Đăng nhập thất bại: Vai trò không khớp");
           return;
         }
         login(selectedRole, token);
@@ -67,9 +72,9 @@ const LoginPage: React.FC = () => {
         navigate('/');
         break;
     }
-    localStorage.setItem("accessToken",data.data.accessToken);
-    localStorage.setItem("refreshToken",data.data.refreshToken);
-    localStorage.setItem("username",data.data.account.username);
+    localStorage.setItem("accessToken", data.data.accessToken);
+    localStorage.setItem("refreshToken", data.data.refreshToken);
+    localStorage.setItem("username", data.data.account.username);
   }
   async function loginToServer() {
     const requestBody = {
