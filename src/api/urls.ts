@@ -161,3 +161,13 @@ export const warehouseMedicineDelete = (id: number) =>
 	`warehouse/medicines/${id}`;
 export const warehouseMedicineManufacturers =
 	"warehouse/medicines/manufacturers";
+
+// Medicine Price Management
+export const warehouseMedicinePrices = (medicineId: number) =>
+	`warehouse/medicines/${medicineId}/prices`;
+export const warehouseMedicinePriceAdd = (medicineId: number) =>
+	`warehouse/medicines/${medicineId}/prices`;
+export const warehouseMedicinePriceUpdate = (medicineId: number) =>
+	`warehouse/medicines/${medicineId}/prices`;
+export const warehouseMedicinePriceDelete = (medicineId: number) =>
+	`warehouse/medicines/${medicineId}/prices`;

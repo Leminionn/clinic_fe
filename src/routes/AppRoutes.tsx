@@ -58,6 +58,12 @@ import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/In
 import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
 import MedicalRecordDetailPage from "../pages/Patient/MedicalRecords/MedicalRecordDetailPage";
 
+// Warehouse Staff - Medicine Management
+import MedicinesList from "../pages/WarehouseStaff/Medicines/List/page";
+import MedicineDetailPage from "../pages/WarehouseStaff/Medicines/Detail/page";
+import MedicineCreateUpdatePage from "../pages/WarehouseStaff/Medicines/CreateUpdate/page";
+import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
+
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
 import NotFound from "../pages/Patient/crud/NotFound";
@@ -205,8 +211,14 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
-
-
+        <Route index element={<Navigate to="/warehouse-staff/medicines" replace />} />
+        <Route path="medicines">
+          <Route index element={<MedicinesList />} />
+          <Route path="create" element={<MedicineCreateUpdatePage />} />
+          <Route path="edit/:id" element={<MedicineCreateUpdatePage />} />
+          <Route path=":id" element={<MedicineDetailPage />} />
+          <Route path=":id/prices" element={<PriceManagementPage />} />
+        </Route>
       </Route>
 
       {/* Patient */}
