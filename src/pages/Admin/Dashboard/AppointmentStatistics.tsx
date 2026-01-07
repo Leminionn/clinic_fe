@@ -21,7 +21,8 @@ export default function AppointmentStatistics() {
                 { label: "Cancelled", color: "var(--color-error-main)", value: responseData.data.cancelled },
                 { label: "Not shown", color: "var(--color-warning-main)", value: responseData.data.noshow },
                 { label: "Completed", color: "var(--color-success-main)", value: responseData.data.completed },
-                { label: "Scheduled", color: "var(--color-success-main)", value: responseData.data.scheduled }
+                { label: "Scheduled", color: "var(--color-success-main)", value: responseData.data.scheduled },
+                {label:"Confirmed",color:"var(--color-success-main)",value:responseData.data.confirmed}
               ])
              },(responseData:any)=>{
               alert(responseData.message);
