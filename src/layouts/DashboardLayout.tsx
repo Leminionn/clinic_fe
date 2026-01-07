@@ -44,6 +44,7 @@ export default function DashboardLayout() {
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
+      {label:"Reception list", path:"/admin/reception-list",icon: <People/>},
       {
         label: "Settings",
         icon: <Settings />,

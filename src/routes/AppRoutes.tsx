@@ -64,6 +64,7 @@ import ForgotPassword from "../pages/ForgetPassword/ForgetPassword";
 import VerifyCode from "../pages/ForgetPassword/VerifyCode";
 import ResetPassword from "../pages/ForgetPassword/ResetPassword";
 import SmartConsultation from "../pages/Consultation/ConsultationPage";
+import ReceptionDetail from "../pages/SharedPages/crudsReceptionList/ReceptionDetail/page";
 
 /*
 import PatientPage from "../pages/Patient/crud/PatientPage";
@@ -100,6 +101,8 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<AdminDashboard />} />
+        <Route path="reception-list" element={<ReceptionList/>}/>
+        <Route path="reception/:id" element={<ReceptionDetail/>}/>
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
@@ -164,6 +167,7 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<DoctorDashboard />} />
+        <Route path="reception/:id" element={<ReceptionDetail/>}/>
         <Route path="reception-list" element={<ReceptionList />} />
         <Route path="medical-examination" element={<MedicalExamination />} />
         <Route path="appointments" element={<AppointmentList/>}/>
@@ -198,6 +202,9 @@ export default function AppRoutes() {
           <Route index element={<AppointmentList />} />
           <Route path="new" element={<AppointmentBooking />} />
         </Route>
+        <Route path="reception/:id" element={<ReceptionDetail/>}/>
+
+        
 
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
