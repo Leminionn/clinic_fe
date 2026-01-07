@@ -18,6 +18,7 @@ import { Edit, Close, Person } from "@mui/icons-material";
 import { apiCall } from "../api/api";
 import { profileGetMe, profileUpdateMe } from "../api/urls";
 import { showMessage } from "./ActionResultMessage";
+import { useNavigate } from "react-router-dom";
 
 // Profile types
 interface ProfileResponse {
@@ -55,7 +56,7 @@ export default function UserProfile({ collapsed }: UserProfileProps) {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState<UpdateProfileRequest>({});
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -397,6 +398,14 @@ export default function UserProfile({ collapsed }: UserProfileProps) {
                 sx={{ flex: 1, textTransform: "none" }}
               >
                 {saving ? <CircularProgress size={20} /> : "Save"}
+              </Button>
+              <Button 
+              variant="contained"
+              sx={{ flex: 1, textTransform: "none" }}
+              onClick={(e)=>{
+                navigate("/change_password");
+              }}>
+                Change password
               </Button>
             </Box>
           </Box>

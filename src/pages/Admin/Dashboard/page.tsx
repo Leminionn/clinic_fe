@@ -3,8 +3,30 @@ import { People } from "@mui/icons-material";
 import { Calendar, DollarSign, Package, TrendingUp } from "lucide-react";
 import AppointmentStatistics from "./AppointmentStatistics";
 import LeaveRequests from "./LeaveRequests";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiCall } from "../../../api/api";
 
 export default function AdminDashboard() {
+    const [statisticData, setStatisticData] = useState({
+        appointment:0,
+        staff:0,
+        income:0
+    });
+    const navigate = useNavigate();
+    useEffect(()=>{
+        const accessToken = localStorage.getItem("accessToken");
+        apiCall("admin/statistic","GET",accessToken?accessToken:"",null,(data:any)=>{
+            setStatisticData({
+                appointment:data.data.todayAppointment,
+                staff: data.data.staffToday,
+                income: data.data.thisMothIncome
+            });
+        },(data:any)=>{
+            alert(data.message);
+            navigate("/admin");
+        })
+    },[])
     return (
         <Box sx={{
             display: 'flex',
@@ -18,15 +40,9 @@ export default function AdminDashboard() {
                     fontWeight: 'bold',
                     fontSize: '24px'
                 }}>
-                    Welcome,
+                    Welcome
                 </Typography>
-                <Typography sx={{
-                    color: "var(--color-primary-main)",
-                    fontWeight: 'bold',
-                    fontSize: '24px'
-                }}>
-                    Dr. Robert Harry
-                </Typography>
+                
             </Box>
 
             <Box sx={{
@@ -59,7 +75,7 @@ export default function AdminDashboard() {
                             fontSize: '25px',
                             lineHeight: 1.7
                         }}>
-                            24
+                            {statisticData.appointment}
                         </Typography>
                         <Box display="flex" gap={1}>
                             <TrendingUp size={14} color="var(--color-success-main)" />
@@ -98,7 +114,7 @@ export default function AdminDashboard() {
                             fontSize: '25px',
                             lineHeight: 1.7
                         }}>
-                            7
+                            {statisticData.staff}
                         </Typography>
                         <Typography sx={{
                             color: "var(--color-text-secondary)",
@@ -134,7 +150,7 @@ export default function AdminDashboard() {
                             fontSize: '25px',
                             lineHeight: 1.7
                         }}>
-                            $67.000
+                            {statisticData.income} VND
                         </Typography>
                         <Box display="flex" gap={1}>
                             <TrendingUp size={14} color="var(--color-success-main)" />
@@ -150,41 +166,7 @@ export default function AdminDashboard() {
                     <DollarSign size={30} color="var(--color-success-main)" />
                 </Card>
 
-                <Card sx={{
-                    gridColumn: 'span 3',
-                    margin: '6px',
-                    display: 'flex',
-                    alignItems: "center",
-                    justifyContent: 'space-between',
-                    paddingX: '24px',
-                    borderRadius: 2,
-                    boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.031)",
-                }}>
-                    <Box>
-                        <Typography sx={{
-                            color: "var(--color-text-secondary)",
-                            fontSize: '16px'
-                        }}>
-                            Low Stock Items
-                        </Typography>
-                        <Typography sx={{
-                            color: "var(--color-text-error)",
-                            fontWeight: 'bold',
-                            fontSize: '25px',
-                            lineHeight: 1.7
-                        }}>
-                            3
-                        </Typography>
-                        <Typography sx={{
-                            color: "var(--color-text-error)",
-                            fontSize: '13px'
-                        }}>
-                            Need attention
-                        </Typography>
-                    </Box>
-
-                    <Package size={30} color="var(--color-warning-main)" />
-                </Card>
+                
 
                 <Box sx={{
                     gridColumn: 'span 8',
@@ -193,12 +175,7 @@ export default function AdminDashboard() {
                     <AppointmentStatistics />
                 </Box>
 
-                <Box sx={{
-                    gridColumn: 'span 4',
-                    gridRow: 'span 3',
-                }}>
-                    <LeaveRequests />
-                </Box>
+                
             </Box>
         </Box>
     )

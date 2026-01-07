@@ -122,12 +122,17 @@ export default function AppointmentTable({
       
       
     }
-    if(role=="Receptionist"||role=="Admin") {
+    if(role=="Receptionist"||role=="Admin"||role=="Doctor") {
       let prefix="";
       if(role=="Receptionist") {
         prefix="receptionist";
       } 
-      else prefix="admin";
+      if(role=="Doctor") {
+        prefix="doctor";
+      }
+      if(role=="Admin") {
+        prefix="admin";
+      }
       url=`${prefix}/appointments?pageNumber=${page-1}&pageSize=${rowsPerPage}`;
       if(patientName&&patientName!="") {
         url+=`&patientName=${patientName}`;
@@ -294,7 +299,7 @@ export default function AppointmentTable({
                   }
 
                   <IconButton
-                    onClick={() => { navigate(`/${role?.toLowerCase}/patients/patient-detail/${row.patient_id}`) }}
+                    onClick={() => { navigate(`/${role?.toLowerCase()}/patients/patient-detail/${row.patient_id}`) }}
                     sx={{
                       color: 'var(--color-text-info)',
                       border: '1px solid var(--color-primary-main)',
@@ -308,7 +313,7 @@ export default function AppointmentTable({
                   </IconButton>
                   <IconButton
                     onClick={() => { 
-                      const prefix = role=="Patient"?"patient":"receptionist";
+                      const prefix=role?.toLowerCase();
                       navigate(`/${prefix}/appointment/${row.appointment_id}`)
                      }}
                     sx={{

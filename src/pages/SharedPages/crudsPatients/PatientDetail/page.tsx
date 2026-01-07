@@ -46,6 +46,7 @@ export default function PatientDetail() {
     let prefix="";
     if(role.role=="Admin") prefix="admin";
     if(role.role=="Receptionist") prefix="receptionist";
+    if(role.role=="Doctor") prefix="doctor";
     const accessToken = localStorage.getItem("accessToken");
     apiCall(`${prefix}/get_patient_by_id/${id}`,'GET',accessToken?accessToken:"",null,
       (data:any)=>{

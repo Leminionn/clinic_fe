@@ -27,11 +27,12 @@ import {
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiCall } from '../../../api/api';
+import { useAuth } from '../../../auth/AuthContext';
 // import { useAuth } from '../../../../auth/AuthContext';
 // import { apiCall } from '../../../../api/api';
 
 // --- MOCK API & AUTH ---
-const useAuth = () => ({ role: 'Doctor' });
+
 /*const apiCall = (endpoint: string, method: string, token: string, body: any, onSuccess: any, onError: any) => {
     // Giả lập API call
     setTimeout(() => {
@@ -184,22 +185,23 @@ const PrescriptionDetail = () => {
         // @ts-ignore
         if (role.role === "Receptionist") prefix = "receptionist";
         // @ts-ignore
-        if (role.role === "Doctor") prefix = "doctor"; // Doctor/Pharmacist
+        if (role.role === "Doctor") prefix = "doctor";
+        if(role.role==="Patient") prefix="patient"; // Doctor/Pharmacist
 
         const accessToken = localStorage.getItem("accessToken");
         
         apiCall(`${prefix}/prescription/${id}`, 'GET', accessToken ? accessToken : "", null, (data: any) => {
             setPrescription(fromResponseToPrescriptionDto(data.data));
 
-            apiCall(`${prefix}/prescription_details/${id}`,'GET',accessToken?accessToken:"",null,(d:any)=>{
+            apiCall(`${prefix}/prescription_details_list/${id}`,'GET',accessToken?accessToken:"",null,(d:any)=>{
                 setPrescriptionDetails(d.data.map((item:any)=>fromResponseToPrescriptionDetailDto(item)));
             },(d:any)=>{
                 alert(d.message);
-            navigate("/doctor");
+            navigate(`/${prefix}`);
             })
         }, (data: any) => {
             alert(data.message);
-            navigate("/doctor");
+            navigate(`/${prefix}`);
         });
     }, [id, role, navigate]);
 

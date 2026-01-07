@@ -20,6 +20,7 @@ import { UpdateOutlined, VisibilityOutlined } from "@mui/icons-material";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../../api/api";
+import { useAuth } from "../../../auth/AuthContext";
 
 // 1. Interface tương ứng với JSON từ Backend
 export interface PrescriptionDTO {
@@ -84,10 +85,15 @@ export default function PrescriptionTable({ searchKey, date }: PrescriptionTable
   const [data, setData] = useState<PrescriptionDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalItems, setTotalItems]= useState(0);
+  const {role} = useAuth();
   // Giả lập fetch data có filter
   const fetchPrescriptions = async () => {
     setLoading(true);
+
     let url=`doctor/prescriptions?pageNumber=${page-1}&pageSize=${rowsPerPage}`;
+    if(role=="Patient") {
+      url=`patient/prescriptions?pageNumber=${page-1}&pageSize=${rowsPerPage}`;
+    }
     if(searchKey&&searchKey!="") {
         url+=`&patientName=${searchKey}`;
     } 
@@ -130,6 +136,10 @@ export default function PrescriptionTable({ searchKey, date }: PrescriptionTable
 
   const handleViewDetail = (id: number) => {
       // Navigate tới trang chi tiết (nếu có)
+      if(role==`Patient`) {
+        navigate(`/patient/prescription/${id}`);
+        return;
+      }
       navigate(`/doctor/prescription/${id}`);
       console.log("View prescription:", id);
   };
@@ -217,7 +227,7 @@ export default function PrescriptionTable({ searchKey, date }: PrescriptionTable
                         >
                             <VisibilityOutlined sx={{ fontSize: 18 }} />
                         </IconButton>
-                        <IconButton
+                        {role=='Doctor'&&<IconButton
                         onClick={() => navigate(`/doctor/prescription/update/${row.prescriptionId}`)}
                             sx={{
                                 color: 'var(--color-text-info)',
@@ -227,7 +237,7 @@ export default function PrescriptionTable({ searchKey, date }: PrescriptionTable
                                 width: 32
                             }}>
                           <UpdateOutlined sx={{fontSize: 18}}/>
-                        </IconButton>
+                        </IconButton>}
                     </TableCell>
                 </TableRow>
                 ))

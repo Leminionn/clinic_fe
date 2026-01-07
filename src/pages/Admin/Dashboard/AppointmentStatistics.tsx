@@ -1,14 +1,34 @@
 import { Box, Card, Divider, Typography } from "@mui/material";
 import { Circle, } from "lucide-react";
 import AppointmentsChart from "./AppointmentsChart";
-
-export default function AppointmentStatistics() {
-    const statBoxItems = [
+import { useEffect, useState } from "react";
+import { apiCall } from "../../../api/api";
+import { useNavigate } from "react-router-dom";
+ const fakeStatBoxItems = [
         { label: "Total", color: "var(--color-primary-main)", value: 1532 },
         { label: "Cancelled", color: "var(--color-error-main)", value: 246 },
         { label: "Not shown", color: "var(--color-warning-main)", value: 175 },
         { label: "Completed", color: "var(--color-success-main)", value: 1036 },
     ]
+export default function AppointmentStatistics() {
+    const [statBoxItems,setStatBoxItems] = useState(fakeStatBoxItems);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        const accessToken = localStorage.getItem("accessToken");
+             apiCall("admin/appointment_statistic","GET",accessToken?accessToken:"",null,(responseData:any)=>{
+              setStatBoxItems([
+                { label: "Total", color: "var(--color-primary-main)", value: responseData.data.total },
+                { label: "Cancelled", color: "var(--color-error-main)", value: responseData.data.cancelled },
+                { label: "Not shown", color: "var(--color-warning-main)", value: responseData.data.noshow },
+                { label: "Completed", color: "var(--color-success-main)", value: responseData.data.completed },
+                { label: "Scheduled", color: "var(--color-success-main)", value: responseData.data.scheduled },
+                {label:"Confirmed",color:"var(--color-success-main)",value:responseData.data.confirmed}
+              ])
+             },(responseData:any)=>{
+              alert(responseData.message);
+              navigate("/admin");
+             })
+    },[])
     return (
         <Card sx={{
             height: '100%',

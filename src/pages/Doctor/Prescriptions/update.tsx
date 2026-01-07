@@ -136,7 +136,7 @@ const PrescriptionUpdatePage = () => {
                 apiCall(`doctor/prescription/${prescriptionId}`,"GET",accessToken?accessToken:"",null,(data:any)=>{
                     prescription=fromResponseToPrescription(data.data);
                     setRecords([fromResponseToMedicalRecordDTO(data.data.record)]);
-                    apiCall(`doctor/prescription_details/${prescriptionId}`,"GET",accessToken?accessToken:"",null,(data:any)=>{
+                    apiCall(`doctor/prescription_details_list/${prescriptionId}`,"GET",accessToken?accessToken:"",null,(data:any)=>{
                     details = data.data.map((item:any)=>{
                         return fromResponseToPrescriptionDetail(item);
                     });

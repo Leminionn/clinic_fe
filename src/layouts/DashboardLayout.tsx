@@ -44,6 +44,7 @@ export default function DashboardLayout() {
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
+      {label:"Reception list", path:"/admin/reception-list",icon: <People/>},
       {
         label: "Settings",
         icon: <Settings />,
@@ -57,7 +58,7 @@ export default function DashboardLayout() {
       { label: "Dashboard", path: "/doctor", icon: <Home /> },
       { label: "Reception List", path: "/doctor/reception-list", icon: <People /> },
       { label: "Medical Examination", path: "/doctor/medical-examination", icon: <MedicalInformation /> },
-      { label: "My Appointments", path: "/doctor/my-appointments", icon: <Calendar1 /> },
+      { label: "My Appointments", path: "/doctor/appointments", icon: <Calendar1 /> },
       { label: "Profile", path: "/doctor/profile", icon: <Person /> },
       { label: "Prescriptions", path: "/doctor/prescriptions", icon: <MedicationLiquid /> }
 
@@ -81,7 +82,7 @@ export default function DashboardLayout() {
       { label: "My Appointments", path: "/patient/appointments", icon: <Calendar1 /> },
       { label: "Medical Records", path: "/patient/medical-records", icon: <FolderOpen /> },
       { label: "Invoice History", path: "/patient/invoices", icon: <ReceiptLong /> },
-      { label: "Recent Prescriptions", path: "/patient/recent-presciptions", icon: <MedicationLiquid /> },
+      { label: "Recent Prescriptions", path: "/patient/prescriptions", icon: <MedicationLiquid /> },
       { label: "Profile", path: "/patient/profile", icon: <Person /> },
     ],
   };

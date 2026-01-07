@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { CalendarDays, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../auth/AuthContext";
 
 interface PrescriptionToolbarProps {
   searchKey: string;
@@ -23,6 +24,7 @@ export default function PrescriptionToolbar({
 }: PrescriptionToolbarProps) {
   const dateInputRef = useRef<HTMLInputElement>(null);
   const navigate= useNavigate();
+  const {role} = useAuth();
   return (
     <Box
       sx={{
@@ -39,8 +41,8 @@ export default function PrescriptionToolbar({
           alignItems: "center",
         }}
       >
-        {/* Search by Patient Name */}
-        <TextField
+        {/* Search by Patient Name */} 
+        { role=='Doctor'&&<TextField
           value={searchKey}
           onChange={(e) => onChangeSearchKey(e.target.value)}
           placeholder="Search by patient name"
@@ -68,7 +70,7 @@ export default function PrescriptionToolbar({
             },
           }}
         />
-
+        }
         {/* Date Filter */}
         <TextField
           value={date}
@@ -106,9 +108,9 @@ export default function PrescriptionToolbar({
           }}
         />
       </Box>
-      <Button onClick={()=>{
+      {role=='Doctor'&&<Button onClick={()=>{
         navigate("/doctor/prescription/create");
-      }}>New Prescription</Button>
+      }}>New Prescription</Button>}
     </Box>
   );
 }

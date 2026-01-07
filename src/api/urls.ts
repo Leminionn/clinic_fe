@@ -1,5 +1,5 @@
 export const baseURL = import.meta.env.VITE_BASE_URL;
-
+export const aiURL=import.meta.env.VITE_AI_URL;
 // Receptionist - Patients
 export const receptionistGetPatient = "receptionist/get_all_patients";
 export const receptionistGetPatientDetail = (id: string) =>

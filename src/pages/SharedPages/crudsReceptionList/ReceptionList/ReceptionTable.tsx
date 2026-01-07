@@ -81,6 +81,8 @@ export default function ReceptionTable({filterStatus, filterDate, patientName}:{
   const fetchReceptions = async (page:number, pageSize:number) => {
     const accessToken = localStorage.getItem("accessToken");
     let url = `receptionist/all_receptions?pageNumber=${page-1}&pageSize=${pageSize}`;
+    if(role=='Admin') url = `admin/all_receptions?pageNumber=${page-1}&pageSize=${pageSize}`;
+    if(role=='Doctor') url = `doctor/all_receptions?pageNumber=${page-1}&pageSize=${pageSize}`;
     if(filterStatus!='All') {
       url+=`&status=${filterStatus}`
     }
@@ -195,6 +197,11 @@ export default function ReceptionTable({filterStatus, filterDate, patientName}:{
                         label:"Cancel reception",
                         icon: CancelOutlined,
                         onClick:()=>{ changeStatus("doctor","CANCELLED",row.receptionId)}
+                      },
+                      {
+                        label:"View reception",
+                        icon: Visibility,
+                        onClick: ()=> navigate(`/${role}/reception/${row.receptionId}`)
                       }
                     ] : (row.status=="WAITING"&&role=="Receptionist")?[
                       {
@@ -211,6 +218,11 @@ export default function ReceptionTable({filterStatus, filterDate, patientName}:{
                         label:"Cancel reception",
                         icon: CancelOutlined,
                         onClick:()=>{ changeStatus("receptionist","CANCELLED",row.receptionId)}
+                      },
+                      {
+                        label:"View reception",
+                        icon: Visibility,
+                        onClick: ()=> navigate(`/${role}/reception/${row.receptionId}`)
                       }
                     ]:(row.status=="IN_EXAMINATION"&&role=="Doctor")?[
                       {
@@ -222,12 +234,22 @@ export default function ReceptionTable({filterStatus, filterDate, patientName}:{
                         label:"Done",
                         icon:Done ,
                         onClick:()=>{ changeStatus("doctor","DONE",row.receptionId)}
+                      },
+                      {
+                        label:"View reception",
+                        icon: Visibility,
+                        onClick: ()=> navigate(`/${role}/reception/${row.receptionId}`)
                       }
                     ]:[
                       {
                         label: "View patient",
                         icon: Visibility,
                         onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
+                      },
+                      {
+                        label:"View reception",
+                        icon: Visibility,
+                        onClick: ()=> navigate(`/${role}/reception/${row.receptionId}`)
                       }
                     ]}
                   />

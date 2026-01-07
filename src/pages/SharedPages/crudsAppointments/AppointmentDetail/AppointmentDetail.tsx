@@ -71,6 +71,7 @@ const AppointmentDetail=() => {
         if(role.role=="Admin") url=`admin/appointment_by_id/${id}`
         if(role.role=="Receptionist") url=`receptionist/appointment_by_id/${id}`
         if(role.role=="Patient") url=`patient/appointment/${id}`
+        if(role.role=="Doctor") url=`doctor/appointment_by_id/${id}`
         const accessToken = localStorage.getItem("accessToken");
         apiCall(url,'GET',accessToken?accessToken:"",null,(data:any)=>{
             setAppointment(data.data);
@@ -116,7 +117,7 @@ const AppointmentDetail=() => {
                 <Typography variant="h5" fontWeight="bold" color="#1e293b">
                     Detail #{appointment.appointmentId}
                 </Typography>
-                {appointment.status=='SCHEDULED'&&<Button onClick={
+                {appointment.status=='SCHEDULED'&&(role.role=="Patient"||role.role=="Receptionist")&&<Button onClick={
                     ()=>{
                         const prefix=role.role=="Patient"?"patient":"receptionist";
                         navigate(`/${prefix}/appointment/update/${appointment.appointmentId}`)
