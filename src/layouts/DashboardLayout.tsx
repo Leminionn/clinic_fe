@@ -57,6 +57,7 @@ export default function DashboardLayout() {
     Doctor: [
       { label: "Dashboard", path: "/doctor", icon: <Home /> },
       { label: "Reception List", path: "/doctor/reception-list", icon: <People /> },
+      { label: "Medical Records", path: "/doctor/medical-records", icon: <MedicalInformation /> },
       { label: "Medical Examination", path: "/doctor/medical-examination", icon: <MedicalInformation /> },
       { label: "My Appointments", path: "/doctor/appointments", icon: <Calendar1 /> },
       
