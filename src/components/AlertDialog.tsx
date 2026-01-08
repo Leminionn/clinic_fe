@@ -15,6 +15,7 @@ interface AlertDialogProps {
   open: boolean
   setOpen: (open: boolean) => void
   onConfirm: () => void
+  loading?: boolean
 }
 
 export default function AlertDialog({
@@ -24,7 +25,8 @@ export default function AlertDialog({
   buttonConfirm,
   open,
   setOpen,
-  onConfirm
+  onConfirm,
+  loading = false
 }: AlertDialogProps) {
   return (
     <Dialog
@@ -53,6 +55,7 @@ export default function AlertDialog({
 
       <DialogActions sx={{ alignSelf: 'center', }}>
         <Button onClick={() => setOpen(false)}
+          disabled={loading}
           sx={{
             fontSize: "14px",
             fontWeight: "bold",
@@ -62,8 +65,9 @@ export default function AlertDialog({
         >
           {buttonCancel}
         </Button>
-        
+
         <Button variant="contained" onClick={onConfirm}
+          disabled={loading}
           sx={{
             fontSize: "14px",
             fontWeight: "bold",
@@ -74,7 +78,7 @@ export default function AlertDialog({
                 : 'var(--color-primary-main)',
           }}
         >
-          {buttonConfirm}
+          {loading ? 'Processing...' : buttonConfirm}
         </Button>
       </DialogActions>
     </Dialog>
