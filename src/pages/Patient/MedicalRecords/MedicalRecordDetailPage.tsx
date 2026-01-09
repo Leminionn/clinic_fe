@@ -35,13 +35,7 @@ const MedicalRecordDetailPage: React.FC = () => {
    const [medicalRecord, setMedicalRecord] = useState<MedicalRecord | null>(
       null
    );
-   const [prescription, setPrescription] = useState<Prescription | null>(null);
-   const [prescriptionDetails, setPrescriptionDetails] = useState<
-      PrescriptionDetail[]
-   >([]);
-   const [serviceNames, setServiceNames] = useState<string[]>([]);
    const [loading, setLoading] = useState(true);
-   // const [expandedDetails, setExpandedDetails] = useState(false);
    const [expandedDetails, setExpandedDetails] = useState(false);
 
    useEffect(() => {
@@ -60,10 +54,13 @@ const MedicalRecordDetailPage: React.FC = () => {
          (data: any) => {
             const record = data.data;
             setMedicalRecord(record);
-            // Try to fetch prescription if exists
-            fetchPrescriptionForRecord(record.recordId);
-            // Fetch service names
-            fetchServiceNames(record.orderedServices);
+
+            // New DTO structure already includes prescription
+            if (record.prescription) {
+               setPrescription(record.prescription);
+               setPrescriptionDetails(record.prescription.prescriptionDetail || []);
+            }
+
             setLoading(false);
          },
          (error: any) => {
@@ -71,78 +68,6 @@ const MedicalRecordDetailPage: React.FC = () => {
             setLoading(false);
          }
       );
-   };
-
-   const fetchPrescriptionForRecord = (recordIdParam: number) => {
-      // Use the new endpoint to get prescription by recordId
-      apiCall(
-         `patient/prescription_by_record/${recordIdParam}`,
-         "GET",
-         token,
-         null,
-         (data: any) => {
-            const foundPrescription = data.data;
-            if (foundPrescription) {
-               setPrescription(foundPrescription);
-               fetchPrescriptionDetails(foundPrescription.prescriptionId);
-            }
-         },
-         (error: any) => {
-            console.error("Failed to fetch prescription:", error);
-         }
-      );
-   };
-
-   const fetchPrescriptionDetails = (prescriptionId: number) => {
-      apiCall(
-         `unsecure/prescription_details/${prescriptionId}?pageNumber=0&pageSize=100`,
-         "GET",
-         token,
-         null,
-         (data: any) => {
-            setPrescriptionDetails(data.data?.content || []);
-         },
-         (error: any) => {
-            console.error("Failed to fetch prescription details:", error);
-         }
-      );
-   };
-
-   const fetchServiceNames = (orderedServicesStr: string) => {
-      if (!orderedServicesStr) {
-         setServiceNames([]);
-         return;
-      }
-
-      // Parse service IDs from string like "1,3"
-      const serviceIds = orderedServicesStr.split(',').map(id => id.trim());
-      const names: string[] = [];
-      let fetchedCount = 0;
-
-      serviceIds.forEach((serviceId) => {
-         apiCall(
-            `unsecure/service/${serviceId}`,
-            "GET",
-            token,
-            null,
-            (data: any) => {
-               if (data.data) {
-                  names.push(data.data.serviceName);
-               }
-               fetchedCount++;
-               if (fetchedCount === serviceIds.length) {
-                  setServiceNames(names);
-               }
-            },
-            (error: any) => {
-               console.error(`Failed to fetch service ${serviceId}:`, error);
-               fetchedCount++;
-               if (fetchedCount === serviceIds.length) {
-                  setServiceNames(names);
-               }
-            }
-         );
-      });
    };
 
    // const handleOpenRecordDialog = () => {
@@ -250,12 +175,12 @@ const MedicalRecordDetailPage: React.FC = () => {
                      <Typography variant="subtitle2" color="text.secondary" fontWeight="600">
                         Ordered Services
                      </Typography>
-                     {serviceNames.length > 0 ? (
+                     {Array.isArray(medicalRecord.orderedServices) && medicalRecord.orderedServices.length > 0 ? (
                         <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
-                           {serviceNames.map((serviceName, index) => (
+                           {medicalRecord.orderedServices.map((service, index) => (
                               <Chip
                                  key={index}
-                                 label={serviceName}
+                                 label={`${service.serviceName || 'Unknown Service'} (x${service.quantity})`}
                                  color="secondary"
                                  variant="outlined"
                                  size="small"
@@ -265,7 +190,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                         </Stack>
                      ) : (
                         <Typography variant="body1" gutterBottom>
-                           {medicalRecord.orderedServices || "N/A"}
+                           No services ordered
                         </Typography>
                      )}
                   </Box>
@@ -346,7 +271,7 @@ const MedicalRecordDetailPage: React.FC = () => {
          </Card>
 
          {/* Prescription Section */}
-         {prescription && (
+         {medicalRecord?.prescription && (
             <Card>
                <CardContent>
                   <Typography variant="h6" gutterBottom fontWeight="600">
@@ -360,7 +285,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                            Prescription Date
                         </Typography>
                         <Typography variant="body1">
-                           {new Date(prescription.prescriptionDate).toLocaleDateString(
+                           {new Date(medicalRecord.prescription.prescriptionDate).toLocaleDateString(
                               "en-US"
                            )}
                         </Typography>
@@ -370,7 +295,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                            Prescription Notes
                         </Typography>
                         <Typography variant="body1">
-                           {prescription.notes || "N/A"}
+                           {medicalRecord.prescription.notes || "N/A"}
                         </Typography>
                      </Box>
                   </Box>
@@ -378,7 +303,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                   <Typography variant="subtitle1" gutterBottom fontWeight="600">
                      Medications
                   </Typography>
-                  {prescriptionDetails.length === 0 ? (
+                  {!medicalRecord.prescription.prescriptionDetail || medicalRecord.prescription.prescriptionDetail.length === 0 ? (
                      <Typography variant="body2" color="text.secondary">
                         No medications in this prescription
                      </Typography>
@@ -396,7 +321,7 @@ const MedicalRecordDetailPage: React.FC = () => {
                               </TableRow>
                            </TableHead>
                            <TableBody>
-                              {prescriptionDetails.map((detail, index) => (
+                              {medicalRecord.prescription.prescriptionDetail.map((detail, index) => (
                                  <TableRow key={index}>
                                     <TableCell>{detail.medicine.medicineName}</TableCell>
                                     <TableCell>{detail.quantity}</TableCell>
@@ -405,12 +330,15 @@ const MedicalRecordDetailPage: React.FC = () => {
                                     <TableCell>{detail.days} days</TableCell>
                                     <TableCell>
                                        <Chip
-                                          label={detail.dispenseStatus}
+                                          label={
+                                             detail.dispenseStatus === "DISPENSED" ? "Dispensed" :
+                                                detail.dispenseStatus === "PENDING" ? "Pending" :
+                                                   detail.dispenseStatus === "CANCELLED" ? "Cancelled" : detail.dispenseStatus
+                                          }
                                           size="small"
                                           color={
-                                             detail.dispenseStatus === "DISPENSED"
-                                                ? "success"
-                                                : "warning"
+                                             detail.dispenseStatus === "DISPENSED" ? "success" :
+                                                detail.dispenseStatus === "PENDING" ? "warning" : "default"
                                           }
                                        />
                                     </TableCell>
@@ -424,7 +352,7 @@ const MedicalRecordDetailPage: React.FC = () => {
             </Card>
          )}
 
-         {!prescription && (
+         {!medicalRecord?.prescription && (
             <Card>
                <CardContent>
                   <Typography variant="body2" color="text.secondary">

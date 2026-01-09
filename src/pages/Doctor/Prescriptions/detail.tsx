@@ -41,7 +41,7 @@ import { useAuth } from '../../../auth/AuthContext';
                 prescriptionId: 101,
                 prescriptionDate: "2025-10-25",
                 notes: "Uống thuốc đúng giờ, kiêng đồ cay nóng.",
-                
+
                 // Mapping từ MedicalRecord
                 record: {
                     recordId: 501,
@@ -98,7 +98,7 @@ interface PrescriptionDetailDTO {
     prescriptionId: number;
     prescriptionDate: string; // YYYY-MM-DD
     notes: string;
-    
+
     // Nested object từ Record -> Reception -> Patient / Staff
     record?: {
         recordId: number;
@@ -115,7 +115,7 @@ interface PrescriptionDetailDTO {
     };
 
     // List chi tiết thuốc
-    
+
 }
 
 interface PrescriptionDetailItemDTO {
@@ -139,29 +139,29 @@ const getDispenseStatusColor = (status: string) => {
 };
 
 // --- COMPONENT CHÍNH ---
-function fromResponseToPrescriptionDto(response:any) {
+function fromResponseToPrescriptionDto(response: any) {
     return {
         prescriptionId: response.prescriptionId,
         prescriptionDate: dayjs(response.prescriptionDate).format("DD-MM-YYYY"),
         notes: response.notes,
-                
-                
-                record: {
-                    recordId: response.record.recordId,
-                    doctorName: response.record.doctorName,
-                    doctorId: response.record.doctorId,
-                    reception: {
-                        patient: {
-                            patientId: response.record.patientId,
-                            fullName:response.record.patientName,
-                            
-                        }
-                    },
-                    diagnosis: response.record.diagnosis
-                },
+
+
+        record: {
+            recordId: response.record.recordId,
+            doctorName: response.record.doctorName,
+            doctorId: response.record.doctorId,
+            reception: {
+                patient: {
+                    patientId: response.record.patientId,
+                    fullName: response.record.patientName,
+
+                }
+            },
+            diagnosis: response.record.diagnosis
+        },
     }
 }
-function fromResponseToPrescriptionDetailDto(response:any) {
+function fromResponseToPrescriptionDetailDto(response: any) {
     return {
         medicineId: response.medicine.medicineId,
         medicineName: response.medicine.medicineName,
@@ -169,7 +169,7 @@ function fromResponseToPrescriptionDetailDto(response:any) {
         dosage: response.dosage,
         days: response.days,
         dispenseStatus: response.dispenseStatus,
-            
+
     }
 }
 const PrescriptionDetail = () => {
@@ -186,18 +186,18 @@ const PrescriptionDetail = () => {
         if (role.role === "Receptionist") prefix = "receptionist";
         // @ts-ignore
         if (role.role === "Doctor") prefix = "doctor";
-        if(role.role==="Patient") prefix="patient"; // Doctor/Pharmacist
+        if (role.role === "Patient") prefix = "patient"; // Doctor/Pharmacist
 
         const accessToken = localStorage.getItem("accessToken");
-        
+
         apiCall(`${prefix}/prescription/${id}`, 'GET', accessToken ? accessToken : "", null, (data: any) => {
             setPrescription(fromResponseToPrescriptionDto(data.data));
 
-            apiCall(`${prefix}/prescription_details_list/${id}`,'GET',accessToken?accessToken:"",null,(d:any)=>{
-                setPrescriptionDetails(d.data.map((item:any)=>fromResponseToPrescriptionDetailDto(item)));
-            },(d:any)=>{
+            apiCall(`${prefix}/prescription_details_list/${id}`, 'GET', accessToken ? accessToken : "", null, (d: any) => {
+                setPrescriptionDetails(d.data.map((item: any) => fromResponseToPrescriptionDetailDto(item)));
+            }, (d: any) => {
                 alert(d.message);
-            navigate(`/${prefix}`);
+                navigate(`/${prefix}`);
             })
         }, (data: any) => {
             alert(data.message);
@@ -218,7 +218,7 @@ const PrescriptionDetail = () => {
     const patient = prescription.record?.reception?.patient;
 
     return (
-        <Box 
+        <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -229,8 +229,8 @@ const PrescriptionDetail = () => {
         >
             {/* Header */}
             <Box display="flex" alignItems="center" mb={3}>
-                <Button 
-                    startIcon={<ArrowBack />} 
+                <Button
+                    startIcon={<ArrowBack />}
                     onClick={onBack}
                     sx={{ mr: 2, textTransform: 'none', color: 'text.secondary' }}
                 >
@@ -242,7 +242,7 @@ const PrescriptionDetail = () => {
             </Box>
 
             <Grid container spacing={3}>
-                
+
                 {/* Cột Trái: Danh sách thuốc */}
                 <Grid item xs={12} md={7}>
                     <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', height: '100%' }}>
@@ -263,9 +263,8 @@ const PrescriptionDetail = () => {
                                         <React.Fragment key={index}>
                                             <ListItem alignItems="flex-start" sx={{ px: 0 }}>
                                                 <ListItemAvatar>
-                                                   
-                                                        <LocalPharmacy />
-                                                    
+                                                    <LocalPharmacy />
+
                                                 </ListItemAvatar>
                                                 <ListItemText
                                                     primary={
@@ -273,12 +272,12 @@ const PrescriptionDetail = () => {
                                                             <Typography variant="subtitle1" fontWeight="bold">
                                                                 {item.medicineName}
                                                             </Typography>
-                                                            <Chip 
-                                                                label={statusInfo.label} 
+                                                            <Chip
+                                                                label={statusInfo.label}
                                                                 // @ts-ignore
-                                                                color={statusInfo.color} 
-                                                                size="small" 
-                                                                variant="outlined" 
+                                                                color={statusInfo.color}
+                                                                size="small"
+                                                                variant="outlined"
                                                             />
                                                         </Box>
                                                     }
@@ -294,7 +293,7 @@ const PrescriptionDetail = () => {
                                                     }
                                                 />
                                             </ListItem>
-                                            {index <presciptionDetails.length - 1 && <Divider component="li" />}
+                                            {index < presciptionDetails.length - 1 && <Divider component="li" />}
                                         </React.Fragment>
                                     );
                                 })}
@@ -306,29 +305,29 @@ const PrescriptionDetail = () => {
                 {/* Cột Phải: Thông tin chung */}
                 <Grid item xs={12} md={5}>
                     <Stack spacing={3}>
-                        
+
                         {/* Thông tin đơn thuốc */}
                         <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                             <Typography variant="subtitle1" fontWeight="bold" mb={2} color="text.secondary">
                                 GENERAL INFO
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            
+
                             <Stack spacing={2}>
-                                <InfoItem 
-                                    icon={<CalendarToday color="action" />} 
-                                    label="Prescription Date" 
-                                    value={dayjs(prescription.prescriptionDate).format("DD/MM/YYYY")} 
+                                <InfoItem
+                                    icon={<CalendarToday color="action" />}
+                                    label="Prescription Date"
+                                    value={dayjs(prescription.prescriptionDate).format("DD/MM/YYYY")}
                                 />
-                                <InfoItem 
-                                    icon={<Description color="action" />} 
-                                    label="Notes" 
-                                    value={prescription.notes || "No notes"} 
+                                <InfoItem
+                                    icon={<Description color="action" />}
+                                    label="Notes"
+                                    value={prescription.notes || "No notes"}
                                 />
-                                <InfoItem 
-                                    icon={<MedicalServices color="action" />} 
-                                    label="Diagnosis (Record)" 
-                                    value={prescription.record?.diagnosis || "Unknown"} 
+                                <InfoItem
+                                    icon={<MedicalServices color="action" />}
+                                    label="Diagnosis (Record)"
+                                    value={prescription.record?.diagnosis || "Unknown"}
                                 />
                             </Stack>
                         </Card>
@@ -339,12 +338,12 @@ const PrescriptionDetail = () => {
                                 PEOPLE INVOLVED
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            
+
                             {/* Bệnh nhân */}
                             <Box display="flex" alignItems="center" gap={2} mb={3}>
-                                
-                                    <Person />
-                               
+
+                                <Person />
+
                                 <Box>
                                     <Typography variant="caption" color="text.secondary">PATIENT</Typography>
                                     <Typography variant="body1" fontWeight="bold">
@@ -358,9 +357,9 @@ const PrescriptionDetail = () => {
 
                             {/* Bác sĩ */}
                             <Box display="flex" alignItems="center" gap={2}>
-                                
-                                    {prescription.record?.doctorName ? prescription.record.doctorName.charAt(0) : "Dr"}
-                               
+
+                                {prescription.record?.doctorName ? prescription.record.doctorName.charAt(0) : "Dr"}
+
                                 <Box>
                                     <Typography variant="caption" color="text.secondary">PRESCRIBED BY</Typography>
                                     <Typography variant="body1" fontWeight="bold">
@@ -383,10 +382,10 @@ const PrescriptionDetail = () => {
 // Component con hiển thị Info
 const InfoItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
     <Box display="flex" alignItems="flex-start" gap={1.5}>
-        <Box 
-            sx={{ 
-                p: 1, 
-                borderRadius: 1.5, 
+        <Box
+            sx={{
+                p: 1,
+                borderRadius: 1.5,
                 bgcolor: '#f5f7fa',
                 display: 'flex',
                 alignItems: 'center',
