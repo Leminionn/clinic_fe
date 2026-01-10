@@ -16,42 +16,39 @@ import {
     Person,
     MedicalServices,
     EventAvailable,
-    ArrowBack
+    ArrowBack,
+    Done // Import icon mới
 } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../../../auth/AuthContext';
 import { apiCall } from '../../../../api/api';
+import AlertDialog from '../../crudsReceptionList/ReceptionList/Alert';// Giả định file alert.tsx nằm ở đây
 
-// 1. Định nghĩa Interface cho Appointment (Dựa trên JSON từ Backend)
-// Lưu ý: Các trường @JsonIgnore trong Java sẽ không có ở đây.
-// Các getter public như getDoctorName() sẽ thành field doctorName trong JSON.
 export interface AppointmentDetailDTO {
     appointmentId: number;
     patient: {
         patientId: number;
         fullName: string;
-        // Thêm các trường khác của Patient nếu backend trả về (vd: avatar, phone...)
-        avatar?: string; // Giả định có avatar
+        avatar?: string;
         phone?: string;
     } | null;
-    doctorId: number;        // Từ getDoctorId()
-    doctorName: string;      // Từ getDoctorName()
-    staff?: {                // staff bị @JsonIgnore, nhưng nếu bạn cần avatar bác sĩ, backend nên trả thêm
+    doctorId: number;
+    doctorName: string;
+    staff?: {
         avatar?: string;
     }; 
-    appointmentDate: string; // "YYYY-MM-DD"
-    appointmentTime: string; // "HH:mm:ss"
-    status: 'SCHEDULED' | 'IN_EXAMINATION' | 'DONE' | 'CANCELLED' | 'ABSENT' | 'CHECKED_IN';
+    appointmentDate: string;
+    appointmentTime: string;
+    status: 'SCHEDULED' | 'DONE' | 'CANCELLED' | 'ABSENT' | 'CONFIRMED';
     createDate: string;
 }
 
-// Helper lấy màu trạng thái (Tái sử dụng logic của bạn)
 const getStatusColor = (status: string) => {
     switch (status) {
         case 'SCHEDULED': return { color: 'var(--color-text-info)', bg: 'var(--color-bg-info)', label: 'Scheduled' };
-        case 'CONFIRMED': return { color: 'var(--color-text-warning)', bg: 'var(--color-bg-warning)', label: 'Confirmed' };
-        
+        case 'CONFIRMED': return { color: 'var(--color-text-warning)', bg: 'var(--color-bg-warning)', label: 'Checked in' };
+        case 'DONE': // Đổi COMPLETED thành DONE cho khớp với Interface của bạn
         case 'COMPLETED': return { color: 'var(--color-text-success)', bg: 'var(--color-bg-success)', label: 'Completed' };
         case 'CANCELLED': return { color: 'var(--color-text-error)', bg: 'var(--color-bg-error)', label: 'Cancelled' };
         case 'NOSHOW': return { color: '#718096', bg: '#edf2f7', label: 'No Show' };
@@ -59,30 +56,63 @@ const getStatusColor = (status: string) => {
     }
 };
 
-
-
-const AppointmentDetail=() => {
+const AppointmentDetail = () => {
     const navigate = useNavigate();
     const role = useAuth();
-    const {id} = useParams();
+    const { id } = useParams();
     const [appointment, setAppointment] = useState<AppointmentDetailDTO>();
-    useEffect(()=>{
-        let url="";
-        if(role.role=="Admin") url=`admin/appointment_by_id/${id}`
-        if(role.role=="Receptionist") url=`receptionist/appointment_by_id/${id}`
-        if(role.role=="Patient") url=`patient/appointment/${id}`
-        if(role.role=="Doctor") url=`doctor/appointment_by_id/${id}`
+    
+    // --- NEW STATES ---
+    const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const fetchAppointment = () => {
+        let url = "";
+        if (role.role === "Admin") url = `admin/appointment_by_id/${id}`;
+        if (role.role === "Receptionist") url = `receptionist/appointment_by_id/${id}`;
+        if (role.role === "Patient") url = `patient/appointment/${id}`;
+        if (role.role === "Doctor") url = `doctor/appointment_by_id/${id}`;
+        
         const accessToken = localStorage.getItem("accessToken");
-        apiCall(url,'GET',accessToken?accessToken:"",null,(data:any)=>{
+        apiCall(url, 'GET', accessToken ? accessToken : "", null, (data: any) => {
             setAppointment(data.data);
-        },(data:any)=>{
+        }, (data: any) => {
             alert(data.message);
             navigate(-1);
-        })
-    },[])
-    const onBack=()=>{
+        });
+    };
+
+    useEffect(() => {
+        fetchAppointment();
+    }, []);
+
+    // --- NEW LOGIC: COMPLETE APPOINTMENT ---
+    const handleComplete = () => {
+        setIsSubmitting(true);
+        const accessToken = localStorage.getItem("accessToken");
+        const prefix = role.role?.toLowerCase();
+        
+        const payload = {
+            appointmentId: Number(id),
+            status: 'DONE'
+        };
+
+        apiCall(`${prefix}/change_appointment_status/${id}?status=COMPLETED`, 'GET', accessToken || "", null, 
+            (data: any) => {
+                setIsSubmitting(false);
+                fetchAppointment(); // Refresh lại dữ liệu để cập nhật trạng thái DONE lên UI
+            }, 
+            (data: any) => {
+                setIsSubmitting(false);
+                alert(data.message || "Failed to complete appointment");
+            }
+        );
+    };
+
+    const onBack = () => {
         navigate(-1);
     }
+
     if (!appointment) {
         return (
             <Box p={3} textAlign="center">
@@ -99,13 +129,12 @@ const AppointmentDetail=() => {
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%',
-                bgcolor: '#f4f7fa', // Nền nhẹ cho vùng chứa
+                bgcolor: '#f4f7fa',
                 p: { xs: 2, md: 3 }
             }}
         >
-            {/* Header: Nút Back và Tiêu đề */}
-            <Box display="flex" alignItems="center" mb={3}>
-                {onBack && (
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <Box display="flex" alignItems="center">
                     <Button 
                         startIcon={<ArrowBack />} 
                         onClick={onBack}
@@ -113,22 +142,41 @@ const AppointmentDetail=() => {
                     >
                         Back
                     </Button>
-                )}
-                <Typography variant="h5" fontWeight="bold" color="#1e293b">
-                    Detail #{appointment.appointmentId}
-                </Typography>
-                {appointment.status=='SCHEDULED'&&(role.role=="Patient"||role.role=="Receptionist")&&<Button onClick={
-                    ()=>{
-                        const prefix=role.role=="Patient"?"patient":"receptionist";
-                        navigate(`/${prefix}/appointment/update/${appointment.appointmentId}`)
-                    }
-                }>Edit</Button>}
+                    <Typography variant="h5" fontWeight="bold" color="#1e293b">
+                        Detail #{appointment.appointmentId}
+                    </Typography>
+                </Box>
+
+                <Stack direction="row" spacing={2}>
+                    {/* Nút Edit cũ */}
+                    {appointment.status == 'SCHEDULED' && (role.role == "Patient" || role.role == "Receptionist") && (
+                        <Button 
+                            variant="outlined"
+                            onClick={() => {
+                                const prefix = role.role == "Patient" ? "patient" : "receptionist";
+                                navigate(`/${prefix}/appointment/update/${appointment.appointmentId}`)
+                            }}
+                        >
+                            Edit
+                        </Button>
+                    )}
+
+                    {/* --- NÚT COMPLETE MỚI --- */}
+                    {appointment.status === 'CONFIRMED' && (role.role === "Doctor" || role.role === "Receptionist") && (
+                        <Button 
+                            variant="contained" 
+                            color="success"
+                            startIcon={<Done />}
+                            onClick={() => setIsCompleteDialogOpen(true)}
+                            sx={{ fontWeight: 'bold' }}
+                        >
+                            Complete Appointment
+                        </Button>
+                    )}
+                </Stack>
             </Box>
 
-            {/* Nội dung chính: Chia làm 2 cột nếu màn hình rộng */}
             <Grid container spacing={3}>
-                
-                {/* Cột Trái: Thông tin chính */}
                 <Grid item xs={12} md={8}>
                     <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -148,7 +196,6 @@ const AppointmentDetail=() => {
                         <Divider sx={{ mb: 3 }} />
 
                         <Grid container spacing={3}>
-                            {/* Ngày hẹn */}
                             <Grid item xs={12} sm={6}>
                                 <InfoItem 
                                     icon={<CalendarToday color="action" />} 
@@ -156,8 +203,6 @@ const AppointmentDetail=() => {
                                     value={dayjs(appointment.appointmentDate).format("DD/MM/YYYY")} 
                                 />
                             </Grid>
-                            
-                            {/* Giờ hẹn */}
                             <Grid item xs={12} sm={6}>
                                 <InfoItem 
                                     icon={<AccessTime color="action" />} 
@@ -165,8 +210,6 @@ const AppointmentDetail=() => {
                                     value={appointment.appointmentTime.substring(0, 5)} 
                                 />
                             </Grid>
-
-                            {/* Ngày tạo */}
                             <Grid item xs={12} sm={6}>
                                 <InfoItem 
                                     icon={<EventAvailable color="action" />} 
@@ -174,30 +217,24 @@ const AppointmentDetail=() => {
                                     value={appointment.createDate} 
                                 />
                             </Grid>
-
-                            {/* Dịch vụ / Ghi chú (Nếu có thêm trường này trong tương lai) */}
                             <Grid item xs={12} sm={6}>
                                 <InfoItem 
                                     icon={<MedicalServices color="action" />} 
                                     label="Service type" 
-                                    value="Examinate" // Placeholder vì entity chưa có trường này
+                                    value="Examination" 
                                 />
                             </Grid>
                         </Grid>
                     </Card>
                 </Grid>
 
-                {/* Cột Phải: Thông tin Người tham gia */}
                 <Grid item xs={12} md={4}>
                     <Stack spacing={3}>
-                        
-                        {/* Card Bệnh Nhân */}
                         <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                             <Typography variant="subtitle1" fontWeight="bold" mb={2} color="text.secondary">
                                 Patient info
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            
                             <Box display="flex" alignItems="center" gap={2}>
                                 <Avatar 
                                     src={appointment.patient?.avatar} 
@@ -207,30 +244,23 @@ const AppointmentDetail=() => {
                                 </Avatar>
                                 <Box>
                                     <Typography variant="body1" fontWeight="bold">
-                                        {appointment.patient?.fullName || "Chưa cập nhật"}
+                                        {appointment.patient?.fullName || "N/A"}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
                                         ID: #{appointment.patient?.patientId}
                                     </Typography>
-                                    {appointment.patient?.phone && (
-                                        <Typography variant="body2" color="text.secondary">
-                                            Phone: {appointment.patient.phone}
-                                        </Typography>
-                                    )}
                                 </Box>
                             </Box>
                         </Card>
 
-                        {/* Card Bác Sĩ */}
                         <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                             <Typography variant="subtitle1" fontWeight="bold" mb={2} color="text.secondary">
                                 Doctor
                             </Typography>
                             <Divider sx={{ mb: 2 }} />
-                            
                             <Box display="flex" alignItems="center" gap={2}>
                                 <Avatar 
-                                    src={appointment.staff?.avatar} // Nếu backend trả avatar bác sĩ
+                                    src={appointment.staff?.avatar}
                                     sx={{ width: 56, height: 56, bgcolor: '#f3e5f5', color: '#9c27b0' }}
                                 >
                                     {appointment.doctorName ? appointment.doctorName.charAt(0) : "Dr"}
@@ -245,28 +275,28 @@ const AppointmentDetail=() => {
                                 </Box>
                             </Box>
                         </Card>
-
                     </Stack>
                 </Grid>
             </Grid>
-            
+
+            {/* --- ALERT DIALOG XÁC NHẬN --- */}
+            <AlertDialog
+                open={isCompleteDialogOpen}
+                setOpen={setIsCompleteDialogOpen}
+                title="Complete Appointment"
+                description="Are you sure you want to mark this appointment as completed? This action cannot be undone."
+                type="info"
+                buttonCancel="Cancel"
+                buttonConfirm={isSubmitting ? "Processing..." : "Yes, Complete"}
+                onConfirm={handleComplete}
+            />
         </Box>
     );
 };
 
-// Component con để hiển thị từng dòng thông tin (Icon - Label - Value)
 const InfoItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
     <Box display="flex" alignItems="flex-start" gap={1.5}>
-        <Box 
-            sx={{ 
-                p: 1, 
-                borderRadius: 1.5, 
-                bgcolor: '#f5f7fa',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}
-        >
+        <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: '#f5f7fa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {icon}
         </Box>
         <Box>
