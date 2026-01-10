@@ -131,7 +131,7 @@ export default function ServiceInformation({
               </TableRow>
             ) : (
               data.map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={row.serviceId}>
                   <TableCell align="center">{index + 1}</TableCell>
 
                   <TableCell width="60%">

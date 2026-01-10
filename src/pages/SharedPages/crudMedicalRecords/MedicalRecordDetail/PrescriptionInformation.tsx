@@ -143,7 +143,7 @@ export default function PrescriptionInformation({
               </TableRow>
             ) : (
               data.prescriptionDetail.map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={row.medicine.medicineId}>
                   <TableCell align="center">{index + 1}</TableCell>
 
                   <TableCell width="30%">

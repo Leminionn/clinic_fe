@@ -114,7 +114,7 @@ export default function MedicineImportToolbar({
           variant="contained"
           startIcon={<Add sx={{ height: 24, width: 24, }} />}
           onClick={() => {
-            //navigate('create');
+            navigate('create');
             return;
           }}
           sx={{

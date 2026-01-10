@@ -77,6 +77,7 @@ import MedicineDetailPage from "../pages/WarehouseStaff/Medicines/Detail/page";
 import MedicineCreateUpdatePage from "../pages/WarehouseStaff/Medicines/CreateUpdate/page";
 import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
 import PatientDashboard from "../pages/Patient/Dashboard/page";
+import CreateImport from "../pages/SharedPages/crudMedicineImports/CreateImport/page";
 
 export default function AppRoutes() {
   const { role } = useAuth();
@@ -86,13 +87,13 @@ export default function AppRoutes() {
 
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register_patient" element={<PatientRegister/>}/>
-      <Route path="/change_password" element={<ChangePassword/>}/>
-      <Route path="/create_account" element={<CreateAccount/>}/>
-      <Route path="/forget_password" element={<ForgotPassword/>}/>
-      <Route path="/verify_code" element={<VerifyCode/>}/>
-      <Route path="/reset_password" element={<ResetPassword/>}/>
-      <Route path="/consultation" element={<SmartConsultation/>}/>
+      <Route path="/register_patient" element={<PatientRegister />} />
+      <Route path="/change_password" element={<ChangePassword />} />
+      <Route path="/create_account" element={<CreateAccount />} />
+      <Route path="/forget_password" element={<ForgotPassword />} />
+      <Route path="/verify_code" element={<VerifyCode />} />
+      <Route path="/reset_password" element={<ResetPassword />} />
+      <Route path="/consultation" element={<SmartConsultation />} />
       {/* Admin */}
       <Route
         path="/admin"
@@ -103,8 +104,8 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="reception-list" element={<ReceptionList/>}/>
-        <Route path="reception/:id" element={<ReceptionDetail/>}/>
+        <Route path="reception-list" element={<ReceptionList />} />
+        <Route path="reception/:id" element={<ReceptionDetail />} />
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
@@ -169,11 +170,11 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<DoctorDashboard />} />
-        <Route path="reception/:id" element={<ReceptionDetail/>}/>
+        <Route path="reception/:id" element={<ReceptionDetail />} />
         <Route path="reception-list" element={<ReceptionList />} />
         <Route path="medical-examination" element={<MedicalExamination />} />
-        <Route path="appointments" element={<AppointmentList/>}/>
-        <Route path="appointment/:id" element={<AppointmentDetail/>}/>
+        <Route path="appointments" element={<AppointmentList />} />
+        <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="patients">
           <Route index element={<PatientList />} />
           <Route path="patient-detail/:id" element={<PatientDetail />} />
@@ -212,9 +213,9 @@ export default function AppRoutes() {
           <Route index element={<AppointmentList />} />
           <Route path="new" element={<AppointmentBooking />} />
         </Route>
-        <Route path="reception/:id" element={<ReceptionDetail/>}/>
+        <Route path="reception/:id" element={<ReceptionDetail />} />
 
-        
+
 
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
@@ -249,8 +250,8 @@ export default function AppRoutes() {
           <Route index element={<MedicineImportsList />} />
           {/** 
           <Route path=":id" element={<MedicineImportDetail />} />          
-          <Route path="create" element={<CreateMedicineImport />} />
           */}
+          <Route path="create" element={<CreateImport />} />
         </Route>
       </Route>
 
@@ -265,10 +266,10 @@ export default function AppRoutes() {
 
         }
       >
-        <Route index element={<PatientDashboard/>}/>
+        <Route index element={<PatientDashboard />} />
         <Route path="medical-records" element={<MedicalRecordsPage />} />
         <Route path="medical-record/:recordId" element={<MedicalRecordDetailPage />} />
-        
+
         <Route path="invoices">
           <Route index element={<PatientInvoiceHistory />} />
           <Route path=":invoiceId" element={<PatientInvoiceDetail />} />
@@ -277,8 +278,8 @@ export default function AppRoutes() {
         <Route path="book_appointment" element={<AppointmentBooking />} />
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="appointment/update/:appointmentId" element={<AppointmentUpdate />} />
-        <Route path="prescriptions" element={<PrescriptionListPage/>}/>
-        <Route path="prescription/:id" element={<PrescriptionDetail/>}/>
+        <Route path="prescriptions" element={<PrescriptionListPage />} />
+        <Route path="prescription/:id" element={<PrescriptionDetail />} />
       </Route>
 
       {/* Redirect fallback */}
