@@ -8,8 +8,8 @@ import { useAuth } from "../../../../auth/AuthContext";
 import { showMessage } from "../../../../components/ActionResultMessage";
 
 const NullPrescription: PrescriptionRequest = {
- notes: "",
- prescriptionDetail: []
+  notes: "",
+  prescriptionDetail: []
 }
 
 interface PrescriptionRequest {
@@ -22,17 +22,36 @@ export default function PrescriptionInformation({
   isEditing = false,
   setIsEditing,
   onConfirmSave,
+  onSaveData,
 }: {
   initialData: PrescriptionRequest | null,
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
+  onSaveData: (data: any) => void,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<PrescriptionRequest>(initialData || NullPrescription);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
 
+  // Update data when initialData changes
   useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+    } else {
+      // Khi prescription bị xóa hết hoặc null, reset về NullPrescription
+      setData(NullPrescription);
+    }
+  }, [initialData]);
+
+  const handleSave = () => {
+    onSaveData(data);
+    onConfirmSave();
+  };
+
+  useEffect(() => {
+    if (role === "Patient") return;
+
     const accessToken = localStorage.getItem("accessToken");
 
     apiCall("doctor/medicines", "GET", accessToken ? accessToken : "", null, (data: any) => {
@@ -61,20 +80,20 @@ export default function PrescriptionInformation({
     }));
   };
 
-  // Xóa dòng thuốc
-  const handleRemoveDetail = (medicineId: number) => {
+  // Xóa dòng thuốc theo index (an toàn khi medicine có null)
+  const handleRemoveDetail = (index: number) => {
     setData(prev => ({
       ...prev,
-      prescriptionDetail: prev?.prescriptionDetail.filter(d => d.medicine.medicineId !== medicineId)
+      prescriptionDetail: prev.prescriptionDetail.filter((_, i) => i !== index)
     }));
   };
 
-  // Thay đổi thông tin trong dòng thuốc
-  const handleDetailChange = (medicineId: number, field: keyof PrescriptionDetail, value: any) => {
+  // Thay đổi thông tin trong dòng thuốc theo index
+  const handleDetailChange = (index: number, field: keyof PrescriptionDetail, value: any) => {
     setData(prev => ({
       ...prev,
-      prescriptionDetail: prev.prescriptionDetail.map(detail =>
-        detail.medicine.medicineId === medicineId ? { ...detail, [field]: value } : detail
+      prescriptionDetail: prev.prescriptionDetail.map((detail, i) =>
+        i === index ? { ...detail, [field]: value } : detail
       )
     }));
   };
@@ -138,39 +157,57 @@ export default function PrescriptionInformation({
             {data.prescriptionDetail.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                  No medicine, press "Add medicine" to add
+                  {role === "Doctor" ? 'No medicine, press "Add medicine" to add' : 'No medicine'}
                 </TableCell>
               </TableRow>
             ) : (
               data.prescriptionDetail.map((row, index) => (
-                <TableRow key={row.medicine.medicineId}>
+                <TableRow key={index}>
                   <TableCell align="center">{index + 1}</TableCell>
 
                   <TableCell width="30%">
-                    <Autocomplete
-                      options={medicines}
-                      getOptionDisabled={(option) =>
-                        data.prescriptionDetail
-                          .map(detail => detail.medicine.medicineId)
-                          .includes(option.medicineId)
-                      }
-                      getOptionLabel={(option) => `${option.medicineName} (${option.unit.toLowerCase()})`}
-                      value={medicines.find(m => m.medicineId === row.medicine.medicineId) || null}
-                      onChange={(_, newValue) => {
-                        handleDetailChange(row.medicine.medicineId!, 'medicine', newValue ? newValue : null);
-                      }}
-                      disabled={!isEditing}
-                      renderInput={(params) => (
-                        <TextField {...params} placeholder="Select medicine..." size="small" variant="standard" />
-                      )}
-                    />
+                    {!isEditing ? (
+                      <TextField
+                        value={row.medicine?.medicineName ? `${row.medicine.medicineName}${row.medicine.unit ? ` (${row.medicine.unit.toLowerCase()})` : ''}` : ''}
+                        size="small"
+                        variant="standard"
+                        disabled
+                        fullWidth
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={medicines}
+                        getOptionDisabled={(option) =>
+                          data.prescriptionDetail
+                            .map(detail => detail.medicine?.medicineId)
+                            .includes(option.medicineId)
+                        }
+                        getOptionLabel={(option) => {
+                          if (!option || !option.medicineName) return '';
+                          return `${option.medicineName}${option.unit ? ` (${option.unit.toLowerCase()})` : ''}`;
+                        }}
+                        value={medicines.find(m => m.medicineId === row.medicine?.medicineId) || null}
+                        onChange={(_, newValue) => {
+                          if (newValue) {
+                            handleDetailChange(index, 'medicine', newValue);
+                          } else {
+                            // Khi xóa thuốc, set lại thành null object để giữ row
+                            handleDetailChange(index, 'medicine', { medicineId: null, medicineName: '', unit: '' });
+                          }
+                        }}
+                        disabled={!isEditing}
+                        renderInput={(params) => (
+                          <TextField {...params} placeholder="Select medicine..." size="small" variant="standard" />
+                        )}
+                      />
+                    )}
                   </TableCell>
 
                   <TableCell width="10%">
                     <TextField
                       type="number"
                       value={row.quantity}
-                      onChange={(e) => handleDetailChange(row.medicine.medicineId!, 'quantity', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleDetailChange(index, 'quantity', parseInt(e.target.value) || 0)}
                       size="small"
                       variant="standard"
                       disabled={!isEditing}
@@ -178,13 +215,13 @@ export default function PrescriptionInformation({
                     />
                   </TableCell>
 
-                  <TableCell width="10%">{row.medicine.unit.toLowerCase()}</TableCell>
+                  <TableCell width="10%">{row.medicine?.unit ? row.medicine.unit.toLowerCase() : ''}</TableCell>
 
                   <TableCell width="10%">
                     <TextField
                       type="number"
                       value={row.days}
-                      onChange={(e) => handleDetailChange(row.medicine.medicineId!, 'days', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleDetailChange(index, 'days', parseInt(e.target.value) || 0)}
                       size="small"
                       variant="standard"
                       disabled={!isEditing}
@@ -195,7 +232,7 @@ export default function PrescriptionInformation({
                   <TableCell>
                     <TextField
                       value={row.dosage}
-                      onChange={(e) => handleDetailChange(row.medicine.medicineId!, 'dosage', e.target.value)}
+                      onChange={(e) => handleDetailChange(index, 'dosage', e.target.value)}
                       size="small"
                       variant="standard"
                       disabled={!isEditing}
@@ -207,7 +244,7 @@ export default function PrescriptionInformation({
                       color="error"
                       size="small"
                       disabled={!isEditing}
-                      onClick={() => handleRemoveDetail(row.medicine.medicineId!)}
+                      onClick={() => handleRemoveDetail(index)}
                     >
                       <DeleteOutline fontSize="small" />
                     </IconButton>
@@ -255,7 +292,7 @@ export default function PrescriptionInformation({
               boxShadow: 'none',
               gap: 2,
             }}
-            onClick={onConfirmSave}
+            onClick={handleSave}
           >
             <Save size={16} />
             Save

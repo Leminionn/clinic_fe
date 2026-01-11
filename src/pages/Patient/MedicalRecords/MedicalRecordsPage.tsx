@@ -32,7 +32,7 @@ const MedicalRecordsPage: React.FC = () => {
    const fetchMedicalRecords = () => {
       setLoading(true);
       apiCall(
-         "patient/medical_records",
+         "patient/medical-records",
          "GET",
          token,
          null,
@@ -48,7 +48,7 @@ const MedicalRecordsPage: React.FC = () => {
    };
 
    const handleViewDetail = (recordId: number) => {
-      navigate(`/patient/medical-record/${recordId}`);
+      navigate(`/patient/medical-records/${recordId}`);
    };
 
    if (loading) {

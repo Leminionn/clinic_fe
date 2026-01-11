@@ -2,46 +2,56 @@ import { Autocomplete, Box, Button, TextField, Typography } from "@mui/material"
 import type { DiseaseType, MedicalRecordDetail } from "./MedicalRecordDetail"
 import dayjs from "dayjs"
 import { useAuth } from "../../../../auth/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Edit, Save } from "lucide-react";
-
-const fakeDiseaseTypes: DiseaseType[] = [
-  {
-    diseaseTypeId: 1,
-    diseaseName: "Nhiễm trùng đường hô hấp trên cấp tính",
-    diseaseCode: "J00",
-  },
-  {
-    diseaseTypeId: 2,
-    diseaseName: "Viêm họng cấp",
-    diseaseCode: "J01",
-  },
-  {
-    diseaseTypeId: 3,
-    diseaseName: "Cúm mùa",
-    diseaseCode: "J10",
-  }
-];
+import { apiCall } from "../../../../api/api";
+import { diseaseTypesGetActiveByDoctor } from "../../../../api/urls";
 
 export default function MedicalInformation({
   initialData,
   isEditing = false,
   setIsEditing,
   onConfirmSave,
-
+  onSaveData,
 }: {
   initialData: MedicalRecordDetail,
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
+  onSaveData: (data: any) => void,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<MedicalRecordDetail>(initialData);
-  const [diseaseTypes, setDiseaseTypes] = useState<DiseaseType[]>(fakeDiseaseTypes);
+  const [diseaseTypes, setDiseaseTypes] = useState<DiseaseType[]>([]);
+
+  useEffect(() => {
+    if (role === "Patient") return;
+
+    const accessToken = localStorage.getItem("accessToken");
+    apiCall(diseaseTypesGetActiveByDoctor, "GET", accessToken || "", null,
+      (response: any) => {
+        setDiseaseTypes(response.data || []);
+      },
+      (error: any) => {
+        console.error("Failed to load disease types:", error);
+      }
+    );
+  }, []);
+
+  // Update data when initialData changes
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   const handleCancel = () => {
     setData(initialData)
     setIsEditing(false)
+  };
+
+  const handleSave = () => {
+    // Truyền data về parent component trước khi mở confirm dialog
+    onSaveData(data);
+    onConfirmSave();
   };
 
   return (
@@ -88,7 +98,7 @@ export default function MedicalInformation({
               }}
               onClick={() => {
                 isEditing
-                  ? onConfirmSave()
+                  ? handleSave()
                   : setIsEditing(true)
               }}
             >
@@ -153,9 +163,10 @@ export default function MedicalInformation({
         </Typography>
         <TextField
           value={data.symptoms}
+          onChange={(e) => setData(prev => ({ ...prev, symptoms: e.target.value }))}
           placeholder="Symptoms"
           fullWidth
-          disabled={false}
+          disabled={!isEditing}
         />
       </Box>
 
@@ -172,9 +183,10 @@ export default function MedicalInformation({
         </Typography>
         <TextField
           value={data.diagnosis}
+          onChange={(e) => setData(prev => ({ ...prev, diagnosis: e.target.value }))}
           placeholder="Diagnosis"
           fullWidth
-          disabled={false}
+          disabled={!isEditing}
         />
       </Box>
 
@@ -190,18 +202,27 @@ export default function MedicalInformation({
           Disease Type
         </Typography>
 
-        <Autocomplete
-          options={diseaseTypes}
-          getOptionLabel={(option) => `${option.diseaseName} - ${option.diseaseCode}`}
-          value={diseaseTypes.find(type => type.diseaseTypeId === data.diseaseType?.diseaseTypeId) || null}
-          onChange={(_, newValue) => {
-            setData(prev => ({ ...prev, diseaseType: newValue }))
-          }}
-          disabled={!isEditing}
-          renderInput={(params) => (
-            <TextField {...params} placeholder="Select disease type..." />
-          )}
-        />
+        {!isEditing ? (
+          <TextField
+            value={data.diseaseType ? `${data.diseaseType.diseaseName} - ${data.diseaseType.diseaseCode}` : ''}
+            placeholder="Select disease type..."
+            fullWidth
+            disabled
+          />
+        ) : (
+          <Autocomplete
+            options={diseaseTypes}
+            getOptionLabel={(option) => `${option.diseaseName} - ${option.diseaseCode}`}
+            value={diseaseTypes.find(type => type.diseaseTypeId === data.diseaseType?.diseaseTypeId) || null}
+            onChange={(_, newValue) => {
+              setData(prev => ({ ...prev, diseaseType: newValue }))
+            }}
+            disabled={!isEditing}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select disease type..." />
+            )}
+          />
+        )}
       </Box>
 
       <Box sx={{
@@ -217,9 +238,10 @@ export default function MedicalInformation({
         </Typography>
         <TextField
           value={data.notes}
+          onChange={(e) => setData(prev => ({ ...prev, notes: e.target.value }))}
           placeholder="Notes"
           fullWidth
-          disabled={false}
+          disabled={!isEditing}
         />
       </Box>
     </Box>

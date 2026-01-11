@@ -47,7 +47,7 @@ const MedicalRecordDetailPage: React.FC = () => {
    const fetchMedicalRecordDetail = () => {
       setLoading(true);
       apiCall(
-         `patient/medical_record_by_id/${recordId}`,
+         `patient/medical-records/${recordId}`,
          "GET",
          token,
          null,
