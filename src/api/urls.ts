@@ -59,7 +59,7 @@ export const diseaseTypesDelete = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetById = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetAll = "admin/disease-types/all";
 export const diseaseTypesGetActive = "admin/disease-types/active";
-export const diseaseTypesGetActiveDoctor = "doctor/disease-types/active";
+export const diseaseTypesGetActiveByDoctor = "doctor/disease-types/active";
 
 // Admin - Staff Management (BE: /admin/staff)
 export const staffSearch = (query: string) => `admin/staff${query}`;

@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { apiCall } from "../../../../api/api";
 import AlertDialog from "./Alert"; // Import AlertDialog bạn đã dùng ở Dashboard
+import { medicalRecordCreate } from "../../../../api/urls";
 
 
 // ... (Các hàm getStatusBgColor, getStatusTextColor giữ nguyên)
@@ -47,7 +48,7 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
 }) {
   const navigate = useNavigate();
   const { role } = useAuth();
-  
+
   // States cho phân trang và dữ liệu
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
@@ -58,7 +59,7 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
   // --- STATES CHO DIALOG ---
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ role: string, status: string, id: number } | null>(null);
-  
+
   const [isResultOpen, setIsResultOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState({ title: '', type: 'info' as 'error' | 'warning' | 'info' });
 
@@ -68,10 +69,27 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
     setIsResultOpen(true);
   };
 
-  // Hàm chuẩn bị thay đổi trạng thái (mở confirm trước)
   const handleRequestChange = (targetRole: string, nextStatus: string, rowId: number) => {
     setPendingAction({ role: targetRole, status: nextStatus, id: rowId });
     setIsConfirmOpen(true);
+  };
+
+  const handleStartExam = (receptionId: number) => {
+    const accessToken = localStorage.getItem("accessToken");
+    const body = {
+      receptionId: receptionId
+    };
+
+    apiCall(medicalRecordCreate, 'POST', accessToken || "", JSON.stringify(body),
+      (response: any) => {
+        const createdRecordId = response.data.recordId;
+        showResult("Medical record created successfully!", "info");
+        navigate(`/doctor/medical-records/${createdRecordId}`);
+      },
+      (error: any) => {
+        showResult(error.message || "Failed to create medical record", "error");
+      }
+    );
   };
 
   const changeStatus = (targetRole: string, status: string, rowId: number) => {
@@ -81,11 +99,11 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
       newStatus: status
     }
 
-    apiCall(`${targetRole.toLowerCase()}/reception/update`, 'PUT', accessToken || "", JSON.stringify(body), 
+    apiCall(`${targetRole.toLowerCase()}/reception/update`, 'PUT', accessToken || "", JSON.stringify(body),
       (response: any) => {
         showResult("Updated status successfully!", "info");
         fetchReceptions(page, rowsPerPage); // Refresh lại dữ liệu
-      }, 
+      },
       (error: any) => {
         showResult(error.message || "Failed to update status", "error");
       }
@@ -148,7 +166,7 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
 
         <TableBody>
           {loading ? (
-             <TableRow><TableCell colSpan={7} align="center"><CircularProgress size={28} /></TableCell></TableRow>
+            <TableRow><TableCell colSpan={7} align="center"><CircularProgress size={28} /></TableCell></TableRow>
           ) : data.map((row, index) => (
             <TableRow key={row.receptionId} hover>
               <TableCell sx={{ fontWeight: 'bold' }}>{(page - 1) * rowsPerPage + index + 1}</TableCell>
@@ -170,19 +188,20 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
                       onClick: () => navigate(`/${role}/patients/patient-detail/${row.patientId}`),
                     },
                     // Sử dụng hàm handleRequestChange thay vì changeStatus trực tiếp
-                    ...(row.status === "WAITING" ? [{
+                    ...(row.status === "WAITING" && role === "Doctor" ? [{
                       label: "Start examination",
                       icon: PlayCircleOutline,
-                      onClick: () => handleRequestChange(role!, "IN_EXAMINATION", row.receptionId)
-                    }, {
+                      onClick: () => handleStartExam(row.receptionId)
+                    }] : []),
+                    ...(row.status === "WAITING" && role !== "Doctor" ? [{
                       label: "Cancel reception",
                       icon: CancelOutlined,
                       onClick: () => handleRequestChange(role!, "CANCELLED", row.receptionId)
                     }] : []),
                     ...(row.status === "IN_EXAMINATION" && role === "Doctor" ? [{
-                        label: "Done",
-                        icon: Done,
-                        onClick: () => handleRequestChange("doctor", "DONE", row.receptionId)
+                      label: "Done",
+                      icon: Done,
+                      onClick: () => handleRequestChange("doctor", "DONE", row.receptionId)
                     }] : []),
                     {
                       label: "View reception",
@@ -239,13 +258,13 @@ export default function ReceptionTable({ filterStatus, filterDate, patientName }
         />
       </Box>
 
-      
+
 
       {/* Phân trang... (Giữ nguyên) */}
-      
+
 
       {/* --- CÁC DIALOG TỰ ĐỊNH NGHĨA --- */}
-      
+
       {/* 1. Hộp thoại xác nhận hành động */}
       <AlertDialog
         open={isConfirmOpen}
