@@ -3,11 +3,14 @@ import {
   Box,
   TextField,
   InputAdornment,
+  Button,
 } from "@mui/material";
 import { CalendarDays, Search } from "lucide-react";
 import { useAuth } from "../../../../auth/AuthContext";
+import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-export default function MedicalRecordToolbar({
+export default function MedicineImportToolbar({
   searchKey,
   onChangeSearchKey,
   date,
@@ -19,6 +22,7 @@ export default function MedicalRecordToolbar({
   onChangeDate: (date: string) => void,
 
 }) {
+  const navigate = useNavigate();
   const { role } = useAuth();
   const dateInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,35 +42,34 @@ export default function MedicalRecordToolbar({
           alignItems: "center",
         }}
       >
-        {role != "Patient" &&
-          <TextField
-            value={searchKey}
-            onChange={(e) => onChangeSearchKey(e.target.value)}
-            placeholder="Search by patient name"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search size={22} color="var(--color-text-secondary)" />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              bgcolor: "var(--color-primary-light)",
-              borderRadius: 3,
-              width: '280px',
-              '& .MuiInputBase-root': {
-                pl: '18px',
-              },
-              '& .MuiInputBase-input': {
-                py: '10px',
-                pl: 1,
-                pr: 3
-              },
-              '& fieldset': {
-                border: 'none'
-              },
-            }}
-          />}
+        <TextField
+          value={searchKey}
+          onChange={(e) => onChangeSearchKey(e.target.value)}
+          placeholder="Search by supplier"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search size={22} color="var(--color-text-secondary)" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            bgcolor: "var(--color-primary-light)",
+            borderRadius: 3,
+            width: '280px',
+            '& .MuiInputBase-root': {
+              pl: '18px',
+            },
+            '& .MuiInputBase-input': {
+              py: '10px',
+              pl: 1,
+              pr: 3
+            },
+            '& fieldset': {
+              border: 'none'
+            },
+          }}
+        />
 
         <TextField
           value={date}
@@ -105,6 +108,24 @@ export default function MedicalRecordToolbar({
           }}
         />
       </Box>
+
+      {(role === "WarehouseStaff") &&
+        <Button
+          variant="contained"
+          startIcon={<Add sx={{ height: 24, width: 24, }} />}
+          onClick={() => {
+            navigate('create');
+            return;
+          }}
+          sx={{
+            borderRadius: 1,
+            textTransform: "none",
+            boxShadow: "none",
+          }}
+        >
+          New Import
+        </Button>
+      }
     </Box>
   )
 }

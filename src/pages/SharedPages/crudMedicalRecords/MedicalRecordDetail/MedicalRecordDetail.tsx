@@ -1,272 +1,357 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    Typography,
-    Card,
-    Divider,
-    Grid,
-    Avatar,
-    Chip,
-    Stack,
-    Button,
-    Paper
-} from '@mui/material';
-import {
-    CalendarToday,
-    AccessTime,
-    Person,
-    MedicalServices,
-    EventAvailable,
-    ArrowBack,
-    Notes,
-    LocalHospital,
-    Healing
-} from '@mui/icons-material';
-import dayjs from 'dayjs';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../../../auth/AuthContext';
-import { apiCall } from '../../../../api/api';
-// import { useAuth } from '../../../../auth/AuthContext'; // Uncomment if needed
-// import { apiCall } from '../../../../api/api'; // Uncomment if needed
+import { useEffect, useState } from "react";
+import { Box, Button, Card, Divider, Typography } from "@mui/material";
+import AlertDialog from "../../../../components/AlertDialog";
+import { useNavigate, useParams } from "react-router-dom";
+import { showMessage } from "../../../../components/ActionResultMessage";
+import PatientInformation from "./PatientInformation";
+import MedicalInformation from "./MedicalInformation";
+import { apiCall } from "../../../../api/api";
+import { useAuth } from "../../../../auth/AuthContext";
+import { ArrowBack } from "@mui/icons-material";
+import type { Patient } from "../../../../types/Patient";
+import PrescriptionInformation from "./PrescriptionInformation";
+import ServiceInformation from "./ServiceInformation";
 
-// Mock useAuth và apiCall để component có thể chạy độc lập cho demo
-
-
-
-// 1. Định nghĩa Interface cho MedicalRecord (Dựa trên JSON từ Backend)
-export interface MedicalRecordDetailDTO {
-    recordId: number;
-    reception?: { // Nếu backend trả về thông tin reception
-        receptionId: number;
-    };
-    doctorId: number;        // Từ getDoctorId()
-    doctorName: string;      // Từ getDoctorName()
-    examinateDate: string;   // Java Date -> String "YYYY-MM-DD"
-    symptoms: string;
-    diagnosis: string;
-    diseaseType?: {          // Giả định backend trả về object diseaseType
-        id: number;
-        name: string;
-    };
-    orderedServices: string;
-    notes: string;
-    // Thêm thông tin bệnh nhân nếu API trả về (thường sẽ có trong reception hoặc riêng)
-    patientName?: string; 
-    patientId?: number;
+export interface Prescription {
+  prescriptionId: number;
+  notes: string;
+  prescriptionDetail: PrescriptionDetail[];
 }
 
-const MedicalRecordDetail = () => {
-    const navigate = useNavigate();
-    const role = useAuth();
-    const { id } = useParams();
-    const [record, setRecord] = useState<MedicalRecordDetailDTO | null>(null);
-
-    useEffect(() => {
-        let prefix = "";
-        // @ts-ignore
-        if (role.role === "Admin") prefix = "admin";
-        // @ts-ignore
-        if (role.role === "Receptionist") prefix = "receptionist";
-        // @ts-ignore
-        if (role.role === "Doctor") prefix = "doctor";
-
-        const accessToken = localStorage.getItem("accessToken");
-        
-        // Gọi API lấy thông tin chi tiết
-        apiCall(`${prefix}/medical_record_by_id/${id}`, 'GET', accessToken ? accessToken : "", null, (data: any) => {
-            setRecord(data.data);
-        }, (data: any) => {
-            alert(data.message);
-            navigate(-1);
-            
-        });
-    }, [id, role, navigate]);
-
-    const onBack = () => {
-        navigate(-1);
-    };
-
-    if (!record) {
-        return (
-            <Box p={3} textAlign="center">
-                <Typography color="text.secondary">Loading record...</Typography>
-            </Box>
-        );
-    }
-
-    return (
-        <Box 
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-                bgcolor: '#f4f7fa', // Nền nhẹ cho vùng chứa
-                p: { xs: 2, md: 3 }
-            }}
-        >
-            {/* Header: Nút Back và Tiêu đề */}
-            <Box display="flex" alignItems="center" mb={3}>
-                <Button 
-                    startIcon={<ArrowBack />} 
-                    onClick={onBack}
-                    sx={{ mr: 2, textTransform: 'none', color: 'text.secondary' }}
-                >
-                    Back
-                </Button>
-                <Typography variant="h5" fontWeight="bold" color="#1e293b">
-                    Medical Record #{record.recordId}
-                </Typography>
-            </Box>
-
-            {/* Nội dung chính */}
-            <Grid container spacing={3}>
-                
-                {/* Cột Trái: Thông tin Chẩn đoán & Khám bệnh */}
-                <Grid item xs={12} md={8}>
-                    <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                            <Typography variant="h6" fontWeight="bold" color="primary">
-                                Diagnosis Information
-                            </Typography>
-                            {/* Hiển thị Loại bệnh nếu có */}
-                            {record.diseaseType && (
-                                <Chip 
-                                    label={record.diseaseType.name}
-                                    icon={<LocalHospital fontSize="small" />}
-                                    sx={{ 
-                                        bgcolor: '#e3f2fd', 
-                                        color: '#1976d2',
-                                        fontWeight: 'bold',
-                                        borderRadius: 1.5
-                                    }} 
-                                />
-                            )}
-                        </Box>
-                        <Divider sx={{ mb: 3 }} />
-
-                        <Grid container spacing={3}>
-                            {/* Ngày khám */}
-                            <Grid item xs={12} sm={6}>
-                                <InfoItem 
-                                    icon={<CalendarToday color="action" />} 
-                                    label="Examination Date" 
-                                    value={dayjs(record.examinateDate).format("DD/MM/YYYY")} 
-                                />
-                            </Grid>
-                            
-                            {/* Bác sĩ khám (có thể hiển thị lại ở đây cho rõ) */}
-                            <Grid item xs={12} sm={6}>
-                                <InfoItem 
-                                    icon={<Person color="action" />} 
-                                    label="Doctor" 
-                                    value={record.doctorName || "Unknown"} 
-                                />
-                            </Grid>
-
-                            {/* Chẩn đoán */}
-                            <Grid item xs={12}>
-                                <Paper variant="outlined" sx={{ p: 2, bgcolor: '#fff' }}>
-                                    <Typography variant="caption" color="text.secondary" fontWeight="bold">
-                                        DIAGNOSIS
-                                    </Typography>
-                                    <Typography variant="body1" fontWeight="500" color="#334155" mt={0.5}>
-                                        {record.diagnosis || "No diagnosis provided."}
-                                    </Typography>
-                                </Paper>
-                            </Grid>
-
-                            {/* Triệu chứng */}
-                            <Grid item xs={12}>
-                                <InfoItem 
-                                    icon={<Healing color="error" />} 
-                                    label="Symptoms" 
-                                    value={record.symptoms || "No symptoms recorded."} 
-                                />
-                            </Grid>
-
-                            {/* Dịch vụ chỉ định */}
-                            <Grid item xs={12}>
-                                <InfoItem 
-                                    icon={<MedicalServices color="primary" />} 
-                                    label="Ordered Services" 
-                                    value={record.orderedServices || "None"} 
-                                />
-                            </Grid>
-
-                             {/* Ghi chú */}
-                             <Grid item xs={12}>
-                                <InfoItem 
-                                    icon={<Notes color="action" />} 
-                                    label="Doctor's Notes" 
-                                    value={record.notes || "No notes."} 
-                                />
-                            </Grid>
-                        </Grid>
-                    </Card>
-                </Grid>
-
-                {/* Cột Phải: Thông tin Bác sĩ (và có thể thêm Bệnh nhân nếu API trả về) */}
-                <Grid item xs={12} md={4}>
-                    <Stack spacing={3}>
-                        
-                        {/* Card Bác Sĩ */}
-                        <Card sx={{ p: 3, borderRadius: 3, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                            <Typography variant="subtitle1" fontWeight="bold" mb={2} color="text.secondary">
-                                DOCTOR IN CHARGE
-                            </Typography>
-                            <Divider sx={{ mb: 2 }} />
-                            
-                            <Box display="flex" alignItems="center" gap={2}>
-                                <Avatar 
-                                    sx={{ width: 56, height: 56, bgcolor: '#f3e5f5', color: '#9c27b0' }}
-                                >
-                                    {record.doctorName ? record.doctorName.charAt(0) : "Dr"}
-                                </Avatar>
-                                <Box>
-                                    <Typography variant="body1" fontWeight="bold">
-                                        Dr. {record.doctorName}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        ID: #{record.doctorId}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Card>
-
-                        {/* Có thể thêm Card thông tin Reception hoặc Bệnh nhân tại đây nếu cần */}
-                    </Stack>
-                </Grid>
-            </Grid>
-        </Box>
-    );
+export interface PrescriptionDetail {
+  medicine: Medicine;
+  quantity: number;
+  dosage: string;
+  days: number;
 };
 
-// Component con để hiển thị từng dòng thông tin (Icon - Label - Value)
-const InfoItem = ({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) => (
-    <Box display="flex" alignItems="flex-start" gap={1.5}>
-        <Box 
-            sx={{ 
-                p: 1, 
-                borderRadius: 1.5, 
-                bgcolor: '#f5f7fa',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 40, 
-                height: 40
-            }}
-        >
-            {icon}
-        </Box>
-        <Box>
-            <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
-                {label}
-            </Typography>
-            <Typography variant="body1" fontWeight="500" color="#334155" sx={{ whiteSpace: 'pre-line' }}>
-                {value}
-            </Typography>
-        </Box>
-    </Box>
-);
+export interface Medicine {
+  medicineId: number | null;
+  medicineName: string;
+  unit: string;
+};
 
-export default MedicalRecordDetail;
+export interface Service {
+  serviceId: number | null;
+  serviceName: string;
+}
+export interface OrderedService extends Service {
+  quantity: number;
+}
+
+export interface DiseaseType {
+    diseaseTypeId: number;
+    diseaseCode: string;
+    diseaseName: string;
+  };
+
+export interface MedicalRecordDetail {
+  recordId: number;
+  examinateDate: string;
+  patient: Patient,
+  doctorId: number;
+  doctorName: string;
+  symptoms: string;
+  diagnosis: string;
+  diseaseType: DiseaseType | null;
+  notes: string;
+  orderedServices: OrderedService[];
+  prescription: Prescription | null;
+};
+
+const NullMedicalRecordDetail = {
+  recordId: 0,
+  examinateDate: "",
+  patient: {
+    patientId: 0,
+    fullName: "",
+    dateOfBirth: "",
+    gender: "",
+    address: "",
+    phone: "",
+    email: "",
+    idCard: "",
+    firstVisitDate: "",
+  },
+  doctorId: 0,
+  doctorName: "",
+  symptoms: "",
+  diagnosis: "",
+  diseaseType: {
+    diseaseTypeId: 0,
+    diseaseCode: "",
+    diseaseName: "",
+  },
+  notes: "",
+  orderedServices: [],
+  prescription: {
+    prescriptionId: 0,
+    notes: "",
+    prescriptionDetail: []
+  },
+}
+const fakeMedicalRecord: MedicalRecordDetail = {
+  recordId: 1,
+  examinateDate: "2025-11-15T09:30:00",
+  patient: {
+    patientId: 1,
+    fullName: "Nguyen Van An",
+    dateOfBirth: "1995-04-12",
+    gender: "Male",
+    address: "12 Nguyen Trai, Ha Noi",
+    phone: "0901234567",
+    email: "an.nguyen@example.com",
+    idCard: "012345678901",
+    firstVisitDate: "2023-01-10",
+  },
+  doctorId: 1,
+  doctorName: "Tran Van Nam",
+  symptoms: "",
+  diagnosis: "",
+  diseaseType: {
+    diseaseTypeId: 1,
+    diseaseName: "Nhiễm trùng đường hô hấp trên cấp tính",
+    diseaseCode: "J00",
+  },
+  notes: "",
+  orderedServices: [
+    { serviceId: 1, serviceName: "Xét nghiệm máu", quantity: 1, }
+  ],
+  prescription: {
+    prescriptionId: 1,
+    notes: "",
+    prescriptionDetail: [
+      {
+        medicine: {
+          medicineId: 1,
+          medicineName: "Paracetamol 500mg",
+          unit: "TABLET",
+        },
+        quantity: 2,
+        dosage: "",
+        days: 5,
+      },
+      {
+        medicine: {
+          medicineId: 3,
+          medicineName: "Ibuprofen 200mg",
+          unit: "BLISTER",
+        },
+        quantity: 10,
+        dosage: "",
+        days: 5,
+      },
+      {
+        medicine: {
+          medicineId: 5,
+          medicineName: "Amoxicillin 500mg",
+          unit: "BLISTER",
+        },
+        quantity: 5,
+        dosage: "",
+        days: 5,
+      },
+    ]
+  },
+}
+
+export default function MedicalRecordDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { role } = useAuth();
+  const [confirmType, setConfirmType] = useState<'medical_record' | 'prescription' | 'service'>('medical_record');
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isMedicalRecordEditing, setIsMedicalRecordEditing] = useState(false);
+  const [isPrescriptionEditing, setIsPrescriptionEditing] = useState(false);
+  const [isServiceEditing, setIsServiceEditing] = useState(false);
+
+  const [data, setData] = useState<MedicalRecordDetail | null>(fakeMedicalRecord);
+
+  {/**
+  useEffect(() => {
+    let prefix = "";
+    if (role.role == "Admin") prefix = "admin";
+    if (role.role == "Receptionist") prefix = "receptionist";
+    if (role.role == "Doctor") prefix = "doctor";
+    const accessToken = localStorage.getItem("accessToken");
+    apiCall(`${prefix}/get_MedicalRecord_by_id/${id}`, 'GET', accessToken ? accessToken : "", null,
+      (data: any) => {
+        setData(data.data);
+      },
+      (data: any) => {
+        alert(data.message);
+      });
+    apiCall(`${prefix}/MedicalRecord_tabs/${id}`, 'GET', accessToken ? accessToken : "", null,
+      (data: any) => {
+        setMedicalRecordTabs(data.data);
+      },
+      (data: any) => {
+        alert(data.message);
+      }
+    )
+  }, []);
+  */}
+
+  const handleConfirmSaveMedicalRecord = () => {
+    setConfirmType('medical_record');
+    setConfirmMessage('Are you sure you want to save this medical record?');
+    setIsConfirmDialogOpen(true);
+  }
+
+  const handleSaveMedicalRecord = () => {
+    showMessage("The medical record has been successfully saved!");
+
+    setIsConfirmDialogOpen(false);
+  }
+
+  const handleConfirmSavePrescription = () => {
+    setConfirmType('prescription');
+    setConfirmMessage('Are you sure you want to save this prescription?');
+    setIsConfirmDialogOpen(true);
+  }
+
+  const handleSavePrescription = () => {
+    showMessage("The prescription has been successfully saved!");
+
+    setIsConfirmDialogOpen(false);
+  }
+
+  const handleConfirmSaveService = () => {
+    setConfirmType('service');
+    setConfirmMessage('Are you sure you want to save this prescription?');
+    setIsConfirmDialogOpen(true);
+  }
+
+  const handleSaveService = () => {
+    showMessage("The service list has been successfully saved!");
+
+    setIsConfirmDialogOpen(false);
+  }
+
+  if (!data) {
+    return (
+      <Box display="flex" height="100%">
+        <Card sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: 1,
+          m: '26px 50px',
+          gap: 2,
+          borderRadius: 2,
+          boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.031)",
+
+        }}>
+          <Typography>
+            Medical record not found
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={() => navigate(-1)}
+            sx={{
+              mt: 2,
+              gap: 1
+            }}
+          >
+            <ArrowBack />
+            Go back
+          </Button>
+        </Card>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '26px 50px',
+      gap: 3,
+      height: '100%',
+      overflowY: 'auto',
+      "& .MuiInputBase-input.Mui-disabled": {
+        WebkitTextFillColor: "var(--color-text-secondary)", // QUAN TRỌNG
+        color: "var(--color-text-secondary)",
+      },
+    }}>
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box display="flex" alignItems="center" gap={1}>
+          <Button
+            startIcon={<ArrowBack />}
+            onClick={() => { navigate(-1) }}
+            sx={{ mr: 2, textTransform: 'none', color: 'text.secondary' }}
+          >
+            Back
+          </Button>
+          <Typography variant="h5" fontWeight="bold" color="#1e293b">
+            Medical Record #{data.recordId}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{
+        display: 'flex',
+        gap: '12px',
+      }}>
+        <Box flex={1}>
+          <PatientInformation
+            data={data.patient}
+            onViewPatient={() => navigate(`/${role?.toLocaleLowerCase()}/patients/patient-detail/${data.patient.patientId}`)}
+          />
+        </Box>
+
+        <Box flex={3}>
+          <Card sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '24px',
+            gap: 5,
+            borderRadius: 2,
+            boxShadow: "0px 3px 6px rgba(0, 0, 0, 0.031)",
+          }}>
+            <MedicalInformation
+              initialData={data}
+              isEditing={isMedicalRecordEditing}
+              setIsEditing={setIsMedicalRecordEditing}
+              onConfirmSave={handleConfirmSaveMedicalRecord}
+            />
+
+            <Divider />
+
+            <PrescriptionInformation
+              initialData={data.prescription}
+              isEditing={isPrescriptionEditing}
+              setIsEditing={setIsPrescriptionEditing}
+              onConfirmSave={handleConfirmSavePrescription}
+            />
+
+            <Divider />
+
+            <ServiceInformation
+              initialData={data.orderedServices}
+              isEditing={isServiceEditing}
+              setIsEditing={setIsServiceEditing}
+              onConfirmSave={handleConfirmSaveService}
+            />
+          </Card>
+        </Box>
+      </Box>
+
+      <AlertDialog
+        title={confirmMessage}
+        type={"info"}
+        open={isConfirmDialogOpen}
+        setOpen={setIsConfirmDialogOpen}
+        buttonCancel="Cancel"
+        buttonConfirm="Yes"
+        onConfirm={() => {
+          confirmType === 'medical_record' && handleSaveMedicalRecord()
+          confirmType === 'prescription' && handleSavePrescription()
+          confirmType === 'service' && handleSaveService()
+        }}
+      />
+    </Box>
+  );
+}

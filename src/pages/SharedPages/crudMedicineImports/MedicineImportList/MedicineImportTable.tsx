@@ -14,38 +14,97 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Chip,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { Eye } from "lucide-react";
+import type { MedicineImport } from "../../../../types/MedicineImport";
 
-interface MedicalRecord {
-  recordId: number;
-  doctorId: number;
-  doctorName: string;
-  patientId: number;
-  patientName: string;
-  examinateDate: string;
-  diseaseType: string;
-}
-
-const fakeData: MedicalRecord[] = [
-  { recordId: 1, patientId: 1, patientName: "Elizabeth Polson", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 2, patientId: 2, patientName: "John David", doctorId: 2, doctorName: "Sarah Johnson", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm họng cấp" },
-  { recordId: 3, patientId: 3, patientName: "Krishtav Rajan", doctorId: 2, doctorName: "Sarah Johnson", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 4, patientId: 4, patientName: "Sumanth Tinson", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 5, patientId: 5, patientName: "EG Subramani", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "" },
-  { recordId: 6, patientId: 6, patientName: "Ranjan Maari", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Suy giáp" },
-  { recordId: 7, patientId: 7, patientName: "Philipile Gopal", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm dạ dày" },
-  { recordId: 8, patientId: 8, patientName: "EG Subramani", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm mũi dị ứng" },
-  { recordId: 9, patientId: 9, patientName: "Ranjan Maari", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Đau mắt đỏ" },
-  { recordId: 10, patientId: 10, patientName: "Philipile Gopal", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm họng cấp" },
+const fakeData: MedicineImport[] = [
+  {
+    importId: 1001,
+    importDate: "2025-12-01",
+    importerName: "Nguyễn Văn An",
+    supplier: "Công ty Dược Minh Long",
+    totalQuantity: 120,
+    totalValue: 18500000,
+  },
+  {
+    importId: 1002,
+    importDate: "2025-12-03",
+    importerName: "Trần Thị Bích",
+    supplier: "Công ty Dược Phúc Hưng",
+    totalQuantity: 80,
+    totalValue: 12400000,
+  },
+  {
+    importId: 1003,
+    importDate: "2025-12-05",
+    importerName: "Lê Hoàng Nam",
+    supplier: "Công ty Dược An Khang",
+    totalQuantity: 200,
+    totalValue: 31200000,
+  },
+  {
+    importId: 1004,
+    importDate: "2025-12-07",
+    importerName: "Phạm Thu Trang",
+    supplier: "Công ty Dược Medipharco",
+    totalQuantity: 65,
+    totalValue: 9800000,
+  },
+  {
+    importId: 1005,
+    importDate: "2025-12-10",
+    importerName: "Võ Minh Tuấn",
+    supplier: "Công ty Dược OPC",
+    totalQuantity: 150,
+    totalValue: 22600000,
+  },
+  {
+    importId: 1006,
+    importDate: "2025-12-12",
+    importerName: "Ngô Thị Lan",
+    supplier: "Công ty Dược Trường Thọ",
+    totalQuantity: 95,
+    totalValue: 14750000,
+  },
+  {
+    importId: 1007,
+    importDate: "2025-12-14",
+    importerName: "Đặng Quốc Huy",
+    supplier: "Công ty Dược Bình An",
+    totalQuantity: 40,
+    totalValue: 6200000,
+  },
+  {
+    importId: 1008,
+    importDate: "2025-12-16",
+    importerName: "Bùi Thanh Hằng",
+    supplier: "Công ty Dược Nam Việt",
+    totalQuantity: 175,
+    totalValue: 26800000,
+  },
+  {
+    importId: 1009,
+    importDate: "2025-12-18",
+    importerName: "Đỗ Minh Khoa",
+    supplier: "Công ty Dược Hậu Giang",
+    totalQuantity: 220,
+    totalValue: 35500000,
+  },
+  {
+    importId: 1010,
+    importDate: "2025-12-20",
+    importerName: "Trịnh Mỹ Linh",
+    supplier: "Công ty Dược Imexpharm",
+    totalQuantity: 60,
+    totalValue: 9100000,
+  },
 ];
 
-
-export default function MedicalRecordTable({
+export default function MedicineImportTable({
   selectedDate,
   searchKey
 }: {
@@ -56,7 +115,7 @@ export default function MedicalRecordTable({
   const { role } = useAuth();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
-  const [data, setData] = useState<MedicalRecord[]>(fakeData);
+  const [data, setData] = useState<MedicineImport[]>(fakeData);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -85,10 +144,11 @@ export default function MedicalRecordTable({
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Examination Date</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Patient</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Doctor</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Disease Type</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Import Date</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Importer Name</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Supplier</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Total items</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Total value</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }} align="center">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -102,23 +162,23 @@ export default function MedicalRecordTable({
             </TableRow>
           ) : data.length > 0 ? (
             data.map((row) => (
-              <TableRow key={row.recordId} hover>
+              <TableRow key={row.importId} hover>
                 <TableCell width="10%" sx={{ fontWeight: 'bold' }}>
-                  {row.recordId}
+                  {row.importId}
                 </TableCell>
 
-                <TableCell width="20%">
-                  {dayjs(row.examinateDate).format("DD/MM/YYYY - hh:mm:ss")}
+                <TableCell width="15%">
+                  {dayjs(row.importDate).format("DD/MM/YYYY")}
                 </TableCell>
 
-                <TableCell sx={{ width: '22%', maxWidth: 200, }}>
+                <TableCell sx={{ width: '20%', maxWidth: 200, }}>
                   <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
                     pr: 6,
                     gap: 2,
                   }}
-                    title={row.patientName}
+                    title={row.importerName}
                   >
 
                     <Typography sx={{
@@ -126,19 +186,19 @@ export default function MedicalRecordTable({
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                     }}>
-                      {row.patientName}
+                      {row.importerName}
                     </Typography>
                   </Box>
                 </TableCell>
 
-                <TableCell sx={{ width: '22%', maxWidth: 200, }}>
+                <TableCell sx={{ width: '25%', maxWidth: 200, }}>
                   <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
                     pr: 6,
                     gap: 2,
                   }}
-                    title={"Dr. " + row.doctorName}
+                    title={row.supplier}
                   >
 
                     <Typography sx={{
@@ -146,27 +206,22 @@ export default function MedicalRecordTable({
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                     }}>
-                      Dr. {row.doctorName}
+                      {row.supplier}
                     </Typography>
                   </Box>
                 </TableCell>
 
-                <TableCell width="16%">
-                  {row.diseaseType ? (
-                    <Chip
-                      label={row.diseaseType}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ) : (
-                    "N/A"
-                  )}
+                <TableCell width="12%">
+                  {row.totalQuantity}
                 </TableCell>
 
-                <TableCell align="center" width="10%">
+                <TableCell width="12%">
+                  {row.totalValue}
+                </TableCell>
+
+                <TableCell align="center">
                   <IconButton
-                    onClick={() => { navigate(`/${role?.toLowerCase()}/medical-records/${row.recordId}`) }}
+                    onClick={() => { navigate(`/${role?.toLowerCase()}/medicine-imports/${row.importId}`) }}
                     sx={{
                       color: 'var(--color-text-info)',
                       border: '1px solid var(--color-primary-main)',
@@ -174,7 +229,7 @@ export default function MedicalRecordTable({
                       height: 32,
                       width: 32
                     }}
-                    title="View Record"
+                    title="View Import Detail"
                   >
                     <Eye />
                   </IconButton>

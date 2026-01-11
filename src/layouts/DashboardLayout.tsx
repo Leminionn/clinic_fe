@@ -75,7 +75,7 @@ export default function DashboardLayout() {
     WarehouseStaff: [
       { label: "Dashboard", path: "/warehouse-staff", icon: <Home /> },
       { label: "Medicines", path: "/warehouse-staff/medicines", icon: <Medication /> },
-      { label: "Medicine Inventory", path: "/warehouse-staff/inventory", icon: <Inventory /> },
+      { label: "Medicine Inventory", path: "/warehouse-staff/medicine-imports", icon: <Inventory /> },
       
     ],
     Patient: [
