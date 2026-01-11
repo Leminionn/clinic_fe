@@ -44,7 +44,7 @@ export default function DashboardLayout() {
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
-      {label:"Reception list", path:"/admin/reception-list",icon: <People/>},
+      { label: "Reception list", path: "/admin/reception-list", icon: <People /> },
       {
         label: "Settings",
         icon: <Settings />,
@@ -57,11 +57,10 @@ export default function DashboardLayout() {
     Doctor: [
       { label: "Dashboard", path: "/doctor", icon: <Home /> },
       { label: "Reception List", path: "/doctor/reception-list", icon: <People /> },
-      {label:"Patients", path:"/doctor/patients", icon:<People/>},
+      { label: "Patients", path: "/doctor/patients", icon: <People /> },
       { label: "Medical Records", path: "/doctor/medical-records", icon: <MedicalInformation /> },
-      { label: "Medical Examination", path: "/doctor/medical-examination", icon: <MedicalInformation /> },
       { label: "My Appointments", path: "/doctor/appointments", icon: <Calendar1 /> },
-      
+
       { label: "Prescriptions", path: "/doctor/prescriptions", icon: <MedicationLiquid /> }
 
     ],
@@ -70,14 +69,14 @@ export default function DashboardLayout() {
       { label: "Reception List", path: "/receptionist/reception-list", icon: <People /> },
       { label: "Appointments", path: "/receptionist/appointments", icon: <Calendar1 /> },
       { label: "Receipts", path: "/receptionist/invoices", icon: <ReceiptLong /> },
-      
+
       { label: "Patients", path: "/receptionist/patients", icon: <Person></Person> }
     ],
     WarehouseStaff: [
       { label: "Dashboard", path: "/warehouse-staff", icon: <Home /> },
       { label: "Medicines", path: "/warehouse-staff/medicines", icon: <Medication /> },
       { label: "Medicine Inventory", path: "/warehouse-staff/medicine-imports", icon: <Inventory /> },
-      
+
     ],
     Patient: [
       { label: "Dashboard", path: "/patient", icon: <Home /> },
@@ -85,7 +84,7 @@ export default function DashboardLayout() {
       { label: "Medical Records", path: "/patient/medical-records", icon: <FolderOpen /> },
       { label: "Invoice History", path: "/patient/invoices", icon: <ReceiptLong /> },
       { label: "Recent Prescriptions", path: "/patient/prescriptions", icon: <MedicationLiquid /> },
-      
+
     ],
   };
 
