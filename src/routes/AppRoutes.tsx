@@ -35,7 +35,6 @@ import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import MedicalRecordsList from "../pages/SharedPages/crudMedicalRecords/MedicalRecordList/page";
 import MedicalRecordDetail from "../pages/SharedPages/crudMedicalRecords/MedicalRecordDetail/MedicalRecordDetail";
-import MedicineImportsList from "../pages/SharedPages/crudMedicineImports/MedicineImportList/page";
 
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
 import ReceptionList from "../pages/SharedPages/crudsReceptionList/ReceptionList/page";
@@ -74,9 +73,12 @@ import WarehouseStaffDashboard from "../pages/WarehouseStaff/Dashboard/page";
 import MedicinesList from "../pages/WarehouseStaff/Medicines/List/page";
 import MedicineDetailPage from "../pages/WarehouseStaff/Medicines/Detail/page";
 import MedicineCreateUpdatePage from "../pages/WarehouseStaff/Medicines/CreateUpdate/page";
-import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
-import PatientDashboard from "../pages/Patient/Dashboard/page";
+import MedicineImportsList from "../pages/SharedPages/crudMedicineImports/MedicineImportList/page";
 import CreateImport from "../pages/SharedPages/crudMedicineImports/CreateImport/page";
+import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
+
+import PatientDashboard from "../pages/Patient/Dashboard/page";
+import MedicineImportDetail from "../pages/SharedPages/crudMedicineImports/MedicineImportDetail/page";
 
 export default function AppRoutes() {
   const { role } = useAuth();
@@ -247,9 +249,7 @@ export default function AppRoutes() {
         </Route>
         <Route path="medicine-imports">
           <Route index element={<MedicineImportsList />} />
-          {/**
-          <Route path=":id" element={<MedicineImportDetail />} />
-          */}
+          <Route path=":id" element={<MedicineImportDetail />} />   
           <Route path="create" element={<CreateImport />} />
         </Route>
       </Route>
