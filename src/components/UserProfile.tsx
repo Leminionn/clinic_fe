@@ -116,7 +116,8 @@ export default function UserProfile({ collapsed }: UserProfileProps) {
       (err: any) => {
         console.error("Failed to update profile:", err);
         setSaving(false);
-        showMessage("Failed to update profile", "error");
+        const errorMessage = err?.message || "Failed to update profile";
+        showMessage(errorMessage, "error");
       }
     );
   };
