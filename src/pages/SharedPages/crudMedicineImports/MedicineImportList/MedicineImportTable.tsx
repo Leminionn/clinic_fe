@@ -221,7 +221,7 @@ export default function MedicineImportTable({
 
                 <TableCell align="center">
                   <IconButton
-                    onClick={() => { navigate(`/${role?.toLowerCase()}/medicine-imports/${row.importId}`) }}
+                    onClick={() => { navigate(`${row.importId}`) }}
                     sx={{
                       color: 'var(--color-text-info)',
                       border: '1px solid var(--color-primary-main)',

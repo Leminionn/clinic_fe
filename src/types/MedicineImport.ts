@@ -7,7 +7,32 @@ export interface MedicineImport {
   totalValue: number;
 }
 
-export interface CreateMedicineImportUI {  
+export interface MedicineImportDetail {
+  importId: number;
+  importDate: string;
+  importer: {
+    importerId: number;
+    importerName: string;
+  }
+  supplier: string;
+  importDetails: ImportItem[];
+  totalQuantity: number;
+  totalValue: number;
+  editable: boolean;
+}
+
+export interface ImportItem {
+  medicine: {
+    medicineId: number;
+    medicineName: string;
+    unit: string;
+  };
+  quantity: number;
+  expiryDate: string;
+  importPrice: number;
+}
+
+export interface CreateMedicineImportUI {
   importDate: string;
   importerId: number;
   supplier: string;
