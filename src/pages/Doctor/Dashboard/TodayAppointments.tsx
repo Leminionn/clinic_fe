@@ -1,13 +1,18 @@
 import { Typography, Box, Card, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from "@mui/material";
 import dayjs from "dayjs";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function getStatusBgColor(status: string): string {
   if (status === 'Scheduled') {
     return 'var(--color-bg-warning)'
   } else if (status === 'Checked-in') {
     return 'var(--color-bg-info)'
-  } else {
+  } else if(status=="Completed") {
     return 'var(--color-bg-success)'
+  }
+  else {
+    return 'var(--color-bg-error)'
   }
 }
 
@@ -16,12 +21,15 @@ function getStatusTextColor(status: string): string {
     return 'var(--color-text-warning)'
   } else if (status === 'Checked-in') {
     return 'var(--color-text-info)'
-  } else {
+  } else if(status=="Completed"){
     return 'var(--color-text-success)'
+  }
+  else {
+    return 'var(--color-text-error)'
   }
 }
 
-const appointments = [
+const fakeAppointments = [
   { id: 1, name: "Nguyễn Văn A", time: new Date('2025-10-14T09:30:00'), status: "Completed" },
   { id: 2, name: "Trần Thị B", time: new Date('2025-10-14T10:15:00'), status: "Completed" },
   { id: 3, name: "Lê Văn C", time: new Date('2025-10-14T11:00:00'), status: "Scheduled" },
@@ -29,8 +37,18 @@ const appointments = [
   { id: 5, name: "Võ Văn E", time: new Date('2025-10-14T14:30:00'), status: "Checked-in" },
   { id: 6, name: "Hoàng Thị F", time: new Date('2025-10-14T16:00:00'), status: "Scheduled" },
 ];
+function getStatus(responseStatus:any){
+  if(responseStatus=="COMPLETED") return "Completed";
+  if(responseStatus=="CONFIRMED") return "Checked-in";
+  if(responseStatus=="NOSHOW") return "Absent";
+  if(responseStatus=="SCHEDULED") return "Scheduled";
+  if(responseStatus=="CANCELLED") return "Cancelled";
+  return "";
 
-export default function TodayAppointments() {
+}
+
+export default function TodayAppointments({appointments}:{appointments:[]}) {
+  const navigate = useNavigate();
   return (
     <Card sx={{
       height: '100%',
@@ -88,20 +106,20 @@ export default function TodayAppointments() {
                   flex: 0.6,
                   textAlign: 'center'
                 }}>
-                  {dayjs(a.time).format("HH:mm A")}
+                  {a.appointmentTime}
                 </TableCell>
                 <TableCell>
-                  {a.name}
+                  {a.patient.fullName?a.patient.fullName:"Deleted patient"}
                 </TableCell>
                 <TableCell align="center">
                   <Box sx={{
                     display: 'inline-flex',
                     borderRadius: 1,
                     padding: '2px 10px',
-                    color: getStatusTextColor(a.status),
-                    bgcolor: getStatusBgColor(a.status),
+                    color: getStatusTextColor(getStatus(a.status)),
+                    bgcolor: getStatusBgColor(getStatus(a.status)),
                   }}>
-                    {a.status}
+                    {getStatus(a.status)}
                   </Box>
                 </TableCell>
                 <TableCell align="center">
@@ -110,8 +128,11 @@ export default function TodayAppointments() {
                     color: 'var(--color-primary-dark)',
                     bgcolor: 'var(--color-bg-default)',
                     textTransform: 'none',
+                  }} onClick={(e)=>{
+                    navigate("/doctor/appointments");
+                    
                   }}>
-                    View Record
+                    View appointments
                   </Button>
                 </TableCell>
               </TableRow>

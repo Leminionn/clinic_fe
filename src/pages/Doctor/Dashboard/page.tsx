@@ -4,8 +4,26 @@ import { CalendarCheck, } from "lucide-react";
 import TodayAppointments from "./TodayAppointments";
 import UpcomingAppointment from "./UpcomingAppointment";
 import LastExamination from "./LastExaminations";
+import { useEffect, useState } from "react";
+import { apiCall } from "../../../api/api";
 
 export default function DoctorDashboard() {
+  const [dashBoardData, setDashboardData] = useState<any>();
+  const [myName, setMyName] = useState<string>("");
+  useEffect(()=>{
+    const accessToken=localStorage.getItem("accessToken");
+    apiCall("doctor/dashboard","GET",accessToken?accessToken:"",null,(data:any)=>{
+      console.log(data.data);
+      setDashboardData(data.data);
+    },(data:any)=>{
+      alert(data.message);
+    });
+    apiCall("account/me","GET",accessToken?accessToken:"",null,(data:any)=>{
+      setMyName(data.data.fullName);
+    },(data:any)=>{
+      alert(data.message);
+    })
+  },[]);
   return (
     <Box sx={{
       display: 'flex',
@@ -25,7 +43,7 @@ export default function DoctorDashboard() {
           fontWeight: 'bold',
           fontSize: '24px'
         }}>
-          Dr. Robert Harry
+          Dr. {myName}
         </Typography>
       </Box>
 
@@ -43,12 +61,12 @@ export default function DoctorDashboard() {
           <Box minHeight="0" sx={{
             flex: 1.1,
           }}>
-            <LastExamination />
+            <LastExamination lastAppointment={dashBoardData?dashBoardData.latestAppointment:null} />
           </Box>
           <Box minHeight="0" sx={{
             flex: 1,
           }}>
-            <UpcomingAppointment />
+            <UpcomingAppointment nextAppointment={dashBoardData?dashBoardData.upcomingAppointment:null} />
           </Box>
         </Box>
 
@@ -82,12 +100,12 @@ export default function DoctorDashboard() {
                   fontSize: '22px',
                   lineHeight: 1.3
                 }}>
-                  3000
+                  {dashBoardData?.recordAmount}
                 </Typography>
                 <Typography sx={{
                   fontSize: '14px'
                 }}>
-                  Medical Examinations
+                  Medical Records
                 </Typography>
               </Box>
             </Card>
@@ -109,7 +127,7 @@ export default function DoctorDashboard() {
                   fontSize: '22px',
                   lineHeight: 1.3
                 }}>
-                  200
+                  {dashBoardData?.appointmentAmount}
                 </Typography>
                 <Typography sx={{
                   fontWeight: 'medium',
@@ -122,7 +140,7 @@ export default function DoctorDashboard() {
           </Box>
 
           <Box flex={4} minHeight="0">
-            <TodayAppointments />
+            <TodayAppointments appointments={dashBoardData?dashBoardData.todayAppointment:[]} />
           </Box>
         </Box>
       </Box>
