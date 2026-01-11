@@ -58,7 +58,6 @@ import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/In
 
 // Patient Medical Records
 import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
-import MedicalRecordDetailPage from "../pages/Patient/MedicalRecords/MedicalRecordDetailPage";
 import PatientRegister from "../pages/Register/RegisterNewPatient";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import CreateAccount from "../pages/Register/CreateAccount";
@@ -268,7 +267,7 @@ export default function AppRoutes() {
       >
         <Route index element={<PatientDashboard />} />
         <Route path="medical-records" element={<MedicalRecordsPage />} />
-        <Route path="medical-records/:recordId" element={<MedicalRecordDetailPage />} />
+        <Route path="medical-records/:id" element={<MedicalRecordDetail />} />
 
         <Route path="invoices">
           <Route index element={<PatientInvoiceHistory />} />

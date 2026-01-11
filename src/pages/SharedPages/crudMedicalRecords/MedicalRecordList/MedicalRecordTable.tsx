@@ -20,6 +20,8 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { Eye } from "lucide-react";
+import { apiCall } from "../../../../api/api";
+import { medicalRecordsGetList } from "../../../../api/urls";
 
 interface MedicalRecord {
   recordId: number;
@@ -30,20 +32,6 @@ interface MedicalRecord {
   examinateDate: string;
   diseaseType: string;
 }
-
-const fakeData: MedicalRecord[] = [
-  { recordId: 1, patientId: 1, patientName: "Elizabeth Polson", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 2, patientId: 2, patientName: "John David", doctorId: 2, doctorName: "Sarah Johnson", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm họng cấp" },
-  { recordId: 3, patientId: 3, patientName: "Krishtav Rajan", doctorId: 2, doctorName: "Sarah Johnson", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 4, patientId: 4, patientName: "Sumanth Tinson", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Cúm mùa" },
-  { recordId: 5, patientId: 5, patientName: "EG Subramani", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "" },
-  { recordId: 6, patientId: 6, patientName: "Ranjan Maari", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Suy giáp" },
-  { recordId: 7, patientId: 7, patientName: "Philipile Gopal", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm dạ dày" },
-  { recordId: 8, patientId: 8, patientName: "EG Subramani", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm mũi dị ứng" },
-  { recordId: 9, patientId: 9, patientName: "Ranjan Maari", doctorId: 1, doctorName: "David Lee", examinateDate: "2025-11-15T09:30:00", diseaseType: "Đau mắt đỏ" },
-  { recordId: 10, patientId: 10, patientName: "Philipile Gopal", doctorId: 3, doctorName: "Anna Kim", examinateDate: "2025-11-15T09:30:00", diseaseType: "Viêm họng cấp" },
-];
-
 
 export default function MedicalRecordTable({
   selectedDate,
@@ -56,15 +44,46 @@ export default function MedicalRecordTable({
   const { role } = useAuth();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
-  const [data, setData] = useState<MedicalRecord[]>(fakeData);
+  const [data, setData] = useState<MedicalRecord[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const fetchMedicalRecords = () => {
+    setLoading(true);
+    const accessToken = localStorage.getItem("accessToken");
+
+    let url = `${medicalRecordsGetList}?pageNumber=${page - 1}&pageSize=${rowsPerPage}`;
+    if (selectedDate) {
+      url += `&date=${selectedDate}`;
+    }
+
+    apiCall(url, "GET", accessToken || "", null,
+      (response: any) => {
+        const records = response.data.content || [];
+        const mappedData = records.map((item: any) => ({
+          recordId: item.recordId,
+          doctorId: item.doctorId || 0,
+          doctorName: item.doctorName || "N/A",
+          patientId: item.patientId || 0,
+          patientName: item.patientName || "N/A",
+          examinateDate: item.examinateDate,
+          diseaseType: item.diseaseType?.diseaseName || ""
+        }));
+        setData(mappedData);
+        setTotalItems(response.data.totalElements || 0);
+        setLoading(false);
+      },
+      (error: any) => {
+        console.error("Failed to fetch medical records:", error);
+        setData([]);
+        setLoading(false);
+      }
+    );
+  };
+
   useEffect(() => {
-    // fake data
-    setData(fakeData.slice(0, rowsPerPage))
-    setTotalItems(fakeData.length)
-  }, [page, rowsPerPage, selectedDate, searchKey])
+    fetchMedicalRecords();
+  }, [page, rowsPerPage, selectedDate, searchKey]);
 
   return (
     <Box sx={{
