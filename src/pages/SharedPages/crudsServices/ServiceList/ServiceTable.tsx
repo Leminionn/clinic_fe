@@ -17,20 +17,18 @@ import { CloseRounded, VisibilityOutlined } from '@mui/icons-material';
 import { apiCall } from '../../../../api/api';
 import { useAuth } from '../../../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import AlertDialog from '../../crudsReceptionList/ReceptionList/Alert';// Đảm bảo đường dẫn này đúng với file alert.tsx của bạn
+import AlertDialog from '../../crudsReceptionList/ReceptionList/Alert'; 
 
 const ServiceTable = ({ searchKey }: { searchKey: string }) => {
     const navigate = useNavigate();
     const role = useAuth();
     
-    // --- States Dữ liệu ---
     const [serviceData, setServiceData] = useState([]);
-    const [loading, setLoading] = useState(false); // Chuyển thành state để Spinner hoạt động
+    const [loading, setLoading] = useState(false); 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(7);
 
-    // --- States Dialog ---
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
     const [resultDialog, setResultDialog] = useState({
@@ -39,7 +37,6 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
         type: 'info' as 'error' | 'warning' | 'info' | 'success'
     });
 
-    // --- Logic lấy dữ liệu ---
     const getServicesFromServer = useCallback(async () => {
         setLoading(true);
         let url = `admin/service/search?pageNumber=${currentPage - 1}&pageSize=${rowsPerPage}`;
@@ -63,7 +60,6 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
         getServicesFromServer();
     }, [getServicesFromServer]);
 
-    // --- Logic Xử lý Xóa ---
     const handleDeleteClick = (serviceId: number) => {
         setSelectedServiceId(serviceId);
         setIsDeleteDialogOpen(true);
@@ -71,12 +67,11 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
 
     const onConfirmDelete = () => {
         if (!selectedServiceId) return;
-
         const url = `unsecure/service/delete/${selectedServiceId}`;
         apiCall(url, "DELETE", null, null, 
             (response: any) => {
                 setResultDialog({ open: true, title: response.message || "Delete success", type: "success" });
-                getServicesFromServer(); // Load lại dữ liệu ngay lập tức
+                getServicesFromServer();
             }, 
             (response: any) => {
                 setResultDialog({ open: true, title: response.message || "Delete fail", type: "error" });
@@ -84,7 +79,6 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
         );
     };
 
-    // --- Helper Format ---
     const formatCurrency = (amount: any) => {
         if (amount === null || amount === undefined) return '';
         return new Intl.NumberFormat('vi-VN', {
@@ -96,8 +90,13 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
             <Table sx={{
-                '& .MuiTableCell-root': { padding: '8px 0px', color: 'var(--color-text-table)' },
-                '& .MuiTypography-root': { fontSize: 14 },
+                '& .MuiTableCell-root': { 
+                    padding: '8px 0px', 
+                    color: 'var(--color-text-table)' 
+                },
+                '& .MuiTypography-root': { 
+                    fontSize: 14 
+                },
             }}>
                 <TableHead>
                     <TableRow>
@@ -120,7 +119,7 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
                             <TableRow key={row.serviceId} hover>
                                 <TableCell>{row.serviceId}</TableCell>
                                 <TableCell>
-                                    <Typography>{row.serviceName}</Typography>
+                                    <Typography sx={{ fontWeight: 500 }}>{row.serviceName}</Typography>
                                 </TableCell>
                                 <TableCell align="right">
                                     <Typography sx={{ fontWeight: 'bold' }}>
@@ -128,29 +127,36 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
                                     </Typography>
                                 </TableCell>
                                 <TableCell align="center">
+                                    {/* Nút Xem Chi Tiết - Đồng bộ style View Patient */}
                                     <IconButton
                                         onClick={() => navigate("/admin/services/service-detail/" + row.serviceId)}
                                         sx={{
-                                            color: 'var(--color-primary-main)',
+                                            color: 'var(--color-text-info)',
                                             border: '1px solid var(--color-primary-main)',
-                                            borderRadius: 1.2, height: 32, width: 32, mr: 1,
+                                            borderRadius: 1.2, 
+                                            height: 32, 
+                                            width: 32, 
+                                            mr: 1,
                                         }}
                                         title="Detail"
                                     >
-                                        <VisibilityOutlined sx={{ fontSize: 20 }} />
+                                        <VisibilityOutlined sx={{ fontSize: 18 }} />
                                     </IconButton>
 
+                                    {/* Nút Xóa - Đồng bộ style Cancel Appointment */}
                                     <IconButton
                                         onClick={() => handleDeleteClick(row.serviceId)}
                                         sx={{
                                             color: 'var(--color-primary-contrast)',
                                             bgcolor: 'var(--color-error-secondary)',
                                             ':hover': { bgcolor: 'var(--color-text-error)' },
-                                            borderRadius: 1.2, height: 32, width: 32,
+                                            borderRadius: 1.2, 
+                                            height: 32, 
+                                            width: 32,
                                         }}
                                         title="Xóa dịch vụ"
                                     >
-                                        <CloseRounded sx={{ fontSize: 20 }} />
+                                        <CloseRounded sx={{ fontSize: 18 }} />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
@@ -163,14 +169,17 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
                 </TableBody>
             </Table>
 
-            {/* Pagination Section */}
+            {/* Pagination Section - Đồng bộ style AppointmentTable */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: 'center', mr: 5, mt: 3 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography sx={{ color: 'var(--color-text-secondary)' }}>Show</Typography>
                     <Select
                         value={rowsPerPage}
                         onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                        sx={{ "& .MuiInputBase-input": { width: '20px', py: '6px' } }}
+                        sx={{ 
+                            "& .MuiInputBase-input": { width: '20px', py: '6px' },
+                            fontSize: 14
+                        }}
                     >
                         {[7, 10, 15].map(item => <MenuItem key={item} value={item}>{item}</MenuItem>)}
                     </Select>
@@ -192,9 +201,7 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
                 />
             </Box>
 
-            {/* --- CÁC DIALOG THAY THẾ ALERT --- */}
-
-            {/* 1. Dialog xác nhận xóa */}
+            {/* Dialogs */}
             <AlertDialog
                 open={isDeleteDialogOpen}
                 setOpen={setIsDeleteDialogOpen}
@@ -206,7 +213,6 @@ const ServiceTable = ({ searchKey }: { searchKey: string }) => {
                 onConfirm={onConfirmDelete}
             />
 
-            {/* 2. Dialog thông báo kết quả */}
             <AlertDialog
                 open={resultDialog.open}
                 setOpen={(val) => setResultDialog(prev => ({ ...prev, open: val }))}

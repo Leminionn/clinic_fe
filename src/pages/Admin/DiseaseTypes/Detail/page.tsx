@@ -66,7 +66,7 @@ export default function DiseaseTypeDetail() {
          () => {
             showMessage("Disease type deleted successfully!");
             setIsConfirmDialogOpen(false);
-            navigate("..");
+            navigate(-1);
          },
          (err: any) => {
             console.error(err);
@@ -87,7 +87,7 @@ export default function DiseaseTypeDetail() {
       return (
          <Box p={4}>
             <Typography>Disease type not found</Typography>
-            <Button onClick={() => navigate("..")} sx={{ mt: 2 }}>
+            <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>
                Back to list
             </Button>
          </Box>
@@ -108,7 +108,7 @@ export default function DiseaseTypeDetail() {
          {/* Header */}
          <Box display="flex" alignItems="center" justifyContent="space-between">
             <Box display="flex" alignItems="center" gap={1}>
-               <IconButton onClick={() => navigate("..")}>
+               <IconButton onClick={() => navigate(-1)}>
                   <ChevronLeft />
                </IconButton>
                <Typography sx={{ fontSize: "16px", fontWeight: "bold" }}>

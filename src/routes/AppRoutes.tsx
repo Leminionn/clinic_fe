@@ -58,7 +58,7 @@ import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/In
 // Patient Medical Records
 import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
 import PatientRegister from "../pages/Register/RegisterNewPatient";
-import ChangePassword from "../pages/ChangePassword/ChangePassword";
+
 import CreateAccount from "../pages/Register/CreateAccount";
 import ForgotPassword from "../pages/ForgetPassword/ForgetPassword";
 import VerifyCode from "../pages/ForgetPassword/VerifyCode";
@@ -89,7 +89,7 @@ export default function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register_patient" element={<PatientRegister />} />
-      <Route path="/change_password" element={<ChangePassword />} />
+      
       <Route path="/create_account" element={<CreateAccount />} />
       <Route path="/forget_password" element={<ForgotPassword />} />
       <Route path="/verify_code" element={<VerifyCode />} />

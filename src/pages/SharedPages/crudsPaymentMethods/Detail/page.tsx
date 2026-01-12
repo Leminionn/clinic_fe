@@ -27,7 +27,7 @@ export default function PaymentMethodDetail() {
 
   useEffect(() => {
     if (!id) return;
-    
+
     const token = localStorage.getItem("accessToken");
     apiCall(
       paymentMethodsGetById(Number(id)),
@@ -61,7 +61,7 @@ export default function PaymentMethodDetail() {
       () => {
         showMessage("Payment method deleted successfully!");
         setIsConfirmDialogOpen(false);
-        navigate("..");
+        navigate(-1);
       },
       (err: any) => {
         console.error(err);
@@ -82,7 +82,7 @@ export default function PaymentMethodDetail() {
     return (
       <Box p={4}>
         <Typography>Payment method not found</Typography>
-        <Button onClick={() => navigate("..")} sx={{ mt: 2 }}>
+        <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>
           Back to list
         </Button>
       </Box>
@@ -103,7 +103,7 @@ export default function PaymentMethodDetail() {
       {/* Header */}
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box display="flex" alignItems="center" gap={1}>
-          <IconButton onClick={() => navigate("..")}>
+          <IconButton onClick={() => navigate(-1)}>
             <ChevronLeft />
           </IconButton>
           <Typography sx={{ fontSize: "16px", fontWeight: "bold" }}>

@@ -103,7 +103,7 @@ export default function PatientDetail() {
         <Box display="flex" alignItems="center" gap={1}>
           <IconButton
             onClick={() => {
-              navigate('..');
+              navigate(-1);
             }}
           >
             <ChevronLeft />

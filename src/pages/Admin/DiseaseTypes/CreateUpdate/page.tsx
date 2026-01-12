@@ -123,7 +123,7 @@ export default function CreateUpdateDiseaseType() {
                if (newId) {
                   navigate(`../detail/${newId}`);
                } else {
-                  navigate("..");
+                  navigate(-1);
                }
             },
             (err: any) => {
@@ -148,7 +148,7 @@ export default function CreateUpdateDiseaseType() {
       >
          {/* Header with back button */}
          <Box display="flex" alignItems="center" gap={1}>
-            <IconButton onClick={() => navigate("..")}>
+            <IconButton onClick={() => navigate(-1)}>
                <ChevronLeft />
             </IconButton>
             <Typography sx={{ fontSize: "16px", fontWeight: "bold" }}>
@@ -262,7 +262,7 @@ export default function CreateUpdateDiseaseType() {
                <Box display="flex" justifyContent="center" gap={2} mt={5}>
                   <Button
                      variant="outlined"
-                     onClick={() => navigate("..")}
+                     onClick={() => navigate(-1)}
                      sx={{
                         textTransform: "none",
                         fontSize: "16px",
