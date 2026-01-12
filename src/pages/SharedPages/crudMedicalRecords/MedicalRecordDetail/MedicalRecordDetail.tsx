@@ -49,8 +49,7 @@ export interface DiseaseType {
 export interface MedicalRecordDetail {
   recordId: number;
   receptionId: number;
-  receptionStatus?: string;
-  examinateDate: string;
+  receptionStatus?: string; invoicePaymentStatus?: string; // PAID or UNPAID  examinateDate: string;
   patient: Patient,
   doctorId: number;
   doctorName: string;
@@ -417,6 +416,7 @@ export default function MedicalRecordDetail() {
               setIsEditing={setIsMedicalRecordEditing}
               onConfirmSave={handleConfirmSaveMedicalRecord}
               onSaveData={setMedicalRecordData}
+              disabled={data.invoicePaymentStatus === "PAID"}
             />
 
             <Divider />
@@ -427,6 +427,7 @@ export default function MedicalRecordDetail() {
               setIsEditing={setIsPrescriptionEditing}
               onConfirmSave={handleConfirmSavePrescription}
               onSaveData={setPrescriptionData}
+              disabled={data.invoicePaymentStatus === "PAID"}
             />
 
             <Divider />
@@ -437,6 +438,7 @@ export default function MedicalRecordDetail() {
               setIsEditing={setIsServiceEditing}
               onConfirmSave={handleConfirmSaveService}
               onSaveData={setServiceData}
+              disabled={data.invoicePaymentStatus === "PAID"}
             />
           </Card>
         </Box>
