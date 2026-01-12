@@ -84,7 +84,7 @@ export default function PatientList() {
 						*/}
 						</Box>
 
-						<Button
+						{role.role!="Doctor"&&<Button
 							variant="contained"
 							startIcon={<Add sx={{ height: 24, width: 24, }} />}
 							onClick={() => { navigate('create-patient'); }}
@@ -94,7 +94,7 @@ export default function PatientList() {
 							}}
 						>
 							New Patient
-						</Button>
+						</Button>}
 					</Box>
 
 					<Divider />

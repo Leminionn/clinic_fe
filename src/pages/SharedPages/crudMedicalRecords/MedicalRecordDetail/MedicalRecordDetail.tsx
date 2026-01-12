@@ -11,6 +11,7 @@ import { ArrowBack } from "@mui/icons-material";
 import type { Patient } from "../../../../types/Patient";
 import PrescriptionInformation from "./PrescriptionInformation";
 import ServiceInformation from "./ServiceInformation";
+import { medicalRecordGetById, medicalRecordUpdate, prescriptionCreate, prescriptionUpdate } from "../../../../api/urls";
 
 export interface Prescription {
   prescriptionId: number;
@@ -40,13 +41,15 @@ export interface OrderedService extends Service {
 }
 
 export interface DiseaseType {
-    diseaseTypeId: number;
-    diseaseCode: string;
-    diseaseName: string;
-  };
+  diseaseTypeId: number;
+  diseaseCode: string;
+  diseaseName: string;
+};
 
 export interface MedicalRecordDetail {
   recordId: number;
+  receptionId: number;
+  receptionStatus?: string;
   examinateDate: string;
   patient: Patient,
   doctorId: number;
@@ -90,70 +93,6 @@ const NullMedicalRecordDetail = {
     prescriptionDetail: []
   },
 }
-const fakeMedicalRecord: MedicalRecordDetail = {
-  recordId: 1,
-  examinateDate: "2025-11-15T09:30:00",
-  patient: {
-    patientId: 1,
-    fullName: "Nguyen Van An",
-    dateOfBirth: "1995-04-12",
-    gender: "Male",
-    address: "12 Nguyen Trai, Ha Noi",
-    phone: "0901234567",
-    email: "an.nguyen@example.com",
-    idCard: "012345678901",
-    firstVisitDate: "2023-01-10",
-  },
-  doctorId: 1,
-  doctorName: "Tran Van Nam",
-  symptoms: "",
-  diagnosis: "",
-  diseaseType: {
-    diseaseTypeId: 1,
-    diseaseName: "Nhiễm trùng đường hô hấp trên cấp tính",
-    diseaseCode: "J00",
-  },
-  notes: "",
-  orderedServices: [
-    { serviceId: 1, serviceName: "Xét nghiệm máu", quantity: 1, }
-  ],
-  prescription: {
-    prescriptionId: 1,
-    notes: "",
-    prescriptionDetail: [
-      {
-        medicine: {
-          medicineId: 1,
-          medicineName: "Paracetamol 500mg",
-          unit: "TABLET",
-        },
-        quantity: 2,
-        dosage: "",
-        days: 5,
-      },
-      {
-        medicine: {
-          medicineId: 3,
-          medicineName: "Ibuprofen 200mg",
-          unit: "BLISTER",
-        },
-        quantity: 10,
-        dosage: "",
-        days: 5,
-      },
-      {
-        medicine: {
-          medicineId: 5,
-          medicineName: "Amoxicillin 500mg",
-          unit: "BLISTER",
-        },
-        quantity: 5,
-        dosage: "",
-        days: 5,
-      },
-    ]
-  },
-}
 
 export default function MedicalRecordDetail() {
   const { id } = useParams();
@@ -165,33 +104,60 @@ export default function MedicalRecordDetail() {
   const [isMedicalRecordEditing, setIsMedicalRecordEditing] = useState(false);
   const [isPrescriptionEditing, setIsPrescriptionEditing] = useState(false);
   const [isServiceEditing, setIsServiceEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isCompleting, setIsCompleting] = useState(false);
 
-  const [data, setData] = useState<MedicalRecordDetail | null>(fakeMedicalRecord);
+  const [data, setData] = useState<MedicalRecordDetail | null>(null);
+  const [medicalRecordData, setMedicalRecordData] = useState<any>(null);
+  const [prescriptionData, setPrescriptionData] = useState<any>(null);
+  const [serviceData, setServiceData] = useState<any>(null);
 
-  {/**
+  // Fetch medical record detail khi component mount
   useEffect(() => {
-    let prefix = "";
-    if (role.role == "Admin") prefix = "admin";
-    if (role.role == "Receptionist") prefix = "receptionist";
-    if (role.role == "Doctor") prefix = "doctor";
+    if (!id) return;
+
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(`${prefix}/get_MedicalRecord_by_id/${id}`, 'GET', accessToken ? accessToken : "", null,
-      (data: any) => {
-        setData(data.data);
+    const url = medicalRecordGetById(role?.toLowerCase() || "doctor", parseInt(id));
+
+    apiCall(url, 'GET', accessToken || "", null,
+      (response: any) => {
+        const recordData = response.data;
+        setData(recordData);
+        setMedicalRecordData(recordData);
+        setPrescriptionData(recordData.prescription);
+        setServiceData(recordData.orderedServices);
+        setLoading(false);
       },
-      (data: any) => {
-        alert(data.message);
-      });
-    apiCall(`${prefix}/MedicalRecord_tabs/${id}`, 'GET', accessToken ? accessToken : "", null,
-      (data: any) => {
-        setMedicalRecordTabs(data.data);
-      },
-      (data: any) => {
-        alert(data.message);
+      (error: any) => {
+        showMessage(error.message || "Failed to load medical record", "error");
+        setLoading(false);
       }
-    )
-  }, []);
-  */}
+    );
+  }, [id, role]);
+
+  const handleCompleteExamination = () => {
+    if (!data?.receptionId) return;
+
+    setIsCompleting(true);
+    const accessToken = localStorage.getItem("accessToken");
+
+    const body = {
+      receptionId: data.receptionId,
+      newStatus: "DONE"
+    };
+
+    apiCall(`${role?.toLowerCase()}/reception/update`, 'PUT', accessToken || "", JSON.stringify(body),
+      (response: any) => {
+        showMessage("Examination completed successfully!", "success");
+        setIsCompleting(false);
+        navigate(-1);
+      },
+      (error: any) => {
+        showMessage(error.message || "Failed to complete examination", "error");
+        setIsCompleting(false);
+      }
+    );
+  };
 
   const handleConfirmSaveMedicalRecord = () => {
     setConfirmType('medical_record');
@@ -199,10 +165,48 @@ export default function MedicalRecordDetail() {
     setIsConfirmDialogOpen(true);
   }
 
-  const handleSaveMedicalRecord = () => {
-    showMessage("The medical record has been successfully saved!");
+  const handleSaveMedicalRecord = (updatedData: any) => {
+    if (!id) return;
 
-    setIsConfirmDialogOpen(false);
+    const accessToken = localStorage.getItem("accessToken");
+    const url = medicalRecordUpdate(parseInt(id));
+
+    // orderedServices on backend is expected as a STRING ("id:qty,id:qty").
+    // Only include it if it's provided as array or string; convert array to string.
+    let orderedServicesString: string | null = null;
+    if (Array.isArray(updatedData.orderedServices)) {
+      orderedServicesString = updatedData.orderedServices
+        .map((s: any) => `${s.serviceId}:${s.quantity}`)
+        .join(',');
+    } else if (typeof updatedData.orderedServices === 'string' && updatedData.orderedServices.trim() !== '') {
+      orderedServicesString = updatedData.orderedServices;
+    }
+
+    const body: any = {
+      examinateDate: updatedData.examinateDate,
+      symptoms: updatedData.symptoms,
+      diagnosis: updatedData.diagnosis,
+      diseaseTypeId: updatedData.diseaseType?.diseaseTypeId || null,
+      notes: updatedData.notes
+    };
+
+    if (orderedServicesString !== null) {
+      body.orderedServices = orderedServicesString;
+    }
+
+    apiCall(url, 'PUT', accessToken || "", JSON.stringify(body),
+      (response: any) => {
+        showMessage("The medical record has been successfully saved!");
+        setIsConfirmDialogOpen(false);
+        setIsMedicalRecordEditing(false);
+        // Refresh data
+        setData(prev => prev ? { ...prev, ...updatedData } : null);
+      },
+      (error: any) => {
+        showMessage(error.message || "Failed to save medical record", "error");
+        setIsConfirmDialogOpen(false);
+      }
+    );
   }
 
   const handleConfirmSavePrescription = () => {
@@ -211,25 +215,105 @@ export default function MedicalRecordDetail() {
     setIsConfirmDialogOpen(true);
   }
 
-  const handleSavePrescription = () => {
-    showMessage("The prescription has been successfully saved!");
+  const handleSavePrescription = (updatedPrescription: any) => {
+    if (!id || !data) return;
 
-    setIsConfirmDialogOpen(false);
+    const accessToken = localStorage.getItem("accessToken");
+
+    // Chuẩn bị dữ liệu prescription details, lọc bỏ những dòng chưa chọn thuốc
+    const prescriptionDetails = updatedPrescription.prescriptionDetail
+      .filter((detail: any) => detail.medicine?.medicineId !== null)
+      .map((detail: any) => ({
+        prescriptionId: updatedPrescription.prescriptionId || 0,
+        medicineId: detail.medicine.medicineId,
+        quantity: detail.quantity,
+        dosage: detail.dosage,
+        days: detail.days
+      }));
+
+    const body = {
+      recordId: parseInt(id),
+      notes: updatedPrescription.notes || "",
+      prescriptionDetails: prescriptionDetails
+    };
+
+    // Kiểm tra xem prescription đã tồn tại chưa
+    const isNewPrescription = !updatedPrescription.prescriptionId;
+    const url = isNewPrescription
+      ? prescriptionCreate
+      : prescriptionUpdate(updatedPrescription.prescriptionId);
+
+    apiCall(url, isNewPrescription ? 'POST' : 'PUT', accessToken || "", JSON.stringify(body),
+      (response: any) => {
+        showMessage("The prescription has been successfully saved!");
+        setIsConfirmDialogOpen(false);
+        setIsPrescriptionEditing(false);
+
+        // Backend trả về Prescription entity (không có prescriptionDetail đầy đủ)
+        // Cần reload toàn bộ medical record để lấy full data
+        const reloadUrl = medicalRecordGetById(role?.toLowerCase() || "doctor", parseInt(id));
+        apiCall(reloadUrl, 'GET', accessToken || "", null,
+          (reloadResponse: any) => {
+            const recordData = reloadResponse.data;
+            setData(recordData);
+            setMedicalRecordData(recordData);
+            setPrescriptionData(recordData.prescription);
+            setServiceData(recordData.orderedServices);
+          },
+          (error: any) => {
+            console.error("Failed to reload medical record:", error);
+            // Fallback: dùng response ban đầu
+            const savedPrescription = response.data || null;
+            setPrescriptionData(savedPrescription);
+            setData(prev => prev ? { ...prev, prescription: savedPrescription } : null);
+          }
+        );
+      },
+      (error: any) => {
+        showMessage(error.message || "Failed to save prescription", "error");
+        setIsConfirmDialogOpen(false);
+      }
+    );
   }
 
   const handleConfirmSaveService = () => {
     setConfirmType('service');
-    setConfirmMessage('Are you sure you want to save this prescription?');
+    setConfirmMessage('Are you sure you want to save the service list?');
     setIsConfirmDialogOpen(true);
   }
 
-  const handleSaveService = () => {
-    showMessage("The service list has been successfully saved!");
+  const handleSaveService = (updatedServices: any) => {
+    if (!id) return;
 
-    setIsConfirmDialogOpen(false);
+    const accessToken = localStorage.getItem("accessToken");
+    const url = medicalRecordUpdate(parseInt(id));
+
+    // Chuyển đổi mảng services thành chuỗi "serviceId:quantity,serviceId:quantity"
+    const orderedServicesString = updatedServices
+      .map((s: any) => `${s.serviceId}:${s.quantity}`)
+      .join(',');
+
+    const body = {
+      orderedServices: orderedServicesString
+    };
+
+    apiCall(url, 'PUT', accessToken || "", JSON.stringify(body),
+      (response: any) => {
+        showMessage("The service list has been successfully saved!");
+        setIsConfirmDialogOpen(false);
+        setIsServiceEditing(false);
+        // Refresh service data
+        setServiceData(updatedServices);
+        setData(prev => prev ? { ...prev, orderedServices: updatedServices } : null);
+      },
+      (error: any) => {
+        showMessage(error.message || "Failed to save service list", "error");
+        setIsConfirmDialogOpen(false);
+      }
+    );
   }
 
-  if (!data) {
+  if (!data || loading) {
     return (
       <Box display="flex" height="100%">
         <Card sx={{
@@ -245,19 +329,21 @@ export default function MedicalRecordDetail() {
 
         }}>
           <Typography>
-            Medical record not found
+            {loading ? "Loading medical record..." : "Medical record not found"}
           </Typography>
-          <Button
-            variant="outlined"
-            onClick={() => navigate(-1)}
-            sx={{
-              mt: 2,
-              gap: 1
-            }}
-          >
-            <ArrowBack />
-            Go back
-          </Button>
+          {!loading && (
+            <Button
+              variant="outlined"
+              onClick={() => navigate(-1)}
+              sx={{
+                mt: 2,
+                gap: 1
+              }}
+            >
+              <ArrowBack />
+              Go back
+            </Button>
+          )}
         </Card>
       </Box>
     );
@@ -289,6 +375,20 @@ export default function MedicalRecordDetail() {
             Medical Record #{data.recordId}
           </Typography>
         </Box>
+
+        {role === "Doctor" && data.receptionStatus === "IN_EXAMINATION" && (
+          <Button
+            variant="contained"
+            onClick={handleCompleteExamination}
+            disabled={isCompleting}
+            sx={{
+              textTransform: 'none',
+              boxShadow: 'none',
+            }}
+          >
+            {isCompleting ? "Completing..." : "Complete Examination"}
+          </Button>
+        )}
       </Box>
 
       <Box sx={{
@@ -316,6 +416,7 @@ export default function MedicalRecordDetail() {
               isEditing={isMedicalRecordEditing}
               setIsEditing={setIsMedicalRecordEditing}
               onConfirmSave={handleConfirmSaveMedicalRecord}
+              onSaveData={setMedicalRecordData}
             />
 
             <Divider />
@@ -325,6 +426,7 @@ export default function MedicalRecordDetail() {
               isEditing={isPrescriptionEditing}
               setIsEditing={setIsPrescriptionEditing}
               onConfirmSave={handleConfirmSavePrescription}
+              onSaveData={setPrescriptionData}
             />
 
             <Divider />
@@ -334,6 +436,7 @@ export default function MedicalRecordDetail() {
               isEditing={isServiceEditing}
               setIsEditing={setIsServiceEditing}
               onConfirmSave={handleConfirmSaveService}
+              onSaveData={setServiceData}
             />
           </Card>
         </Box>
@@ -347,9 +450,13 @@ export default function MedicalRecordDetail() {
         buttonCancel="Cancel"
         buttonConfirm="Yes"
         onConfirm={() => {
-          confirmType === 'medical_record' && handleSaveMedicalRecord()
-          confirmType === 'prescription' && handleSavePrescription()
-          confirmType === 'service' && handleSaveService()
+          if (confirmType === 'medical_record' && medicalRecordData) {
+            handleSaveMedicalRecord(medicalRecordData);
+          } else if (confirmType === 'prescription' && prescriptionData) {
+            handleSavePrescription(prescriptionData);
+          } else if (confirmType === 'service' && serviceData) {
+            handleSaveService(serviceData);
+          }
         }}
       />
     </Box>

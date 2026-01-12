@@ -107,7 +107,7 @@ export default function PatientTable({
 								width="12%"
 								align="center"
 							>
-								<IconButton
+								{role!="Doctor"&&<IconButton
 									onClick={() => { navigate(`update-patient/${p.patientId}`) }}
 									sx={{
 										color: 'var(--color-primary-contrast)',
@@ -120,7 +120,7 @@ export default function PatientTable({
 									title="Edit Patient"
 								>
 									<Edit sx={{ fontSize: 20 }} />
-								</IconButton>
+								</IconButton>}
 
 								{role === "Admin" &&
 									<IconButton

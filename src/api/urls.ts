@@ -1,5 +1,5 @@
 export const baseURL = import.meta.env.VITE_BASE_URL;
-export const aiURL=import.meta.env.VITE_AI_URL;
+export const aiURL = import.meta.env.VITE_AI_URL;
 // Receptionist - Patients
 export const receptionistGetPatient = "receptionist/get_all_patients";
 export const receptionistGetPatientDetail = (id: string) =>
@@ -59,6 +59,7 @@ export const diseaseTypesDelete = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetById = (id: number) => `admin/disease-types/${id}`;
 export const diseaseTypesGetAll = "admin/disease-types/all";
 export const diseaseTypesGetActive = "admin/disease-types/active";
+export const diseaseTypesGetActiveByDoctor = "doctor/disease-types/active";
 
 // Admin - Staff Management (BE: /admin/staff)
 export const staffSearch = (query: string) => `admin/staff${query}`;
@@ -148,6 +149,32 @@ export const paymentCancelPayment = (role: string, orderCode: number) =>
 	`${role}/payment/payment-requests/${orderCode}/cancel`;
 export const paymentVerifyPayment = (role: string) =>
 	`${role}/payment/verify-payment`;
+
+// ==================== MEDICAL RECORD APIs ====================
+// Doctor Medical Record APIs
+export const medicalRecordGetById = (role: string, recordId: number) =>
+	`${role}/medical-records/${recordId}`;
+export const medicalRecordCreate = "doctor/medical_record/create";
+export const medicalRecordUpdate = (recordId: number) =>
+	`doctor/medical_record/update/${recordId}`;
+export const medicalRecordsGetList = "doctor/medical-records";
+
+// Services
+export const unsecureAllServices = "unsecure/all_services";
+
+// ==================== PRESCRIPTION APIs ====================
+// Doctor Prescription APIs
+export const prescriptionCreate = "doctor/prescription/create";
+export const prescriptionUpdate = (prescriptionId: number) =>
+	`doctor/prescription/update/${prescriptionId}`;
+export const prescriptionGetById = (prescriptionId: number) =>
+	`doctor/prescription/${prescriptionId}`;
+export const prescriptionGetByRecord = (recordId: number) =>
+	`patient/prescription_by_record/${recordId}`;
+export const prescriptionDetailsList = (prescriptionId: number) =>
+	`doctor/prescription_details_list/${prescriptionId}`;
+export const doctorGetMedicines = "doctor/medicines";
+export const doctorGetRecords = "doctor/records";
 
 // ==================== WAREHOUSE - MEDICINE APIs ====================
 // Medicine Management

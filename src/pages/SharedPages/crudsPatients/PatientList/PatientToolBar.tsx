@@ -8,6 +8,7 @@ import {
   InputLabel,
 } from "@mui/material";
 import { Search } from "lucide-react";
+import { useAuth } from "../../../../auth/AuthContext";
 
 interface PatientToolbarProps {
   searchKey: string;
@@ -22,6 +23,7 @@ export default function PatientToolbar({
   gender,
   onChangeGender,
 }: PatientToolbarProps) {
+  const {role} = useAuth();
   return (
     <Box
       sx={{

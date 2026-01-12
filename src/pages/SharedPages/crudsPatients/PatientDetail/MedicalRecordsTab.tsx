@@ -171,13 +171,14 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                   </TableCell>
 
                   <TableCell align="center">
-                        <Tooltip title="Detail">
+                        {role.role!="Doctor"&&<Tooltip title="Detail">
                             <IconButton
                                 onClick={() => {
                                     // TODO: Thêm logic chuyển hướng hoặc mở modal tại đây
                                     let prefix="";
                                     if(role.role=="Admin") prefix="admin";
                                     if(role.role=="Receptionist") prefix="receptionist";
+                                    if(role.role=="Doctor") prefix="doctor";
                                     navigate(`/${prefix}/medical_record/${row.recordId}`)
                                     
                                 }}
@@ -197,7 +198,7 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                             >
                                 <VisibilityOutlined sx={{ fontSize: 18 }} />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip>}
                     </TableCell>
                 </TableRow>
               ))}

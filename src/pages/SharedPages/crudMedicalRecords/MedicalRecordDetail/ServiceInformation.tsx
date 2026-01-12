@@ -5,6 +5,7 @@ import { DeleteOutline } from "@mui/icons-material";
 import { Edit, Plus, Save } from "lucide-react";
 import { apiCall } from "../../../../api/api";
 import { useAuth } from "../../../../auth/AuthContext";
+import { unsecureAllServices } from "../../../../api/urls";
 
 const fakeServices: Service[] = [
   {
@@ -26,25 +27,55 @@ export default function ServiceInformation({
   isEditing = false,
   setIsEditing,
   onConfirmSave,
+  onSaveData,
 }: {
   initialData: OrderedService[],
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
+  onSaveData: (data: any) => void,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<OrderedService[]>(initialData || []);
   const [services, setServices] = useState<Service[]>([]);
 
+  const handleSave = () => {
+    onSaveData(data);
+    onConfirmSave();
+  };
+
   useEffect(() => {
-    // logic get all service
-    setServices(fakeServices)
+    // Chỉ load danh sách services khi role là Doctor (để edit)
+    if (role === "Patient") return;
+
+    // fetch services from backend (unsecure endpoint returns paged results)
+    const accessToken = localStorage.getItem("accessToken");
+    const url = `${unsecureAllServices}?pageNumber=0&pageSize=1000`;
+    apiCall(url, "GET", accessToken || "", null,
+      (response: any) => {
+        // response.data may be a Page with content or a list
+        const payload = response.data;
+        if (payload) {
+          const list = payload.content ? payload.content : payload;
+          setServices(list || []);
+        } else {
+          setServices([]);
+        }
+      },
+      (error: any) => {
+        console.error("Failed to load services:", error);
+        setServices(fakeServices);
+      }
+    );
 
   }, []);
 
+  // Chỉ sync với initialData khi không đang edit (tránh reset local changes)
   useEffect(() => {
-    setData(initialData);
-  }, [initialData]);
+    if (!isEditing) {
+      setData(initialData || []);
+    }
+  }, [initialData, isEditing]);
 
   // Thêm dòng mới
   const handleAddDetail = () => {
@@ -56,16 +87,16 @@ export default function ServiceInformation({
     setData(prev => ([...prev, newDetail]));
   };
 
-  // Xóa dòng
-  const handleRemoveDetail = (serviceId: number) => {
-    setData(prev => (prev?.filter(d => d.serviceId !== serviceId)));
+  // Xóa dòng theo index
+  const handleRemoveDetail = (index: number) => {
+    setData(prev => (prev.filter((_, i) => i !== index)));
   };
 
-  // Thay đổi thông tin trong dòng
-  const handleDetailChange = (serviceId: number, field: keyof OrderedService, value: any) => {
+  // Thay đổi thông tin trong dòng theo index
+  const handleDetailChange = (index: number, field: keyof OrderedService, value: any) => {
     setData(prev => (
-      prev.map(detail =>
-        detail.serviceId === serviceId ? { ...detail, [field]: value } : detail
+      prev.map((detail, i) =>
+        i === index ? { ...detail, [field]: value } : detail
       )
     ));
   };
@@ -126,39 +157,56 @@ export default function ServiceInformation({
             {data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                  No service, press "Add service" to add
+                  {role === "Doctor" ? 'No service, press "Add service" to add' : 'No service'}
                 </TableCell>
               </TableRow>
             ) : (
               data.map((row, index) => (
-                <TableRow key={row.serviceId}>
+                <TableRow key={index}>
                   <TableCell align="center">{index + 1}</TableCell>
 
                   <TableCell width="60%">
-                    <Autocomplete
-                      options={services}
-                      getOptionDisabled={(option) =>
-                        data
-                          .map(detail => detail.serviceId)
-                          .includes(option.serviceId)
-                      }
-                      getOptionLabel={(option) => `${option.serviceName}`}
-                      value={services.find(m => m.serviceId === row.serviceId) || null}
-                      onChange={(_, newValue) => {
-                        handleDetailChange(row.serviceId!, 'serviceId', newValue ? newValue : null);
-                      }}
-                      disabled={!isEditing}
-                      renderInput={(params) => (
-                        <TextField {...params} placeholder="Select service..." size="small" variant="standard" />
-                      )}
-                    />
+                    {!isEditing ? (
+                      <TextField
+                        value={row.serviceName || ''}
+                        size="small"
+                        variant="standard"
+                        disabled
+                        fullWidth
+                      />
+                    ) : (
+                      <Autocomplete
+                        options={services}
+                        getOptionDisabled={(option) =>
+                          data
+                            .map(detail => detail.serviceId)
+                            .includes(option.serviceId)
+                        }
+                        getOptionLabel={(option) => `${option.serviceName}`}
+                        value={services.find(m => m.serviceId === row.serviceId) || null}
+                        onChange={(_, newValue) => {
+                          if (newValue) {
+                            // Cập nhật cả serviceId và serviceName
+                            handleDetailChange(index, 'serviceId', newValue.serviceId);
+                            handleDetailChange(index, 'serviceName', newValue.serviceName);
+                          } else {
+                            handleDetailChange(index, 'serviceId', null);
+                            handleDetailChange(index, 'serviceName', '');
+                          }
+                        }}
+                        disabled={!isEditing}
+                        renderInput={(params) => (
+                          <TextField {...params} placeholder="Select service..." size="small" variant="standard" />
+                        )}
+                      />
+                    )}
                   </TableCell>
 
                   <TableCell width="20%">
                     <TextField
                       type="number"
                       value={row.quantity}
-                      onChange={(e) => handleDetailChange(row.serviceId!, 'quantity', parseInt(e.target.value) || 0)}
+                      onChange={(e) => handleDetailChange(index, 'quantity', parseInt(e.target.value) || 0)}
                       size="small"
                       variant="standard"
                       disabled={!isEditing}
@@ -171,7 +219,7 @@ export default function ServiceInformation({
                       color="error"
                       size="small"
                       disabled={!isEditing}
-                      onClick={() => handleRemoveDetail(row.serviceId!)}
+                      onClick={() => handleRemoveDetail(index)}
                     >
                       <DeleteOutline fontSize="small" />
                     </IconButton>
@@ -209,7 +257,7 @@ export default function ServiceInformation({
               boxShadow: 'none',
               gap: 2,
             }}
-            onClick={onConfirmSave}
+            onClick={handleSave}
           >
             <Save size={16} />
             Save

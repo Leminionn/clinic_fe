@@ -35,7 +35,6 @@ import DoctorDashboard from "../pages/Doctor/Dashboard/page";
 import MedicalExamination from "../pages/Doctor/MedicalExam/page";
 import MedicalRecordsList from "../pages/SharedPages/crudMedicalRecords/MedicalRecordList/page";
 import MedicalRecordDetail from "../pages/SharedPages/crudMedicalRecords/MedicalRecordDetail/MedicalRecordDetail";
-import MedicineImportsList from "../pages/SharedPages/crudMedicineImports/MedicineImportList/page";
 
 import ReceptionistDashboard from "../pages/Receptionist/Dashboard/page";
 import ReceptionList from "../pages/SharedPages/crudsReceptionList/ReceptionList/page";
@@ -58,7 +57,6 @@ import { PatientInvoiceHistory, PatientInvoiceDetail } from "../pages/Patient/In
 
 // Patient Medical Records
 import MedicalRecordsPage from "../pages/Patient/MedicalRecords/MedicalRecordsPage";
-import MedicalRecordDetailPage from "../pages/Patient/MedicalRecords/MedicalRecordDetailPage";
 import PatientRegister from "../pages/Register/RegisterNewPatient";
 import ChangePassword from "../pages/ChangePassword/ChangePassword";
 import CreateAccount from "../pages/Register/CreateAccount";
@@ -75,9 +73,12 @@ import WarehouseStaffDashboard from "../pages/WarehouseStaff/Dashboard/page";
 import MedicinesList from "../pages/WarehouseStaff/Medicines/List/page";
 import MedicineDetailPage from "../pages/WarehouseStaff/Medicines/Detail/page";
 import MedicineCreateUpdatePage from "../pages/WarehouseStaff/Medicines/CreateUpdate/page";
-import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
-import PatientDashboard from "../pages/Patient/Dashboard/page";
+import MedicineImportsList from "../pages/SharedPages/crudMedicineImports/MedicineImportList/page";
 import CreateImport from "../pages/SharedPages/crudMedicineImports/CreateImport/page";
+import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
+
+import PatientDashboard from "../pages/Patient/Dashboard/page";
+import MedicineImportDetail from "../pages/SharedPages/crudMedicineImports/MedicineImportDetail/page";
 
 export default function AppRoutes() {
   const { role } = useAuth();
@@ -107,7 +108,7 @@ export default function AppRoutes() {
         <Route path="reception-list" element={<ReceptionList />} />
         <Route path="reception/:id" element={<ReceptionDetail />} />
         <Route path="appointment/:id" element={<AppointmentDetail />} />
-        <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
+        <Route path="medical-records/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
         <Route path="patients">
           <Route index element={<PatientList />} />
@@ -182,7 +183,7 @@ export default function AppRoutes() {
         <Route path="medical-records">
           <Route index element={<MedicalRecordsList />} />
           <Route path=":id" element={<MedicalRecordDetail />} />
-          {/** 
+          {/**
           <Route path="create" element={<CreateMedicalRecord />} />
           */}
         </Route>
@@ -248,9 +249,7 @@ export default function AppRoutes() {
         </Route>
         <Route path="medicine-imports">
           <Route index element={<MedicineImportsList />} />
-          {/** 
-          <Route path=":id" element={<MedicineImportDetail />} />          
-          */}
+          <Route path=":id" element={<MedicineImportDetail />} />   
           <Route path="create" element={<CreateImport />} />
         </Route>
       </Route>
@@ -268,7 +267,7 @@ export default function AppRoutes() {
       >
         <Route index element={<PatientDashboard />} />
         <Route path="medical-records" element={<MedicalRecordsPage />} />
-        <Route path="medical-record/:recordId" element={<MedicalRecordDetailPage />} />
+        <Route path="medical-records/:id" element={<MedicalRecordDetail />} />
 
         <Route path="invoices">
           <Route index element={<PatientInvoiceHistory />} />

@@ -113,7 +113,7 @@ export default function PatientDetail() {
           </Typography>
         </Box>
 
-        <Box display="flex" gap={2}>
+       {role.role!="Doctor"&&<Box display="flex" gap={2}>
           <Button
             variant="contained"
             onClick={handleConfirmDeletePatient}
@@ -140,7 +140,7 @@ export default function PatientDetail() {
           >
             Edit
           </Button>
-        </Box>
+        </Box>}
       </Box>
 
       <Box display="flex" p="6px">

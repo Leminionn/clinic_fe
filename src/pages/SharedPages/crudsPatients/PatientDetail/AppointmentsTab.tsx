@@ -173,6 +173,7 @@ export default function AppointmentsTab({ patientId, appointments }: Appointment
                                     let prefix="";
                                     if(role.role=="Admin") prefix="admin";
                                     if(role.role=="Receptionist") prefix="receptionist";
+                                    if(role.role=="Doctor") prefix="doctor";
                                     navigate(`/${prefix}/appointment/${row.appointmentId}`)
                                     console.log("appointment ID:", row.appointmentId);
                                 }}

@@ -199,13 +199,14 @@ export default function InvoicesTab({ patientId, invoices }: InvoicesTabProps) {
                         )}
                     </TableCell>
                     <TableCell align="center">
-                        <Tooltip title="Detail">
+                        {role.role!="Doctor"&&<Tooltip title="Detail">
                             <IconButton
                                 onClick={() => {
                                     // TODO: Thêm logic chuyển hướng hoặc mở modal tại đây
                                     let prefix="";
                                     if(role.role=="Admin") prefix="admin";
                                     if(role.role=="Receptionist") prefix="receptionist";
+                                    
                                     navigate(`/${prefix}/invoices/${row.invoiceId}`)
                                     console.log("appointment ID:", row.invoiceId);
                                 }}
@@ -225,7 +226,7 @@ export default function InvoicesTab({ patientId, invoices }: InvoicesTabProps) {
                             >
                                 <VisibilityOutlined sx={{ fontSize: 18 }} />
                             </IconButton>
-                        </Tooltip>
+                        </Tooltip>}
                     </TableCell>
                   </TableRow>
                 );

@@ -97,16 +97,23 @@ const PrescriptionCreatePage = () => {
         const accessToken = localStorage.getItem("accessToken");
         apiCall("doctor/records","GET",accessToken?accessToken:"",null,(data:any)=>{
             //console.log(data);
-            setRecords(data.data.map((item:any)=>fromResponseToRecordData(item)));
+            
+            setRecords(data.data.filter((item:any)=>{
+                return item.patientName!=null&&item.doctorName!=null;
+            }).map((item:any)=>{
+                
+                return fromResponseToRecordData(item)
+                
+            }));
         },(data:any)=>{
             alert(data.message);
             navigate("/doctor");
         });
         apiCall("doctor/medicines","GET",accessToken?accessToken:"",null,(data:any)=>{
             setMedicines(data.data.map((item:any)=>{
-                if(item.reception!=null&&item.reception.patient!=null) {
-                    fromResponseToMedicineData(item);
-                }
+                 
+                   return fromResponseToMedicineData(item);
+                
             }));
         },(data:any)=>{
             alert(data.message);
