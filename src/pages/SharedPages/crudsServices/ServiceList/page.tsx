@@ -1,7 +1,7 @@
 import { Box, Button, Card, Typography, Stack } from "@mui/material";
 import React, { useState } from "react";
 import ServiceTable from "./ServiceTable";
-import { AddCircleOutline } from "@mui/icons-material";
+import { Add, AddCircleOutline } from "@mui/icons-material";
 import theme from "../../../../theme";
 import { useNavigate } from "react-router-dom";
 import ServiceToolbar from "./ServiceToolBar";
@@ -63,21 +63,16 @@ export default function ServiecList() {
         />
 
         <Button
-          variant="contained"
-          startIcon={<AddCircleOutline />}
-          onClick={() => navigate("/admin/services/create")}
-          sx={{
-            textTransform: "none",
-            borderRadius: "10px",
-            fontWeight: "bold",
-            boxShadow: "0px 4px 10px rgba(37, 99, 235, 0.2)",
-            px: 3,
-            py: 1,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Create Service
-        </Button>
+                      variant="contained"
+                      startIcon={<Add sx={{ height: 24, width: 24, }} />}
+                      onClick={() => { navigate('/admin/service/create'); }}
+                      sx={{
+                        borderRadius: 1,
+                        textTransform: "none"
+                      }}
+                    >
+                      New Service
+                    </Button>
       </Stack>
           <ServiceTable searchKey={searchKey} />
         </Box>

@@ -1,46 +1,51 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Box,
-    Typography,
-    Card,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
     Divider,
     TextField,
     Button,
     InputAdornment,
     IconButton,
     CircularProgress,
-    Container
+    Box,
+    Stack
 } from '@mui/material';
-import { Lock, Visibility, VisibilityOff, Save, ArrowBack } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { apiCall } from '../../api/api';// Đảm bảo đường dẫn đúng
+import { Lock, Visibility, VisibilityOff, Save, Close } from '@mui/icons-material';
+import { apiCall } from '../../api/api';
 import { useAuth } from '../../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function ChangePassword() {
-    const navigate = useNavigate();
+// Thêm Props cho Modal
+interface ChangePasswordModalProps {
+    open: boolean;
+    onClose: () => void;
+}
+
+export default function ChangePasswordModal({ open, onClose }: ChangePasswordModalProps) {
     const [loading, setLoading] = useState(false);
-    const {role} = useAuth();
-    useEffect(()=>{
-        if(!role) {
-            navigate("/login");
-        }
-    },[role])
-
-    // Form State
+    const { role } = useAuth();
+    const navigate= useNavigate();
     const [formData, setFormData] = useState({
         oldPassword: '',
         newPassword: ''
     });
 
-    // Visibility State
     const [showOldPass, setShowOldPass] = useState(false);
     const [showNewPass, setShowNewPass] = useState(false);
 
+    // Reset form khi đóng/mở modal
+    useEffect(() => {
+        if (!open) {
+            setFormData({ oldPassword: '', newPassword: '' });
+            setLoading(false);
+        }
+    }, [open]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = () => {
@@ -53,14 +58,15 @@ export default function ChangePassword() {
         const accessToken = localStorage.getItem("accessToken");
 
         apiCall(
-            'change_password', // Endpoint giả định
-            'PUT', // Hoặc PUT tùy backend
+            'change_password', 
+            'PUT', 
             accessToken || "",
             JSON.stringify(formData),
             (data: any) => {
                 setLoading(false);
                 alert("Password changed successfully!");
-                navigate(-1); // Quay lại trang trước
+                onClose();
+                navigate("/login"); // Đóng modal thay vì navigate(-1)
             },
             (error: any) => {
                 setLoading(false);
@@ -70,130 +76,82 @@ export default function ChangePassword() {
     };
 
     return (
-        <Box sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '100%',
-            bgcolor: '#f4f7fa', // Màu nền dashboard
-            p: 3
-        }}>
-            <Container maxWidth="sm">
-                <Card sx={{
-                    p: 4,
-                    borderRadius: 3,
-                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-                }}>
-                    {/* Header */}
-                    <Box display="flex" alignItems="center" mb={3}>
-                        <Button
-                            startIcon={<ArrowBack />}
-                            onClick={() => navigate(-1)}
-                            sx={{ mr: 1, textTransform: 'none', color: 'text.secondary', minWidth: 'auto' }}
-                        >
-                            Back
-                        </Button>
-                        <Typography variant="h5" fontWeight="bold" color="#1e293b">
-                            Change Password
-                        </Typography>
-                    </Box>
+        <Dialog 
+            open={open} 
+            onClose={onClose} 
+            fullWidth 
+            maxWidth="xs"
+            PaperProps={{ sx: { borderRadius: 3, p: 1 } }}
+        >
+            <DialogTitle sx={{ fontWeight: 'bold', color: '#1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                Change Password
+                <IconButton onClick={onClose} size="small"><Close /></IconButton>
+            </DialogTitle>
+            
+            <Divider />
 
-                    <Divider sx={{ mb: 4 }} />
+            <DialogContent>
+                <Stack spacing={3} sx={{ mt: 1 }}>
+                    <TextField
+                        fullWidth
+                        label="Old Password"
+                        name="oldPassword"
+                        type={showOldPass ? 'text' : 'password'}
+                        value={formData.oldPassword}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: (<InputAdornment position="start"><Lock color="action" /></InputAdornment>),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowOldPass(!showOldPass)} edge="end">
+                                        {showOldPass ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
 
-                    <Box component="form" display="flex" flexDirection="column" gap={3}>
-                        
-                        {/* Old Password */}
-                        <TextField
-                            fullWidth
-                            label="Old Password"
-                            name="oldPassword"
-                            type={showOldPass ? 'text' : 'password'}
-                            value={formData.oldPassword}
-                            onChange={handleChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Lock color="action" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowOldPass(!showOldPass)}
-                                            edge="end"
-                                        >
-                                            {showOldPass ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                    <TextField
+                        fullWidth
+                        label="New Password"
+                        name="newPassword"
+                        type={showNewPass ? 'text' : 'password'}
+                        value={formData.newPassword}
+                        onChange={handleChange}
+                        InputProps={{
+                            startAdornment: (<InputAdornment position="start"><Lock color="action" /></InputAdornment>),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowNewPass(!showNewPass)} edge="end">
+                                        {showNewPass ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Stack>
+            </DialogContent>
 
-                        {/* New Password */}
-                        <TextField
-                            fullWidth
-                            label="New Password"
-                            name="newPassword"
-                            type={showNewPass ? 'text' : 'password'}
-                            value={formData.newPassword}
-                            onChange={handleChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Lock color="action" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowNewPass(!showNewPass)}
-                                            edge="end"
-                                        >
-                                            {showNewPass ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-
-                        {/* Action Buttons */}
-                        <Box display="flex" justifyContent="flex-end" gap={2} mt={2}>
-                            <Button
-                                variant="outlined"
-                                onClick={() => navigate(-1)}
-                                disabled={loading}
-                                sx={{
-                                    borderRadius: 2,
-                                    textTransform: 'none',
-                                    px: 3,
-                                    color: 'text.secondary',
-                                    borderColor: 'var(--color-border)'
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="contained"
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
-                                sx={{
-                                    borderRadius: 2,
-                                    textTransform: 'none',
-                                    px: 3,
-                                    fontWeight: 'bold',
-                                    bgcolor: 'var(--color-primary-main)',
-                                    '&:hover': {
-                                        bgcolor: 'var(--color-primary-dark)'
-                                    }
-                                }}
-                            >
-                                {loading ? "Updating..." : "Update Password"}
-                            </Button>
-                        </Box>
-                    </Box>
-                </Card>
-            </Container>
-        </Box>
+            <DialogActions sx={{ p: 3, pt: 0 }}>
+                <Button onClick={onClose} color="inherit" sx={{ textTransform: 'none', fontWeight: 'bold' }}>
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+                    sx={{ 
+                        borderRadius: 2, 
+                        textTransform: 'none', 
+                        fontWeight: 'bold',
+                        px: 3,
+                        bgcolor: 'var(--color-primary-main)' 
+                    }}
+                >
+                    {loading ? "Updating..." : "Update Password"}
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }

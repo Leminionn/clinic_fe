@@ -39,7 +39,7 @@ export default function Sidebar({ items }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
-
+  
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -57,6 +57,7 @@ export default function Sidebar({ items }: SidebarProps) {
     const active = location.pathname === item.path;
     const hasChildren = item.children && item.children.length > 0;
     const open = openMenus.includes(item.label);
+
 
     return (
       <Box key={item.label}>
