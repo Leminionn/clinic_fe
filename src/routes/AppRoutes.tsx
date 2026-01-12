@@ -32,7 +32,7 @@ import ScheduleList from "../pages/Admin/Schedules/List/page";
 import ShiftDetail from "../pages/Admin/Schedules/Detail/page";
 
 import DoctorDashboard from "../pages/Doctor/Dashboard/page";
-import MedicalExamination from "../pages/Doctor/MedicalExam/page";
+
 import MedicalRecordsList from "../pages/SharedPages/crudMedicalRecords/MedicalRecordList/page";
 import MedicalRecordDetail from "../pages/SharedPages/crudMedicalRecords/MedicalRecordDetail/MedicalRecordDetail";
 
@@ -173,7 +173,6 @@ export default function AppRoutes() {
         <Route index element={<DoctorDashboard />} />
         <Route path="reception/:id" element={<ReceptionDetail />} />
         <Route path="reception-list" element={<ReceptionList />} />
-        <Route path="medical-examination" element={<MedicalExamination />} />
         <Route path="appointments" element={<AppointmentList />} />
         <Route path="appointment/:id" element={<AppointmentDetail />} />
         <Route path="patients">
