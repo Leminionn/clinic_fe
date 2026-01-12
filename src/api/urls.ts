@@ -174,6 +174,7 @@ export const prescriptionGetByRecord = (recordId: number) =>
 export const prescriptionDetailsList = (prescriptionId: number) =>
 	`doctor/prescription_details_list/${prescriptionId}`;
 export const doctorGetMedicines = "doctor/medicines";
+export const adminGetMedicines = "admin/medicines";
 export const doctorGetRecords = "doctor/records";
 
 // ==================== WAREHOUSE - MEDICINE APIs ====================

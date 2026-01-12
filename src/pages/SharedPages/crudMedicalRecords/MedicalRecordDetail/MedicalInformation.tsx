@@ -5,7 +5,7 @@ import { useAuth } from "../../../../auth/AuthContext";
 import { useEffect, useState } from "react";
 import { Edit, Save } from "lucide-react";
 import { apiCall } from "../../../../api/api";
-import { diseaseTypesGetActiveByDoctor } from "../../../../api/urls";
+import { diseaseTypesGetActive, diseaseTypesGetActiveByDoctor } from "../../../../api/urls";
 
 export default function MedicalInformation({
   initialData,
@@ -28,7 +28,15 @@ export default function MedicalInformation({
     if (role === "Patient") return;
 
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(diseaseTypesGetActiveByDoctor, "GET", accessToken || "", null,
+
+    let url = diseaseTypesGetActive;
+    if (role === "Doctor") {
+      url = diseaseTypesGetActiveByDoctor;
+    } else if (role === "Admin") {
+      url = diseaseTypesGetActive;
+    }
+
+    apiCall(url, "GET", accessToken || "", null,
       (response: any) => {
         setDiseaseTypes(response.data || []);
       },
