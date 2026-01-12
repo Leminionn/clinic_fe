@@ -245,8 +245,25 @@ const InvoiceList: React.FC = () => {
                                             </TableCell>
                                             <TableCell>{invoice.paymentMethodName || "-"}</TableCell>
                                             <TableCell align="center">
-                                                <IconButton size="small" sx={{ color: "primary.main", border: "1px solid", borderColor: "primary.light" }}>
-                                                    <Typography sx={{ fontSize: "12px", fontWeight: "bold" }}>i</Typography>
+                                                <IconButton
+                                                    size="small"
+                                                    sx={{
+                                                        color: "var(--color-primary-main)",
+                                                        border: "1px solid var(--color-primary-main)",
+                                                        borderRadius: 1.2,
+                                                        height: 32,
+                                                        width: 32,
+                                                        "&:hover": {
+                                                            bgcolor: "var(--color-primary-light)",
+                                                        },
+                                                    }}
+                                                    title="View Detail"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleViewDetail(invoice.invoiceId);
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontSize: "14px", fontWeight: "bold" }}>i</Typography>
                                                 </IconButton>
                                             </TableCell>
                                         </TableRow>
