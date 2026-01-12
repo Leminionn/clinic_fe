@@ -25,18 +25,11 @@ export default function MedicalInformation({
   const [diseaseTypes, setDiseaseTypes] = useState<DiseaseType[]>([]);
 
   useEffect(() => {
-    if (role === "Patient") return;
+    if (role !== "Doctor") return;
 
     const accessToken = localStorage.getItem("accessToken");
 
-    let url = diseaseTypesGetActive;
-    if (role === "Doctor") {
-      url = diseaseTypesGetActiveByDoctor;
-    } else if (role === "Admin") {
-      url = diseaseTypesGetActive;
-    }
-
-    apiCall(url, "GET", accessToken || "", null,
+    apiCall(diseaseTypesGetActiveByDoctor, "GET", accessToken || "", null,
       (response: any) => {
         setDiseaseTypes(response.data || []);
       },

@@ -218,7 +218,7 @@ export default function AppRoutes() {
 
 
         <Route path="appointment/:id" element={<AppointmentDetail />} />
-        <Route path="medical_record/:id" element={<MedicalRecordDetail />} />
+        <Route path="medical-records/:id" element={<MedicalRecordDetail />} />
         <Route path="invoice/:id" element={<InvoiceDetail />} />
         <Route path="invoices">
           <Route index element={<InvoiceList />} />
@@ -248,7 +248,7 @@ export default function AppRoutes() {
         </Route>
         <Route path="medicine-imports">
           <Route index element={<MedicineImportsList />} />
-          <Route path=":id" element={<MedicineImportDetail />} />   
+          <Route path=":id" element={<MedicineImportDetail />} />
           <Route path="create" element={<CreateImport />} />
         </Route>
       </Route>

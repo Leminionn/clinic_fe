@@ -46,7 +46,7 @@ export default function ServiceInformation({
 
   useEffect(() => {
     // Chỉ load danh sách services khi role là Doctor (để edit)
-    if (role === "Patient") return;
+    if (role !== "Doctor") return;
 
     // fetch services from backend (unsecure endpoint returns paged results)
     const accessToken = localStorage.getItem("accessToken");

@@ -29,8 +29,8 @@ export interface MedicalRecordDTO {
   symptoms: string;
   diagnosis: string;
   diseaseType: {           // Assuming RefDiseaseType is an object, adjust if it's just an ID or Name
-     diseaseTypeId: number;
-     diseaseTypeName: string;
+    diseaseTypeId: number;
+    diseaseTypeName: string;
   } | null;
   orderedServices: string;
   notes: string;
@@ -43,7 +43,7 @@ interface MedicalRecordsTabProps {
 
 export default function MedicalRecordsTab({ patientId, medicalRecords }: MedicalRecordsTabProps) {
   const role = useAuth();
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   return (
     <Box>
       <Typography variant="h6" gutterBottom fontWeight="bold">
@@ -52,13 +52,13 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
       <Divider sx={{ mb: 3 }} />
 
       {medicalRecords.length === 0 ? (
-        <Box 
-          sx={{ 
-            p: 4, 
-            textAlign: 'center', 
-            bgcolor: '#f9fafb', 
-            borderRadius: 2, 
-            border: '1px dashed #ccc' 
+        <Box
+          sx={{
+            p: 4,
+            textAlign: 'center',
+            bgcolor: '#f9fafb',
+            borderRadius: 2,
+            border: '1px dashed #ccc'
           }}
         >
           <Typography variant="body1" color="text.secondary">
@@ -104,10 +104,10 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                   {/* Doctor */}
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1.5}>
-                      <Avatar 
-                         sx={{ width: 32, height: 32, bgcolor: '#e3f2fd', color: '#1976d2', fontSize: 14 }}
+                      <Avatar
+                        sx={{ width: 32, height: 32, bgcolor: '#e3f2fd', color: '#1976d2', fontSize: 14 }}
                       >
-                          {row.doctorName ? row.doctorName.charAt(0) : <Person />}
+                        {row.doctorName ? row.doctorName.charAt(0) : <Person />}
                       </Avatar>
                       <Typography variant="body2">
                         Dr. {row.doctorName}
@@ -118,88 +118,86 @@ export default function MedicalRecordsTab({ patientId, medicalRecords }: Medical
                   {/* Diagnosis & Symptoms */}
                   <TableCell>
                     <Stack spacing={0.5}>
-                        {row.diseaseType && (
-                            <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 'bold', display: 'block' }}>
-                                [{row.diseaseType.diseaseTypeName}]
-                            </Typography>
-                        )}
-                        <Typography variant="body2" fontWeight={600}>
-                            {row.diagnosis || "No diagnotics"}
+                      {row.diseaseType && (
+                        <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 'bold', display: 'block' }}>
+                          [{row.diseaseType.diseaseTypeName}]
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-                            <span style={{ fontWeight: 500 }}>Symptoms:</span> {row.symptoms || "N/A"}
-                        </Typography>
+                      )}
+                      <Typography variant="body2" fontWeight={600}>
+                        {row.diagnosis || "No diagnotics"}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
+                        <span style={{ fontWeight: 500 }}>Symptoms:</span> {row.symptoms || "N/A"}
+                      </Typography>
                     </Stack>
                   </TableCell>
 
                   {/* Ordered Services */}
                   <TableCell>
-                     {row.orderedServices ? (
-                        <Box display="flex" gap={1} alignItems="start">
-                            <MedicalServices fontSize="small" color="action" sx={{ mt: 0.3, width: 16 }} />
-                            <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
-                                {row.orderedServices}
-                            </Typography>
-                        </Box>
-                     ) : (
-                        <Typography variant="caption" color="text.secondary">None</Typography>
-                     )}
+                    {row.orderedServices ? (
+                      <Box display="flex" gap={1} alignItems="start">
+                        <MedicalServices fontSize="small" color="action" sx={{ mt: 0.3, width: 16 }} />
+                        <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                          {row.orderedServices}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Typography variant="caption" color="text.secondary">None</Typography>
+                    )}
                   </TableCell>
 
                   {/* Notes */}
                   <TableCell>
                     {row.notes ? (
-                        <Tooltip title={row.notes} arrow placement="top">
-                             <Box display="flex" gap={1} alignItems="center" sx={{ cursor: 'pointer' }}>
-                                <Notes fontSize="small" color="action" sx={{ width: 16 }} />
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{ 
-                                        maxWidth: 150, 
-                                        overflow: 'hidden', 
-                                        textOverflow: 'ellipsis', 
-                                        whiteSpace: 'nowrap' 
-                                    }}
-                                >
-                                    {row.notes}
-                                </Typography>
-                            </Box>
-                        </Tooltip>
+                      <Tooltip title={row.notes} arrow placement="top">
+                        <Box display="flex" gap={1} alignItems="center" sx={{ cursor: 'pointer' }}>
+                          <Notes fontSize="small" color="action" sx={{ width: 16 }} />
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              maxWidth: 150,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            {row.notes}
+                          </Typography>
+                        </Box>
+                      </Tooltip>
                     ) : (
-                        <Typography variant="caption" color="text.secondary">-</Typography>
+                      <Typography variant="caption" color="text.secondary">-</Typography>
                     )}
                   </TableCell>
 
                   <TableCell align="center">
-                        {role.role!="Doctor"&&<Tooltip title="Detail">
-                            <IconButton
-                                onClick={() => {
-                                    // TODO: Thêm logic chuyển hướng hoặc mở modal tại đây
-                                    let prefix="";
-                                    if(role.role=="Admin") prefix="admin";
-                                    if(role.role=="Receptionist") prefix="receptionist";
-                                    if(role.role=="Doctor") prefix="doctor";
-                                    navigate(`/${prefix}/medical_record/${row.recordId}`)
-                                    
-                                }}
-                                sx={{
-                                    color: 'var(--color-primary-main)', // Hoặc dùng màu cứng '#1976d2' nếu biến CSS chưa có
-                                    border: '1px solid currentColor',
-                                    borderRadius: 1.5,
-                                    height: 32,
-                                    width: 32,
-                                    padding: 0,
-                                    opacity: 0.8,
-                                    '&:hover': {
-                                        opacity: 1,
-                                        bgcolor: 'rgba(25, 118, 210, 0.04)'
-                                    }
-                                }}
-                            >
-                                <VisibilityOutlined sx={{ fontSize: 18 }} />
-                            </IconButton>
-                        </Tooltip>}
-                    </TableCell>
+                    <Tooltip title="Detail">
+                      <IconButton
+                        onClick={() => {
+                          let prefix = "";
+                          if (role.role == "Admin") prefix = "admin";
+                          if (role.role == "Receptionist") prefix = "receptionist";
+                          if (role.role == "Doctor") prefix = "doctor";
+                          navigate(`/${prefix}/medical-records/${row.recordId}`)
+                        }}
+                        sx={{
+                          color: 'var(--color-primary-main)',
+                          border: '1px solid currentColor',
+                          borderRadius: 1.5,
+                          height: 32,
+                          width: 32,
+                          padding: 0,
+                          opacity: 0.8,
+                          '&:hover': {
+                            opacity: 1,
+                            bgcolor: 'rgba(25, 118, 210, 0.04)'
+                          }
+                        }}
+                      >
+                        <VisibilityOutlined sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

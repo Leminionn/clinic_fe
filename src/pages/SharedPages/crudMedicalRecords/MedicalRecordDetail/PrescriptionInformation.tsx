@@ -51,18 +51,11 @@ export default function PrescriptionInformation({
   };
 
   useEffect(() => {
-    if (role === "Patient") return;
+    if (role !== "Doctor") return;
 
     const accessToken = localStorage.getItem("accessToken");
 
-    let url = doctorGetMedicines;
-    if (role === "Doctor") {
-      url = doctorGetMedicines;
-    } else if (role === "Admin") {
-      url = adminGetMedicines;
-    }
-
-    apiCall(url, "GET", accessToken ? accessToken : "", null, (data: any) => {
+    apiCall(doctorGetMedicines, "GET", accessToken ? accessToken : "", null, (data: any) => {
       setMedicines(data.data);
     }, (data: any) => {
       showMessage(data.message);
