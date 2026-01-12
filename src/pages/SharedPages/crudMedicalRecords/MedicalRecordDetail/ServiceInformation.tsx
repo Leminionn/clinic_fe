@@ -28,12 +28,14 @@ export default function ServiceInformation({
   setIsEditing,
   onConfirmSave,
   onSaveData,
+  disabled = false,
 }: {
   initialData: OrderedService[],
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
   onSaveData: (data: any) => void,
+  disabled?: boolean,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<OrderedService[]>(initialData || []);
@@ -124,6 +126,7 @@ export default function ServiceInformation({
         {role === "Doctor" &&
           <Button
             variant="contained"
+            disabled={disabled}
             sx={{
               textTransform: 'none',
               minWidth: '120px',

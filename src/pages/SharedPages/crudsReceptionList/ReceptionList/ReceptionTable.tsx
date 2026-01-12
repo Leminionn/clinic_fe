@@ -16,28 +16,34 @@ import AlertDialog from "./Alert"; // Import AlertDialog bạn đã dùng ở Da
 import { medicalRecordCreate } from "../../../../api/urls";
 
 
-// ... (Các hàm getStatusBgColor, getStatusTextColor giữ nguyên)
+// ... (Các hàm getStatusBgColor, getStatusTextColor)
 export function getStatusBgColor(status: string): string {
-  if (status === 'Admitted - Waiting') {
-    return 'var(--color-bg-warning)'
-  } else if (status === 'Examined - Unpaid') {
-    return 'var(--color-bg-info)'
-  } else if (status === 'Paid') {
-    return 'var(--color-bg-success)'
-  } else {
-    return 'var(--color-bg-error)'
+  switch (status) {
+    case 'WAITING':
+      return 'var(--color-bg-warning)'; // Orange for waiting
+    case 'IN_EXAMINATION':
+      return 'var(--color-bg-info)'; // Blue for in progress
+    case 'DONE':
+      return 'var(--color-bg-success)'; // Green for completed
+    case 'CANCELLED':
+      return 'var(--color-bg-error)'; // Red for cancelled
+    default:
+      return 'var(--color-bg-warning)';
   }
 }
 
 export function getStatusTextColor(status: string): string {
-  if (status === 'Admitted - Waiting') {
-    return 'var(--color-text-warning)'
-  } else if (status === 'Examined - Unpaid') {
-    return 'var(--color-text-info)'
-  } else if (status === 'Paid') {
-    return 'var(--color-text-success)'
-  } else {
-    return 'var(--color-text-error)'
+  switch (status) {
+    case 'WAITING':
+      return 'var(--color-text-warning)'; // Orange text
+    case 'IN_EXAMINATION':
+      return 'var(--color-text-info)'; // Blue text
+    case 'DONE':
+      return 'var(--color-text-success)'; // Green text
+    case 'CANCELLED':
+      return 'var(--color-text-error)'; // Red text
+    default:
+      return 'var(--color-text-warning)';
   }
 }
 

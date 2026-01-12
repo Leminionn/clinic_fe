@@ -13,12 +13,14 @@ export default function MedicalInformation({
   setIsEditing,
   onConfirmSave,
   onSaveData,
+  disabled = false,
 }: {
   initialData: MedicalRecordDetail,
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
   onSaveData: (data: any) => void,
+  disabled?: boolean,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<MedicalRecordDetail>(initialData);
@@ -91,6 +93,7 @@ export default function MedicalInformation({
 
             <Button
               variant="contained"
+              disabled={disabled}
               sx={{
                 textTransform: 'none',
                 width: '120px',

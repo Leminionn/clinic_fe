@@ -24,12 +24,14 @@ export default function PrescriptionInformation({
   setIsEditing,
   onConfirmSave,
   onSaveData,
+  disabled = false,
 }: {
   initialData: PrescriptionRequest | null,
   isEditing: boolean,
   setIsEditing: (isEditing: boolean) => void,
   onConfirmSave: () => void,
   onSaveData: (data: any) => void,
+  disabled?: boolean,
 }) {
   const { role } = useAuth();
   const [data, setData] = useState<PrescriptionRequest>(initialData || NullPrescription);
@@ -122,6 +124,7 @@ export default function PrescriptionInformation({
         {role === "Doctor" &&
           <Button
             variant="contained"
+            disabled={disabled}
             sx={{
               textTransform: 'none',
               minWidth: '120px',

@@ -12,7 +12,7 @@ import { FilterDrama } from "@mui/icons-material";
 export default function ReceptionList() {
   const [searchKey, setSearchKey] = useState("");
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("WAITING");
   const [isNewFormOpen, setIsNewFormOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -57,7 +57,7 @@ export default function ReceptionList() {
           <Divider />
 
           <Box flex={1} mt={3}>
-            <ReceptionTable filterStatus={filterStatus} filterDate={selectedDate} patientName={searchKey}/>
+            <ReceptionTable filterStatus={filterStatus} filterDate={selectedDate} patientName={searchKey} />
           </Box>
         </Card>
       </Box>
@@ -66,21 +66,21 @@ export default function ReceptionList() {
         open={isNewFormOpen}
         onClose={() => setIsNewFormOpen(false)}
         onConfirm={(patientId: number) => {
-          
+
           const data = {
-            patientId:patientId,
+            patientId: patientId,
             receptionDate: new Date().toISOString()
           }
           const accessToken = localStorage.getItem("accessToken");
-          apiCall("receptionist/reception/create","POST",accessToken?accessToken:"",JSON.stringify(data),
-        (data:any)=>{
-          showMessage("Received patient successfully!");
-          setIsNewFormOpen(false);
-        },
-      (data:any)=>{
-        showMessage(data.message,"error");
-      })
-          
+          apiCall("receptionist/reception/create", "POST", accessToken ? accessToken : "", JSON.stringify(data),
+            (data: any) => {
+              showMessage("Received patient successfully!");
+              setIsNewFormOpen(false);
+            },
+            (data: any) => {
+              showMessage(data.message, "error");
+            })
+
         }}
         onAppointmentCheckIn={(appointmentId: number) => {
           showMessage("Checked in successfully!");
