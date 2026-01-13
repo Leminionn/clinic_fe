@@ -86,6 +86,14 @@ export default function MedicineImportDetailPage() {
           totalValue: response.data.totalValue,
           editable: response.data.editable,
         };
+        // Debug log - có thể xóa sau khi fix xong
+        console.log('Import data:', importData);
+        console.log('Import editable:', response.data.editable);
+        console.log('Details editable:', response.data.details.map((d: { medicineId: number; editable: boolean; statusMessage: string }) => ({
+          medicineId: d.medicineId,
+          editable: d.editable,
+          statusMessage: d.statusMessage
+        })));
         setData(importData);
         setLoading(false);
       },

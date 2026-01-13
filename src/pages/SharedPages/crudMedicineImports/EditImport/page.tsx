@@ -191,8 +191,12 @@ export default function EditImport() {
       showMessage("The medicine type for some items have not been selected!", "error");
       return;
     };
-    if (editableItems.some(item => item.quantity < 1 || item.importPrice < 0)) {
-      showMessage("Quantity and unit cost must not be negative!", "error");
+    if (editableItems.some(item => item.quantity < 1)) {
+      showMessage("Quantity must be at least 1!", "error");
+      return;
+    };
+    if (editableItems.some(item => item.importPrice <= 0)) {
+      showMessage("Unit cost must be greater than 0!", "error");
       return;
     };
     if (editableItems.some(item => !item.expiryDate)) {
