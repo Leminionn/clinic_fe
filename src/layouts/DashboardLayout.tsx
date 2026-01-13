@@ -25,6 +25,11 @@ export default function DashboardLayout() {
   const menuByRole: Record<string, SidebarItem[]> = {
     Admin: [
       { label: "Dashboard", path: "/admin", icon: <Home /> },
+      // Operations
+      { label: "Reception List", path: "/admin/reception-list", icon: <People /> },
+      { label: "Appointments", path: "/admin/appointments", icon: <Calendar1 /> },
+      // People Management
+      { label: "Patients", path: "/admin/patients", icon: <People /> },
       {
         label: "Staffs",
         icon: <People />,
@@ -32,19 +37,17 @@ export default function DashboardLayout() {
           { label: "Doctors", path: "/admin/staff/doctors", icon: <People /> },
           { label: "Receptionists", path: "/admin/staff/receptionists", icon: <People /> },
           { label: "Warehouse Staffs", path: "/admin/staff/warehouse-staffs", icon: <People /> },
-
         ],
       },
-      { label: "Patients", path: "/admin/patients", icon: <People /> },
-      { label: "Appointments", path: "/admin/appointments", icon: <Calendar1 /> },
       { label: "Staff Schedules", path: "/admin/schedules", icon: <Calendar1 /> },
+      // Medical
       { label: "Services", path: "/admin/services", icon: <MedicalServices /> },
-      { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
-      { label: "Receipts", path: "/admin/invoices", icon: <ReceiptLong /> },
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/medicine-imports", icon: <Inventory /> },
-      { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
-      { label: "Reception list", path: "/admin/reception-list", icon: <People /> },
+      // Financial
+      { label: "Receipts", path: "/admin/invoices", icon: <ReceiptLong /> },
+      { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
+      // System
       {
         label: "Settings",
         icon: <Settings />,
@@ -57,34 +60,29 @@ export default function DashboardLayout() {
     Doctor: [
       { label: "Dashboard", path: "/doctor", icon: <Home /> },
       { label: "Reception List", path: "/doctor/reception-list", icon: <People /> },
+      { label: "My Appointments", path: "/doctor/appointments", icon: <Calendar1 /> },
       { label: "Patients", path: "/doctor/patients", icon: <People /> },
       { label: "Medical Records", path: "/doctor/medical-records", icon: <MedicalInformation /> },
-      { label: "My Appointments", path: "/doctor/appointments", icon: <Calendar1 /> },
-
-      { label: "Prescriptions", path: "/doctor/prescriptions", icon: <MedicationLiquid /> }
-
+      { label: "Prescriptions", path: "/doctor/prescriptions", icon: <MedicationLiquid /> },
     ],
     Receptionist: [
       { label: "Dashboard", path: "/receptionist", icon: <Home /> },
       { label: "Reception List", path: "/receptionist/reception-list", icon: <People /> },
       { label: "Appointments", path: "/receptionist/appointments", icon: <Calendar1 /> },
+      { label: "Patients", path: "/receptionist/patients", icon: <Person /> },
       { label: "Receipts", path: "/receptionist/invoices", icon: <ReceiptLong /> },
-
-      { label: "Patients", path: "/receptionist/patients", icon: <Person></Person> }
     ],
     WarehouseStaff: [
       { label: "Dashboard", path: "/warehouse-staff", icon: <Home /> },
       { label: "Medicines", path: "/warehouse-staff/medicines", icon: <Medication /> },
       { label: "Medicine Inventory", path: "/warehouse-staff/medicine-imports", icon: <Inventory /> },
-
     ],
     Patient: [
       { label: "Dashboard", path: "/patient", icon: <Home /> },
       { label: "My Appointments", path: "/patient/appointments", icon: <Calendar1 /> },
       { label: "Medical Records", path: "/patient/medical-records", icon: <FolderOpen /> },
+      { label: "Prescriptions", path: "/patient/prescriptions", icon: <MedicationLiquid /> },
       { label: "Invoice History", path: "/patient/invoices", icon: <ReceiptLong /> },
-      { label: "Recent Prescriptions", path: "/patient/prescriptions", icon: <MedicationLiquid /> },
-
     ],
   };
 
