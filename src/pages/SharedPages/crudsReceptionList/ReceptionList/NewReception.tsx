@@ -79,36 +79,37 @@ export default function NewReceptionForm({
     setPatientFound(false);
     setPatient(NullPatient);
   }
-  function mapData(patientResponse:any) {
-    const result:ReceptionPatientFindInterface = {
+  function mapData(patientResponse: any) {
+    const result: ReceptionPatientFindInterface = {
       patientId: patientResponse.patientId,
       address: patientResponse.address,
       fullName: patientResponse.fullName,
       dateOfBirth: patientResponse.dateOfBirth,
       gender: patientResponse.gender,
       phone: patientResponse.phone,
-      email:patientResponse.email
+      email: patientResponse.email
     };
     return result;
   }
   const handleFindPatient = (idCard: string) => {
     setLoading(true);
     const accessToken = localStorage.getItem("accessToken");
-    apiCall(`receptionist/find_patient?idCard=${idCard}`,"GET",accessToken?accessToken:"",null,
-      (data:any)=>{
+    apiCall(`receptionist/find_patient?idCard=${idCard}`, "GET", accessToken ? accessToken : "", null,
+      (data: any) => {
         setPatientIdCard(idCard);
         setPatientFound(true);
         setPatient(mapData(data.data));
         setLoading(false);
       },
-      (data:any)=>{
+      (data: any) => {
         setPatientIdCard("");
         setPatientFound(false);
         setPatient(NullPatient);
+        setLoading(false);
       }
     )
 
-    
+
   }
 
   const handleCancel = () => {
