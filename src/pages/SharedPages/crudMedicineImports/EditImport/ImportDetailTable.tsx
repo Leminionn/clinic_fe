@@ -14,6 +14,8 @@ export default function ImportDetailTable({
   onDetailChange: (rowId: string, field: keyof CreateUpdateImportDetailUI, value: any) => void;
   onRemoveDetail: (rowId: string) => void;
 }) {
+  // Chỉ hiện cột Status khi có item không editable
+  const hasNonEditableItems = data.some(item => item.editable === false);
 
   return (
     <TableContainer component={Paper} elevation={0} variant="outlined">
@@ -28,14 +30,14 @@ export default function ImportDetailTable({
             <TableCell sx={{ fontWeight: 'bold' }}>Unit Cost</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Total Cost</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }} align="center">Status</TableCell>
+            {hasNonEditableItems && <TableCell sx={{ fontWeight: 'bold' }} align="center">Status</TableCell>}
           </TableRow>
         </TableHead>
 
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={9} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+              <TableCell colSpan={hasNonEditableItems ? 9 : 8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
                 No items added yet, press "Add item" to add
               </TableCell>
             </TableRow>
@@ -140,18 +142,20 @@ export default function ImportDetailTable({
                     )}
                   </TableCell>
 
-                  <TableCell align="center" width="10%">
-                    {!isEditable && (
-                      <Tooltip title={row.statusMessage || "Đã bán, không được sửa/xóa"} arrow>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                          <Warning sx={{ fontSize: 16, color: 'warning.main' }} />
-                          <Typography variant="caption" color="warning.main" sx={{ fontSize: 11 }}>
-                            Đã bán
-                          </Typography>
-                        </Box>
-                      </Tooltip>
-                    )}
-                  </TableCell>
+                  {hasNonEditableItems && (
+                    <TableCell align="center" width="10%">
+                      {!isEditable && (
+                        <Tooltip title={row.statusMessage || "Đã bán, không được sửa/xóa"} arrow>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                            <Warning sx={{ fontSize: 16, color: 'warning.main' }} />
+                            <Typography variant="caption" color="warning.main" sx={{ fontSize: 11 }}>
+                              Đã bán
+                            </Typography>
+                          </Box>
+                        </Tooltip>
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             }))}

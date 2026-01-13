@@ -24,10 +24,12 @@ import { apiCall } from "../../../../api/api";
 import { showMessage } from "../../../../components/ActionResultMessage";
 
 export default function MedicineImportTable({
-  selectedDate,
+  fromDate,
+  toDate,
   searchKey
 }: {
-  selectedDate: string,
+  fromDate: string,
+  toDate: string,
   searchKey: string
 }) {
   const navigate = useNavigate();
@@ -51,10 +53,16 @@ export default function MedicineImportTable({
     
     setLoading(true);
     
-    // Build query params
+    // Build query params với date range
     let queryParams = `?page=${page - 1}&size=${rowsPerPage}&sortBy=importDate&sortType=DESC`;
     if (searchKey) {
       queryParams += `&keyword=${encodeURIComponent(searchKey)}`;
+    }
+    if (fromDate) {
+      queryParams += `&fromDate=${fromDate}`;
+    }
+    if (toDate) {
+      queryParams += `&toDate=${toDate}`;
     }
     
     apiCall(`${apiPrefix}/imports${queryParams}`, "GET", accessToken, null,
@@ -81,7 +89,7 @@ export default function MedicineImportTable({
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage, selectedDate, searchKey, role]);
+  }, [page, rowsPerPage, fromDate, toDate, searchKey, role]);
 
   return (
     <Box sx={{

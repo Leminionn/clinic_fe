@@ -60,14 +60,15 @@ export default function CreateImport() {
 
   }, []);
 
-  // Thêm dòng thuốc mới
+  // Thêm dòng thuốc mới - mặc định ngày hết hạn là 6 tháng sau
   const handleAddDetail = () => {
+    const defaultExpiryDate = dayjs().add(6, 'month').toISOString();
     const newDetail: CreateUpdateImportDetailUI = {
       rowId: uuidv4(),
       medicineId: null,
       quantity: 1,
       importPrice: 0,
-      expiryDate: new Date().toISOString(),
+      expiryDate: defaultExpiryDate,
     };
     setItems(prev => ([...prev, newDetail]));
   };

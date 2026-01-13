@@ -4,6 +4,7 @@ import {
   TextField,
   InputAdornment,
   Button,
+  Typography,
 } from "@mui/material";
 import { CalendarDays, Search } from "lucide-react";
 import { useAuth } from "../../../../auth/AuthContext";
@@ -13,18 +14,22 @@ import { useNavigate } from "react-router-dom";
 export default function MedicineImportToolbar({
   searchKey,
   onChangeSearchKey,
-  date,
-  onChangeDate,
+  fromDate,
+  onChangeFromDate,
+  toDate,
+  onChangeToDate,
 }: {
   searchKey: string,
   onChangeSearchKey: (key: string) => void,
-  date: string,
-  onChangeDate: (date: string) => void,
-
+  fromDate: string,
+  onChangeFromDate: (date: string) => void,
+  toDate: string,
+  onChangeToDate: (date: string) => void,
 }) {
   const navigate = useNavigate();
   const { role } = useAuth();
-  const dateInputRef = useRef<HTMLInputElement>(null);
+  const fromDateInputRef = useRef<HTMLInputElement>(null);
+  const toDateInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <Box
@@ -38,7 +43,7 @@ export default function MedicineImportToolbar({
       <Box
         sx={{
           display: "flex",
-          gap: 4,
+          gap: 2,
           alignItems: "center",
         }}
       >
@@ -56,7 +61,7 @@ export default function MedicineImportToolbar({
           sx={{
             bgcolor: "var(--color-primary-light)",
             borderRadius: 3,
-            width: '280px',
+            width: '250px',
             '& .MuiInputBase-root': {
               pl: '18px',
             },
@@ -71,45 +76,84 @@ export default function MedicineImportToolbar({
           }}
         />
 
-        <TextField
-          value={date}
-          onChange={(e) => onChangeDate(e.target.value)}
-          type="date"
-          inputRef={dateInputRef}
-          variant="outlined"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                <CalendarDays size={18} color="var(--color-primary-main)"
-                  onClick={() => dateInputRef.current?.showPicker()} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            "& .MuiInputBase-root": {
-              color: "var(--color-text-placeholder)",
-              width: '180px',
-              cursor: "pointer",
-              "& input": {
-                cursor: "pointer",
-                px: '24px',
-                py: '10px',
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" color="text.secondary">From:</Typography>
+          <TextField
+            value={fromDate}
+            onChange={(e) => onChangeFromDate(e.target.value)}
+            type="date"
+            inputRef={fromDateInputRef}
+            variant="outlined"
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <CalendarDays size={16} color="var(--color-primary-main)"
+                    onClick={() => fromDateInputRef.current?.showPicker()} style={{ cursor: 'pointer' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiInputBase-root": {
+                width: '150px',
+                "& input": {
+                  cursor: "pointer",
+                  py: '8px',
+                  px: '12px',
+                },
+                "& fieldset": {
+                  borderRadius: 2,
+                  borderWidth: 1.5,
+                  borderColor: "var(--color-primary-main)",
+                },
               },
-              "& fieldset": {
-                borderRadius: 3,
-                borderWidth: 1.6,
-                borderColor: "var(--color-primary-main)",
+              "& input::-webkit-calendar-picker-indicator": {
+                display: "none",
               },
-            },
+            }}
+          />
+        </Box>
 
-            "& input::-webkit-calendar-picker-indicator": {
-              display: "none",
-            },
-          }}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2" color="text.secondary">To:</Typography>
+          <TextField
+            value={toDate}
+            onChange={(e) => onChangeToDate(e.target.value)}
+            type="date"
+            inputRef={toDateInputRef}
+            variant="outlined"
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <CalendarDays size={16} color="var(--color-primary-main)"
+                    onClick={() => toDateInputRef.current?.showPicker()} style={{ cursor: 'pointer' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiInputBase-root": {
+                width: '150px',
+                "& input": {
+                  cursor: "pointer",
+                  py: '8px',
+                  px: '12px',
+                },
+                "& fieldset": {
+                  borderRadius: 2,
+                  borderWidth: 1.5,
+                  borderColor: "var(--color-primary-main)",
+                },
+              },
+              "& input::-webkit-calendar-picker-indicator": {
+                display: "none",
+              },
+            }}
+          />
+        </Box>
       </Box>
 
-      {(role === "WarehouseStaff") &&
+      {(role === "WarehouseStaff" || role === "Admin") &&
         <Button
           variant="contained"
           startIcon={<Add sx={{ height: 24, width: 24, }} />}
