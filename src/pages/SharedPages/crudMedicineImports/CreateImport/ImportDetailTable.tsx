@@ -1,6 +1,7 @@
 import { Autocomplete, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
-import type { CreateImportDetailUI, Medicine } from "../../../../types/MedicineImport";
+import type { CreateUpdateImportDetailUI, Medicine } from "../../../../types/MedicineImport";
 import { DeleteOutline } from "@mui/icons-material";
+import dayjs from "dayjs";
 
 export default function ImportDetailTable({
   data,
@@ -8,9 +9,9 @@ export default function ImportDetailTable({
   onDetailChange,
   onRemoveDetail
 }: {
-  data: CreateImportDetailUI[];
+  data: CreateUpdateImportDetailUI[];
   medicineList: Medicine[];
-  onDetailChange: (rowId: string, field: keyof CreateImportDetailUI, value: any) => void;
+  onDetailChange: (rowId: string, field: keyof CreateUpdateImportDetailUI, value: any) => void;
   onRemoveDetail: (rowId: string) => void;
 }) {
 
@@ -59,7 +60,7 @@ export default function ImportDetailTable({
                 <TableCell width="10%">
                   <TextField
                     type="date"
-                    value={row.expiryDate}
+                    value={dayjs(row.expiryDate).format("YYYY-MM-DD")}
                     onChange={(e) => onDetailChange(row.rowId, 'expiryDate', (e.target.value) || "")}
                     size="small"
                     variant="standard"

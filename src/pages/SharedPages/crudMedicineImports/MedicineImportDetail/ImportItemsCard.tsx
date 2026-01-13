@@ -27,7 +27,8 @@ export default function ImportItemsCard({
             <TableCell sx={{ fontWeight: 'bold' }} align="center">STT</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Medicine Name</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Expiry Date</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Quantity</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Import Quantity</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Quantity In Stock</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Unit</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Unit Cost</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Total Cost</TableCell>
@@ -38,19 +39,27 @@ export default function ImportItemsCard({
           {data.importDetails.map((item, index) => (
             <TableRow key={index}>
               <TableCell width="5%" align="center">{index + 1}</TableCell>
-              <TableCell width="25%">
+              <TableCell width="20%">
                 {item.medicine.medicineName}
               </TableCell>
-              <TableCell width="15%">
+              <TableCell width="12%">
                 {dayjs(item.expiryDate).format("DD/MM/YYYY")}
               </TableCell>
               <TableCell width="10%">
                 {item.quantity}
               </TableCell>
-              <TableCell width="15%">
+              <TableCell width="10%">
+                <Typography 
+                  color={item.quantityInStock < item.quantity ? 'warning.main' : 'text.primary'}
+                  fontWeight={item.quantityInStock < item.quantity ? 'bold' : 'normal'}
+                >
+                  {item.quantityInStock ?? item.quantity}
+                </Typography>
+              </TableCell>
+              <TableCell width="10%">
                 {item.medicine.unit.toLowerCase()}
               </TableCell>
-              <TableCell width="15%">
+              <TableCell width="13%">
                 {item.importPrice.toLocaleString()} đ
               </TableCell>
               <TableCell>

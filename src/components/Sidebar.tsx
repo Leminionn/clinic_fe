@@ -54,7 +54,14 @@ export default function Sidebar({ items }: SidebarProps) {
   };
 
   const renderMenuItem = (item: SidebarItem, depth = 0) => {
-    const active = location.pathname === item.path;
+    // Active if current path starts with item.path (to support detail pages)
+    // For root paths like /admin, /doctor etc, use exact match to avoid false positives
+    const isRootPath = item.path && (item.path.split('/').filter(Boolean).length <= 1);
+    const active = item.path 
+      ? (isRootPath 
+          ? location.pathname === item.path 
+          : location.pathname.startsWith(item.path))
+      : false;
     const hasChildren = item.children && item.children.length > 0;
     const open = openMenus.includes(item.label);
 

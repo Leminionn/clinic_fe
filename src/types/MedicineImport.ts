@@ -18,7 +18,7 @@ export interface MedicineImportDetail {
   importDetails: ImportItem[];
   totalQuantity: number;
   totalValue: number;
-  editable: boolean;
+  editable: boolean; // true if ALL details are editable (no items sold from this import)
 }
 
 export interface ImportItem {
@@ -27,24 +27,44 @@ export interface ImportItem {
     medicineName: string;
     unit: string;
   };
-  quantity: number;
+  quantity: number; // Import quantity (static - original import amount)
+  quantityInStock: number; // Current inventory quantity (dynamic)
   expiryDate: string;
   importPrice: number;
+  editable: boolean; // true if quantityInStock == quantity (no items sold from this batch)
+  statusMessage: string; // Warning message if not editable (e.g., "Đã bán, không được sửa/xóa")
 }
 
-export interface CreateMedicineImportUI {
+export interface CreateMedicineImport {
   importDate: string;
   importerId: number;
   supplier: string;
-  importDetails: CreateImportDetailUI[]
+  importDetails: CreateUpdateImportDetail[]
 }
 
-export interface CreateImportDetailUI {
-  rowId: string;
+export interface CreateUpdateImportDetail {
   medicineId: number | null;
   quantity: number;
   expiryDate: string;
   importPrice: number;
+}
+
+export interface CreateUpdateImportDetailUI extends CreateUpdateImportDetail {
+  rowId: string;
+  editable?: boolean; // true if this item can be edited (no items sold)
+  statusMessage?: string; // Warning message if not editable
+  quantityInStock?: number; // Current inventory quantity (for display purposes)
+}
+
+export interface UpdateMedicineImport {
+  importId: number;
+  importDate: string;
+  importer: {
+    importerId: number;
+    importerName: string;
+  };
+  supplier: string;
+  importDetails: CreateUpdateImportDetail[]
 }
 
 export interface Medicine {
