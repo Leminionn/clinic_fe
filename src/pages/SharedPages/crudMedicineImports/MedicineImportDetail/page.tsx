@@ -161,7 +161,9 @@ export default function MedicineImportDetailPage() {
           </Typography>
         </Box>
 
-        {data.editable && (
+        {/* Admin luôn thấy nút Edit, WarehouseStaff chỉ thấy khi editable */}
+        {/* Nút Delete chỉ hiển thị khi tất cả items đều chưa bán (all editable) */}
+        {(role === 'Admin' || data.editable) && (
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="contained"
@@ -171,26 +173,27 @@ export default function MedicineImportDetailPage() {
                 gap: 2,
                 boxShadow: 'none',
               }}
-              disabled={!data.editable}
               onClick={() => { navigate("edit") }}
             >
               <Edit size={18} />
               Edit Import
             </Button>
-            <Button
-              variant="contained"
-              sx={{
-                width: "140px",
-                bgcolor: "var(--color-text-error)",
-                textTransform: 'none',
-                gap: 2,
-                boxShadow: 'none',
-              }}
-              disabled={!data.editable}
-              onClick={() => { handleConfirmDelete() }}
-            >
-              Delete Import
-            </Button>
+            {/* Chỉ hiện nút Delete khi tất cả items đều editable (chưa bán) */}
+            {data.importDetails?.every(item => item.editable !== false) && (
+              <Button
+                variant="contained"
+                sx={{
+                  width: "140px",
+                  bgcolor: "var(--color-text-error)",
+                  textTransform: 'none',
+                  gap: 2,
+                  boxShadow: 'none',
+                }}
+                onClick={() => { handleConfirmDelete() }}
+              >
+                Delete Import
+              </Button>
+            )}
           </Box>
         )}
       </Box>

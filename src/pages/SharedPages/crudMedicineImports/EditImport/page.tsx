@@ -270,19 +270,22 @@ export default function EditImport() {
           </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          sx={{
-            textTransform: 'none',
-            gap: 2,
-            boxShadow: 'none',
-          }}
-          disabled={items.length === 0}
-          onClick={handleConfirmSaveMedicineImport}
-        >
-          <Save size={18} />
-          Save Import
-        </Button>
+        {/* Chỉ ẩn nút Save khi WarehouseStaff và import đã quá 3 ngày */}
+        {(role === 'Admin' || initialData.editable !== false) && (
+          <Button
+            variant="contained"
+            sx={{
+              textTransform: 'none',
+              gap: 2,
+              boxShadow: 'none',
+            }}
+            disabled={items.length === 0}
+            onClick={handleConfirmSaveMedicineImport}
+          >
+            <Save size={18} />
+            Save Import
+          </Button>
+        )}
       </Box>
 
       <Box sx={{
@@ -335,6 +338,7 @@ export default function EditImport() {
                 type="date"
                 value={dayjs(importDate).format("YYYY-MM-DD")}
                 onChange={(e) => setImportDate(e.target.value)}
+                inputProps={{ max: dayjs().format("YYYY-MM-DD") }}
               />
             </Box>
           </Card>
@@ -382,18 +386,21 @@ export default function EditImport() {
               <Typography sx={{ fontWeight: 'bold', fontSize: 18 }}>
                 Import Items
               </Typography>
-              <Button
-                variant="contained"
-                sx={{
-                  textTransform: 'none',
-                  gap: 2,
-                  boxShadow: 'none',
-                }}
-                onClick={handleAddDetail}
-              >
-                <Plus size={18} />
-                Add Item
-              </Button>
+              {/* Chỉ ẩn nút Add Item khi WarehouseStaff và import đã quá 3 ngày */}
+              {(role === 'Admin' || initialData.editable !== false) && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    textTransform: 'none',
+                    gap: 2,
+                    boxShadow: 'none',
+                  }}
+                  onClick={handleAddDetail}
+                >
+                  <Plus size={18} />
+                  Add Item
+                </Button>
+              )}
             </Box>
 
             <ImportDetailTable
