@@ -3,13 +3,12 @@ import { Card, Box, Typography, Divider, } from "@mui/material";
 
 import MedicineImportToolbar from "./MedicineImportToolbar";
 import MedicineImportTable from "./MedicineImportTable";
-import dayjs from "dayjs";
 
 export default function MedicineImportList() {
   const [searchKey, setSearchKey] = useState("");
-  // Date range: từ đầu tháng đến hôm nay
-  const [fromDate, setFromDate] = useState(dayjs().startOf('month').format('YYYY-MM-DD'));
-  const [toDate, setToDate] = useState(dayjs().format('YYYY-MM-DD'));
+  // Date range: mặc định để trống - không filter theo ngày
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   
   return (

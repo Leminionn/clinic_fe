@@ -22,7 +22,7 @@ export default function ImportDetailTable({
       <Table size="small">
         <TableHead sx={{ bgcolor: '#f8f9fa' }}>
           <TableRow>
-            <TableCell sx={{ fontWeight: 'bold' }} align="center">STT</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', width: '5%' }} align="center">STT</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Medicine Name</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Expiry Date</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>Quantity</TableCell>

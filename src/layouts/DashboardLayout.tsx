@@ -16,6 +16,7 @@ import {
   Settings,
   LocalHospital,
   FolderOpen,
+  LocalShipping,
 } from "@mui/icons-material";
 import { Calendar1, ChartArea, FolderTree } from "lucide-react";
 
@@ -43,6 +44,7 @@ export default function DashboardLayout() {
       { label: "Receipts", path: "/admin/invoices", icon: <ReceiptLong /> },
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
       { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
+      { label: "Medicine Import History", path: "/admin/medicine-imports", icon: <LocalShipping /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
       { label: "Reception list", path: "/admin/reception-list", icon: <People /> },
       {
