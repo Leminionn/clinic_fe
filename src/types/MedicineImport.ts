@@ -32,19 +32,33 @@ export interface ImportItem {
   importPrice: number;
 }
 
-export interface CreateMedicineImportUI {
+export interface CreateMedicineImport {
   importDate: string;
   importerId: number;
   supplier: string;
-  importDetails: CreateImportDetailUI[]
+  importDetails: CreateUpdateImportDetail[]
 }
 
-export interface CreateImportDetailUI {
-  rowId: string;
+export interface CreateUpdateImportDetail {
   medicineId: number | null;
   quantity: number;
   expiryDate: string;
   importPrice: number;
+}
+
+export interface CreateUpdateImportDetailUI extends CreateUpdateImportDetail {
+  rowId: string;
+}
+
+export interface UpdateMedicineImport {
+  importId: number;
+  importDate: string;
+  importer: {
+    importerId: number;
+    importerName: string;
+  };
+  supplier: string;
+  importDetails: CreateUpdateImportDetail[]
 }
 
 export interface Medicine {

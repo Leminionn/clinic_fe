@@ -79,6 +79,7 @@ import PriceManagementPage from "../pages/WarehouseStaff/Medicines/Prices/page";
 
 import PatientDashboard from "../pages/Patient/Dashboard/page";
 import MedicineImportDetail from "../pages/SharedPages/crudMedicineImports/MedicineImportDetail/page";
+import EditImport from "../pages/SharedPages/crudMedicineImports/EditImport/page";
 
 export default function AppRoutes() {
   const { role } = useAuth();
@@ -250,6 +251,7 @@ export default function AppRoutes() {
           <Route index element={<MedicineImportsList />} />
           <Route path=":id" element={<MedicineImportDetail />} />
           <Route path="create" element={<CreateImport />} />
+          <Route path=":id/edit" element={<EditImport />} />
         </Route>
       </Route>
 

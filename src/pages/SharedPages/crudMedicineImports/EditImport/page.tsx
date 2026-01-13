@@ -1,29 +1,83 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Divider, TextField, Typography } from "@mui/material";
 import AlertDialog from "../../../../components/AlertDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { showMessage } from "../../../../components/ActionResultMessage";
 import { apiCall } from "../../../../api/api";
 import { ArrowBack } from "@mui/icons-material";
-import type { CreateMedicineImport, CreateUpdateImportDetailUI, Medicine } from "../../../../types/MedicineImport";
+import type { CreateUpdateImportDetail, CreateUpdateImportDetailUI, Medicine, UpdateMedicineImport } from "../../../../types/MedicineImport";
 import { Plus, Save } from "lucide-react";
 import dayjs from "dayjs";
 import { v4 as uuidv4 } from "uuid";
 import ImportDetailTable from "./ImportDetailTable";
 
-export default function CreateImport() {
+const mockMedicineImport: UpdateMedicineImport = {
+  importId: 1001,
+  importDate: "2026-01-10T08:45:00.000Z",
+  importer: {
+    importerId: 3,
+    importerName: "Nguyen Thi Lan",
+  },
+  supplier: "Công ty Dược phẩm Minh Long",
+  importDetails: [
+    {
+      medicineId: 1,
+      quantity: 50,
+      expiryDate: "2027-06-30T00:00:00.000Z",
+      importPrice: 18000,
+    },
+    {
+      medicineId: 1,
+      quantity: 30,
+      expiryDate: "2028-01-15T00:00:00.000Z",
+      importPrice: 17500,
+    },
+    {
+      medicineId: 3,
+      quantity: 200,
+      expiryDate: "2027-03-20T00:00:00.000Z",
+      importPrice: 2200,
+    },
+    {
+      medicineId: 5,
+      quantity: 40,
+      expiryDate: "2028-09-01T00:00:00.000Z",
+      importPrice: 35000,
+    },
+  ],
+};
+
+// hàm thêm row id cho import details get về để hiện thị UI table không bị lỗi
+const normalizeImportDetails = (details: CreateUpdateImportDetail[]) => {
+  return details.map(item => ({
+    ...item,
+    rowId: uuidv4()
+  }));
+};
+
+export default function EditImport() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
   const [confirmMessage, setConfirmMessage] = useState('');
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
-  const importer = { staffId: 1, fullName: "Nguyễn Văn An" }; //fake
+  const [initialData, setInitialData] = useState<UpdateMedicineImport>();
   const [importDate, setImportDate] = useState(new Date().toISOString());
   const [supplier, setSupplier] = useState("");
   const [items, setItems] = useState<CreateUpdateImportDetailUI[]>([]);
   const [medicineList, setMedicineList] = useState<Medicine[]>([]);
 
+  const fetchImportData = async () => {
+    //logic get import data         //fake
+    setInitialData(mockMedicineImport);
+  };
+
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
+
+    fetchImportData();
+    if (!initialData) return;
 
     apiCall("warehouse/medicines/all", "GET", accessToken ? accessToken : "", null, (data: any) => {
       setMedicineList(data.data);
@@ -31,7 +85,15 @@ export default function CreateImport() {
       showMessage(data.message);
     })
 
+    console.log(importDate)
   }, []);
+
+  useEffect(() => {
+    if (!initialData) return;
+    setSupplier(initialData.supplier || "");
+    setItems(normalizeImportDetails(initialData.importDetails || []));
+
+  }, [initialData]);
 
   // Thêm dòng thuốc mới
   const handleAddDetail = () => {
@@ -83,9 +145,8 @@ export default function CreateImport() {
   }
 
   const handleSaveMedicineImport = () => {
-    const payload: CreateMedicineImport = {
+    const payload = {
       importDate: new Date(importDate).toISOString(),
-      importerId: importer.staffId,
       supplier: supplier,
       importDetails: items.map(({ rowId, ...rest }) => rest),
     }
@@ -95,13 +156,13 @@ export default function CreateImport() {
     showMessage("The medicine import has been successfully saved!");
 
     setIsConfirmDialogOpen(false);
-    // navigate(`../${importId}`);      //importId của import vừa tạo
+    navigate(`../${id}`);
   }
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalValue = items.reduce((sum, item) => sum + item.importPrice * item.quantity, 0);
 
-  return (
+  if (initialData) return (
     <Box sx={{
       display: 'flex',
       flexDirection: 'column',
@@ -124,7 +185,7 @@ export default function CreateImport() {
             Back
           </Button>
           <Typography variant="h5" fontWeight="bold">
-            New Import
+            Edit Import #{initialData.importId}
           </Typography>
         </Box>
 
@@ -176,7 +237,7 @@ export default function CreateImport() {
                 Importer:
               </Typography>
               <Typography fontSize={18} fontWeight="bold">
-                {importer.fullName}
+                {initialData.importer.importerName}
               </Typography>
             </Box>
 

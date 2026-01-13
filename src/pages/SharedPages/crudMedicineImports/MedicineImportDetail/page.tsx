@@ -6,6 +6,8 @@ import { Edit } from "lucide-react";
 import { ArrowBack } from "@mui/icons-material";
 import MedicineImportDetailStatCards from "./StatCards";
 import ImportItemsCard from "./ImportItemsCard";
+import AlertDialog from "../../../../components/AlertDialog";
+import { showMessage } from "../../../../components/ActionResultMessage";
 
 const mockMedicineImport: MedicineImportDetail = {
   importId: 1001,
@@ -67,10 +69,23 @@ export default function MedicineImportDetail() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<MedicineImportDetail>();
   const [loading, setLoading] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   useEffect(() => {
     setData(mockMedicineImport)
   }, []);
+
+  const handleConfirmDelete = () => {
+    setConfirmMessage('Are you sure you want to delete this medicine import?');
+    setIsConfirmDialogOpen(true);
+  }
+
+  const handleDelete = () => {
+    showMessage("Deleted successfully!");
+    setIsConfirmDialogOpen(false);
+    navigate("..")
+  }
 
   if (loading) return (
     <Box
@@ -108,21 +123,38 @@ export default function MedicineImportDetail() {
           </Typography>
         </Box>
 
-        {data.editable &&
-          <Button
-            variant="contained"
-            sx={{
-              textTransform: 'none',
-              gap: 2,
-              boxShadow: 'none',
-            }}
-            disabled={!data.editable}
-            //onClick={() => { navigate("edit") }}
-          >
-            <Edit size={18} />
-            Edit Import
-          </Button>
-        }
+        {data.editable && (
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              sx={{
+                width: "140px",
+                textTransform: 'none',
+                gap: 2,
+                boxShadow: 'none',
+              }}
+              disabled={!data.editable}
+              onClick={() => { navigate("edit") }}
+            >
+              <Edit size={18} />
+              Edit Import
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                width: "140px",
+                bgcolor: "var(--color-text-error)",
+                textTransform: 'none',
+                gap: 2,
+                boxShadow: 'none',
+              }}
+              disabled={!data.editable}
+              onClick={() => { handleConfirmDelete() }}
+            >
+              Delete Import
+            </Button>
+          </Box>
+        )}
       </Box>
 
       <MedicineImportDetailStatCards data={data} />
@@ -131,6 +163,17 @@ export default function MedicineImportDetail() {
         <ImportItemsCard data={data} />
       </Box>
 
+      <AlertDialog
+        title={confirmMessage}
+        type={"error"}
+        open={isConfirmDialogOpen}
+        setOpen={setIsConfirmDialogOpen}
+        buttonCancel="Cancel"
+        buttonConfirm="Yes"
+        onConfirm={() => {
+          handleDelete()
+        }}
+      />
     </Box>
   )
 }
