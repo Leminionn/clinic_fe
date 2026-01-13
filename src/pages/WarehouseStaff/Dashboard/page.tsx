@@ -149,7 +149,7 @@ export default function WarehouseStaffDashboard() {
                   <Typography variant="h6" fontWeight="700" color="#334155">
                      Recent Imports
                   </Typography>
-                  <Button variant="text" size="small" endIcon={<History />} onClick={() => navigate('/warehouse-staff/imports')}>
+                  <Button variant="text" size="small" endIcon={<History />} onClick={() => navigate('/warehouse-staff/medicine-imports')}>
                      View All
                   </Button>
                </Box>
@@ -216,7 +216,7 @@ export default function WarehouseStaffDashboard() {
                         transition: 'all 0.2s',
                         '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' }
                      }}
-                     onClick={() => navigate('/warehouse-staff/imports')}
+                     onClick={() => navigate('/warehouse-staff/medicine-imports/create')}
                   >
                      <Stack direction="row" spacing={2} alignItems="center">
                         <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: '#e0f2fe', color: '#0284c7' }}>
