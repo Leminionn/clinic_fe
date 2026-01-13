@@ -20,110 +20,76 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../auth/AuthContext";
 import { Eye } from "lucide-react";
 import type { MedicineImport } from "../../../../types/MedicineImport";
-
-const fakeData: MedicineImport[] = [
-  {
-    importId: 1001,
-    importDate: "2025-12-01",
-    importerName: "Nguyễn Văn An",
-    supplier: "Công ty Dược Minh Long",
-    totalQuantity: 120,
-    totalValue: 18500000,
-  },
-  {
-    importId: 1002,
-    importDate: "2025-12-03",
-    importerName: "Trần Thị Bích",
-    supplier: "Công ty Dược Phúc Hưng",
-    totalQuantity: 80,
-    totalValue: 12400000,
-  },
-  {
-    importId: 1003,
-    importDate: "2025-12-05",
-    importerName: "Lê Hoàng Nam",
-    supplier: "Công ty Dược An Khang",
-    totalQuantity: 200,
-    totalValue: 31200000,
-  },
-  {
-    importId: 1004,
-    importDate: "2025-12-07",
-    importerName: "Phạm Thu Trang",
-    supplier: "Công ty Dược Medipharco",
-    totalQuantity: 65,
-    totalValue: 9800000,
-  },
-  {
-    importId: 1005,
-    importDate: "2025-12-10",
-    importerName: "Võ Minh Tuấn",
-    supplier: "Công ty Dược OPC",
-    totalQuantity: 150,
-    totalValue: 22600000,
-  },
-  {
-    importId: 1006,
-    importDate: "2025-12-12",
-    importerName: "Ngô Thị Lan",
-    supplier: "Công ty Dược Trường Thọ",
-    totalQuantity: 95,
-    totalValue: 14750000,
-  },
-  {
-    importId: 1007,
-    importDate: "2025-12-14",
-    importerName: "Đặng Quốc Huy",
-    supplier: "Công ty Dược Bình An",
-    totalQuantity: 40,
-    totalValue: 6200000,
-  },
-  {
-    importId: 1008,
-    importDate: "2025-12-16",
-    importerName: "Bùi Thanh Hằng",
-    supplier: "Công ty Dược Nam Việt",
-    totalQuantity: 175,
-    totalValue: 26800000,
-  },
-  {
-    importId: 1009,
-    importDate: "2025-12-18",
-    importerName: "Đỗ Minh Khoa",
-    supplier: "Công ty Dược Hậu Giang",
-    totalQuantity: 220,
-    totalValue: 35500000,
-  },
-  {
-    importId: 1010,
-    importDate: "2025-12-20",
-    importerName: "Trịnh Mỹ Linh",
-    supplier: "Công ty Dược Imexpharm",
-    totalQuantity: 60,
-    totalValue: 9100000,
-  },
-];
+import { apiCall } from "../../../../api/api";
+import { showMessage } from "../../../../components/ActionResultMessage";
 
 export default function MedicineImportTable({
-  selectedDate,
+  fromDate,
+  toDate,
   searchKey
 }: {
-  selectedDate: string,
+  fromDate: string,
+  toDate: string,
   searchKey: string
 }) {
   const navigate = useNavigate();
   const { role } = useAuth();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(7);
-  const [data, setData] = useState<MedicineImport[]>(fakeData);
+  const [data, setData] = useState<MedicineImport[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // Xác định base URL theo role
+  const getApiPrefix = () => {
+    if (role === 'Admin') return 'admin';
+    if (role === 'WarehouseStaff') return 'store_keeper';
+    return 'api'; // fallback
+  };
+
+  const fetchData = () => {
+    const accessToken = localStorage.getItem("accessToken");
+    const apiPrefix = getApiPrefix();
+    
+    setLoading(true);
+    
+    // Build query params với date range
+    let queryParams = `?page=${page - 1}&size=${rowsPerPage}&sortBy=importDate&sortType=DESC`;
+    if (searchKey) {
+      queryParams += `&keyword=${encodeURIComponent(searchKey)}`;
+    }
+    if (fromDate) {
+      queryParams += `&fromDate=${fromDate}`;
+    }
+    if (toDate) {
+      queryParams += `&toDate=${toDate}`;
+    }
+    
+    apiCall(`${apiPrefix}/imports${queryParams}`, "GET", accessToken, null,
+      (response: { data: { content: Array<{ importId: number; importDate: string; importerName: string; supplier: string; totalQuantity: number; totalValue: number }>; totalElements: number } }) => {
+        const imports: MedicineImport[] = response.data.content.map((item) => ({
+          importId: item.importId,
+          importDate: item.importDate,
+          importerName: item.importerName,
+          supplier: item.supplier,
+          totalQuantity: item.totalQuantity,
+          totalValue: item.totalValue,
+        }));
+        setData(imports);
+        setTotalItems(response.data.totalElements || 0);
+        setLoading(false);
+      },
+      (error: { message?: string }) => {
+        showMessage(error.message || "Failed to load imports", "error");
+        setLoading(false);
+      }
+    );
+  };
+
   useEffect(() => {
-    // fake data
-    setData(fakeData.slice(0, rowsPerPage))
-    setTotalItems(fakeData.length)
-  }, [page, rowsPerPage, selectedDate, searchKey])
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage, fromDate, toDate, searchKey, role]);
 
   return (
     <Box sx={{

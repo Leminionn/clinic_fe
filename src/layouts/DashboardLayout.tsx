@@ -42,7 +42,7 @@ export default function DashboardLayout() {
       { label: "Payment Methods", path: "/admin/payment-methods", icon: <Payment /> },
       { label: "Receipts", path: "/admin/invoices", icon: <ReceiptLong /> },
       { label: "Disease Types", path: "/admin/disease-types", icon: <LocalHospital /> },
-      { label: "Medicine Inventory", path: "/admin/inventory", icon: <Inventory /> },
+      { label: "Medicine Inventory", path: "/admin/medicine-imports", icon: <Inventory /> },
       { label: "Report & Statistic", path: "/admin/statistic", icon: <ChartArea /> },
       { label: "Reception list", path: "/admin/reception-list", icon: <People /> },
       {

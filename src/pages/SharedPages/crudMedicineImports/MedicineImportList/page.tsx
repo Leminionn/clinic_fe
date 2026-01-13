@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Card, Box, Typography, Divider, } from "@mui/material";
-import AlertDialog from "../../../../components/AlertDialog";
-import { showMessage } from "../../../../components/ActionResultMessage";
 
 import MedicineImportToolbar from "./MedicineImportToolbar";
 import MedicineImportTable from "./MedicineImportTable";
-import dayjs from "dayjs";
 
 export default function MedicineImportList() {
   const [searchKey, setSearchKey] = useState("");
-  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+  // Date range: mặc định để trống - không filter theo ngày
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   
   return (
@@ -37,14 +36,16 @@ export default function MedicineImportList() {
           <MedicineImportToolbar
             searchKey={searchKey}
             onChangeSearchKey={setSearchKey}
-            date={selectedDate}
-            onChangeDate={setSelectedDate}
+            fromDate={fromDate}
+            onChangeFromDate={setFromDate}
+            toDate={toDate}
+            onChangeToDate={setToDate}
           />
 
           <Divider />
 
           <Box flex={1} mt={3}>
-            <MedicineImportTable selectedDate={selectedDate} searchKey={searchKey}/>
+            <MedicineImportTable fromDate={fromDate} toDate={toDate} searchKey={searchKey}/>
           </Box>
         </Card>
       </Box>

@@ -160,6 +160,12 @@ export default function AppRoutes() {
           <Route index element={<InvoiceList />} />
           <Route path=":invoiceId" element={<InvoiceDetailPage />} />
         </Route>
+        <Route path="medicine-imports">
+          <Route index element={<MedicineImportsList />} />
+          <Route path=":id" element={<MedicineImportDetail />} />
+          <Route path="create" element={<CreateImport />} />
+          <Route path=":id/edit" element={<EditImport />} />
+        </Route>
       </Route>
 
       {/* Doctor */}
