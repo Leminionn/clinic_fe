@@ -264,7 +264,7 @@ export default function EditImport() {
         <Box display="flex" alignItems="center" gap={1}>
           <Button
             startIcon={<ArrowBack />}
-            onClick={() => { navigate(-1) }}
+            onClick={() => { navigate(`../${id}`) }}
             sx={{ mr: 2, textTransform: 'none', color: 'text.secondary' }}
           >
             Back

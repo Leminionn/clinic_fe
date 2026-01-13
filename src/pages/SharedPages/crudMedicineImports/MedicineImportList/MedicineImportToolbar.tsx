@@ -95,7 +95,7 @@ export default function MedicineImportToolbar({
             }}
             sx={{
               "& .MuiInputBase-root": {
-                width: '150px',
+                width: '170px',
                 "& input": {
                   cursor: "pointer",
                   py: '8px',
@@ -133,7 +133,7 @@ export default function MedicineImportToolbar({
             }}
             sx={{
               "& .MuiInputBase-root": {
-                width: '150px',
+                width: '170px',
                 "& input": {
                   cursor: "pointer",
                   py: '8px',
